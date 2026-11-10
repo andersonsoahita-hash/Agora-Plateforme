@@ -1132,6 +1132,9 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 }
 @media (max-width:560px){#es>.a-hd .a-brand>div{display:none}#es>.a-hd .seg button{padding:7px 9px;font-size:12.5px}}
 @media(max-width:700px){#es{padding-top:env(safe-area-inset-top,0px)}#es>.a-hd{position:static}#estab{top:0}}
+.ad-f-wrap .ad-b{border:0;border-radius:99px;padding:11px 18px;font:600 14px 'DM Sans',sans-serif;background:#fff;box-shadow:inset 0 0 0 1.5px rgba(27,32,51,.18);cursor:pointer;color:#1b2033}
+.ad-f-wrap .ad-b.ok{background:linear-gradient(90deg,#f2b84b,#ff8f5e);color:#1a1204;box-shadow:none}
+.ad-f-wrap .ad-k{min-width:0}
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=DM+Sans:wght@400;500;600;700&family=Dancing+Script:wght@600;700&display=swap">
 
@@ -2117,13 +2120,13 @@ function vFo(){return '<div class="a-w wide"><div class="a-hs" role="tablist">'+
 /* ---- rendu et événements ---- */
 var es=$('#es');
 function render(){
-  var b=$('#esb'),tr=role==='fo'||role==='tr';b.className=tr?'tr':'';$('#estab').classList.toggle('hide',tr);$('#es').classList.toggle('adm',tr);
-  b.innerHTML=tr?vAdmin():vEl();
+  var b=$('#esb'),ad=role==='fo',tr=role==='tr';b.className=ad?'tr':'';$('#estab').classList.toggle('hide',ad);$('#es').classList.toggle('adm',ad);
+  b.innerHTML=ad?vAdmin():(tr?vForm():vEl());
   var HE={com:['La communauté Agora','Un mouvement : on s’entraîne ensemble, on se défie, on se retrouve pour de vrai.'],home:['Agora, là où l’on prend la parole','Chez les Grecs, l’agora était la place publique : on s’y croisait, on y discutait, on s’y exprimait librement. Ici, tu apprends à y parler.'],studio:['Le Studio','Un sujet, un temps, ta voix. Entraîne-toi, puis juge honnêtement ce qui a marché.'],course:['La formation','Cinq niveaux, soixante leçons, un quiz par leçon, un test et un certificat à chaque palier.'],orators:['Les orateurs','Écoute ceux qui ont tenu une salle, et vole leur méthode, pas leur voix.'],prep:['Préparer un discours','Une trame solide avant de monter sur scène.'],proofs:['Les preuves','Un discours tient quand ses faits tiennent.'],account:['Ton compte','']};
   var hh=tr?['Espace formateur','Suivre les élèves, valider les niveaux, relire les leçons et les tests.']:(HE[P.tab]||HE.home);
   $('#ehero').innerHTML='<div class="eh-in"><span class="eh-k">'+(tr?'Formateur':'Agora · L’art oratoire')+'</span><h1>'+hh[0]+'</h1><p>'+hh[1]+'</p></div><div class="eh-il il" aria-hidden="true">'+((IHE[tr?'fo':P.tab]&&A.IL[IHE[tr?'fo':P.tab]])?A.IL[IHE[tr?'fo':P.tab]]():'')+'</div><svg class="eh-bg" viewBox="0 0 600 300" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="470" cy="150" r="40"/><circle cx="470" cy="150" r="80"/><circle cx="470" cy="150" r="120"/><circle cx="470" cy="150" r="160"/><circle cx="470" cy="150" r="200"/></g><g fill="currentColor"><circle cx="470" cy="118" r="17"/><path d="M440 190c0-24 14-38 30-38s30 14 30 38v30h-60z"/></g></svg>';
 
-  $('#estab').innerHTML=TABS.map(function(t){return '<button data-tab="'+t[0]+'" class="'+(P.tab===t[0]?'on':'')+'" aria-label="'+t[1]+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+t[2]+'</svg>'+t[1]+'</button>'}).join('');
+  $('#estab').innerHTML=tr?FTABS():TABS.map(function(t){return '<button data-tab="'+t[0]+'" class="'+(P.tab===t[0]?'on':'')+'" aria-label="'+t[1]+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+t[2]+'</svg>'+t[1]+'</button>'}).join('');
   revealAll();$('#es').classList.toggle('examing',TS().st==='run'&&!tr);ensureTQ();
   [].forEach.call(document.querySelectorAll('.seg button'),function(x){x.classList.toggle('on',x.dataset.role===role)});
 }
@@ -2574,6 +2577,19 @@ es.addEventListener('click',function(e){var b=e.target.closest('[data-ad]');if(!
   case 'adel':{if(!own){toast('Action disponible depuis la gestion globale');return}var ad2=AD.admins.filter(function(x){return x.id===v})[0];if(!ad2||ad2.role==='owner'){toast('Action non disponible');return}if(!b.dataset.sure){b.dataset.sure='1';b.textContent='Confirmer la suppression';return}AD.admins=AD.admins.filter(function(x){return x.id!==v});aLog('Administrateur supprimé : '+ad2.name);toast('Administrateur supprimé');break}
   default:return}
   aSave();var y=$('#es').scrollTop;render();$('#es').scrollTop=y});
+
+/* ---- espace formateur (même esprit que l'élève, sans aucun prix) ---- */
+var FT=[['home','Accueil','M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'],['el','Mes élèves','M16 11a4 4 0 1 0-8 0M4 21a8 8 0 0 1 16 0'],['pro','Présences','M5 4h14v16H5zM9 9l2 2 4-4'],['for','Séances','M4 5h16v15H4zM4 10h16M9 3v4M15 3v4'],['not','Notes & tests','M6 3h9l4 4v14H6zM9 12h7M9 16h7'],['cha','Messages','M4 5h16v11H9l-5 4z'],['fbk','Mes retours','M5 4h14v16l-4-3H5z']];
+var FV='home';
+function FTABS(){return FT.map(function(t){return '<button data-ftab="'+t[0]+'" class="'+(FV===t[0]?'on':'')+'" aria-label="'+t[1]+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="'+t[2]+'"/></svg>'+t[1]+'</button>'}).join('')}
+function vForm(){var h='<div class="a-w wide ad-f-wrap">';
+  if(FV==='home'){var S=aStud(),act=S.filter(function(u){return u.status==='actif'&&!u.blocked}),inactive=act.filter(function(u){return u.seen>=7}),ses=AD.ses.filter(function(s){return s.tr==='u2'}).sort(function(a,b){return a.date<b.date?-1:1});
+    h+='<div class="ad-kp">'+kpi('Mes élèves',act.length,'actifs','g')+kpi('Séances à venir',ses.length,'planifiées','g')+kpi('À relancer',inactive.length,'sans connexion depuis 7 jours','r')+'</div>';
+    h+=aCard('Mes prochaines séances',tbl(['Quand','Niveau','Où / lien','Élèves'],ses.slice(0,5).map(function(s){return [fD(s.date)+' '+esc(s.time),s.lvl,esc(s.lieu),s.who.length]}),'Aucune séance planifiée.')+'<button class="ad-b ok" data-ftab="pro">Gérer les séances et l’appel</button>');
+    h+=aCard('Mes élèves',tbl(['Élève','Niveau','Leçons faites','Dernière connexion'],act.map(function(u){return [esc(u.name),'Niveau '+u.lvl,u.done+'/60',u.seen+' j']}),'Aucun élève.'));
+  }else if(AR[FV]){h+=AR[FV]()}
+  return h+'</div>'}
+document.addEventListener('click',function(e){var t=e.target.closest('[data-ftab]');if(t){FV=t.dataset.ftab;AV=FV==='home'?'dash':FV;render();var es=document.getElementById('es');if(es)es.scrollTop=0;return}var g=e.target.closest('[data-a="goF"]');if(g){FV=g.dataset.v;AV=FV;render()}});
 
 
 if(AG_MODE==="admin"){role="fo";openES()}
