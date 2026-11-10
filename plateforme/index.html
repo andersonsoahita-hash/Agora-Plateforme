@@ -1050,6 +1050,84 @@ details.a-sub summary{display:flex;justify-content:space-between;gap:10px;align-
 .cm-how2{margin-top:10px;color:rgba(255,255,255,.9)}.cm-how2 summary{cursor:pointer;font-weight:700;color:#f2b84b}
 #es .cm-how2 p{font-size:14px;margin-top:8px}
 a.btn{text-decoration:none;display:inline-flex;align-items:center}
+/* Administration Agora : fonctionnalités de SMC Gestion, style Agora (clair, sobre, boutons Métis) */
+#es.adm #ehero{display:none}
+#es.adm #esb{padding:0;max-width:none;background:transparent}
+.ad-app{display:grid;grid-template-columns:268px minmax(0,1fr);min-height:calc(100vh - 62px);font-family:'DM Sans',system-ui,sans-serif;color:#1b2033}
+.ad-side{position:sticky;top:62px;align-self:start;height:calc(100vh - 62px);overflow:auto;background:rgba(255,255,255,.82);backdrop-filter:blur(8px);border-right:1px solid rgba(27,32,51,.1);padding:16px 12px;display:flex;flex-direction:column;gap:12px}
+.ad-br{display:flex;gap:10px;align-items:center;padding:4px 6px 10px;border-bottom:1px solid rgba(27,32,51,.1)}
+.ad-lg{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font:700 20px Fraunces,Georgia,serif;color:#1a1204;background:linear-gradient(90deg,#f2b84b,#ff8f5e)}
+.ad-br b{display:block;font:700 18px Fraunces,Georgia,serif;color:#1b2033}.ad-br small{font-size:11px;letter-spacing:.14em;color:#8a6212;font-weight:700}
+.ad-who{font-size:13px;color:#7a2218;font-weight:600;padding:0 6px}
+.ad-side nav{display:grid;gap:2px}
+.ad-side nav button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:none;color:#4a5273;font:500 15px 'DM Sans',sans-serif;padding:11px 12px;border-radius:12px;cursor:pointer;min-height:44px}
+.ad-side nav button span{width:22px;text-align:center}
+.ad-side nav button em{margin-left:auto;background:#c2391f;color:#fff;border-radius:99px;font-style:normal;font-size:12px;padding:1px 7px}
+.ad-side nav button:hover{background:rgba(122,34,24,.07);color:#1b2033}
+.ad-side nav button.on{background:#fbeceb;color:#7a2218;box-shadow:inset 3px 0 #c2391f;font-weight:700}
+.ad-out{margin-top:auto;border:1.5px solid rgba(27,32,51,.2);background:#fff;color:#1b2033;font:700 15px 'DM Sans',sans-serif;padding:12px;border-radius:99px;cursor:pointer}
+.ad-main{padding:clamp(16px,3vw,32px);min-width:0;display:grid;gap:16px;align-content:start}
+.ad-top h1{margin:0;font:700 clamp(26px,4vw,36px) Fraunces,Georgia,serif;color:#1b2033}
+.ad-top small{color:#5a6280;font-size:14px}
+.ad-warn{padding:12px 16px;border-radius:14px;background:#fde6e9;border:1px solid #e3949f;color:#8a1f2e}
+.ad-kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:14px}
+.ad-k{padding:16px 18px;border-radius:18px;background:rgba(255,255,255,.88);border:1px solid rgba(27,32,51,.1);border-left:5px solid #235887;display:grid;gap:4px;box-shadow:0 14px 30px -24px rgba(27,32,51,.45)}
+.ad-k.g{border-left-color:#d79a1f}.ad-k.r{border-left-color:#c2391f}
+.ad-k span{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#5a6280;font-weight:700}
+.ad-k b{font:700 28px 'DM Sans',sans-serif;color:#1b2033}.ad-k small{color:#5a6280;font-size:13px}
+.ad-two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:16px}
+.ad-c{background:rgba(255,255,255,.88);border:1px solid rgba(27,32,51,.1);border-radius:20px;padding:18px;display:grid;gap:12px;align-content:start;min-width:0;box-shadow:0 14px 30px -26px rgba(27,32,51,.45)}
+#es.adm .ad-c h3{margin:0;font:700 20px Fraunces,Georgia,serif;color:#1b2033}
+#es.adm .ad-c h4{margin:6px 0 0;color:#1b2033}
+#es.adm .ad-c p{margin:0;color:#2c3350;line-height:1.5}
+#es.adm .ad-c p.ad-mu,#es.adm .ad-c small,#es.adm small.ad-mu,.ad-mu{color:#5a6280}
+#es.adm .ad-big{font:700 34px 'DM Sans',sans-serif;color:#7a2218}
+.ad-tw{overflow-x:auto}
+.ad-t{width:100%;border-collapse:collapse;font-size:14.5px;min-width:560px}
+.ad-t th{text-align:left;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#7a2218;padding:8px 10px;border-bottom:1.5px solid rgba(27,32,51,.14);white-space:nowrap}
+.ad-t td{padding:11px 10px;border-bottom:1px solid rgba(27,32,51,.08);color:#1b2033;vertical-align:middle}
+.ad-t td small{display:block}
+.ad-st{display:inline-block;padding:3px 11px;border-radius:99px;font-size:12.5px;font-weight:700}
+.ad-st.ok{color:#176a47;background:#dff3ea}
+.ad-st.wt{color:#2a3a8c;background:#e6ebfb}
+.ad-st.ko{color:#a3202f;background:#fde6e9}
+#es.adm .ad-b{border:1.5px solid rgba(27,32,51,.22);background:#fff;color:#1b2033;font:600 14px 'DM Sans',sans-serif;padding:9px 16px;border-radius:99px;cursor:pointer;min-height:40px;margin:2px 4px 2px 0;transition:transform .15s,box-shadow .15s}
+#es.adm .ad-b:hover{transform:translateY(-1px);box-shadow:0 8px 18px -10px rgba(27,32,51,.5)}
+#es.adm .ad-b.on{background:#1a1204;color:#fff;border-color:#1a1204}
+#es.adm .ad-b.ok{background:linear-gradient(90deg,#f2b84b,#ff8f5e);color:#1a1204;border-color:transparent;font-weight:700}
+#es.adm .ad-b.ko{background:#fff;border-color:#e3949f;color:#a3202f}
+.ad-ac{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.ad-row{display:flex;gap:14px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid rgba(27,32,51,.08)}
+.ad-row>div:first-child{min-width:0;flex:1 1 280px;display:grid;gap:3px}
+.ad-row small{display:block}
+.ad-fm{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:12px}
+.ad-f{display:grid;gap:6px;font-size:13px;color:#5a6280;font-weight:600}
+.ad-f input,.ad-f select,.ad-f textarea,.ad-s{width:100%;box-sizing:border-box;background:#fff;color:#1b2033;border:1.5px solid rgba(27,32,51,.2);border-radius:14px;padding:12px 14px;font:16px 'DM Sans',sans-serif}
+.ad-f input:focus,.ad-f select:focus,.ad-f textarea:focus,.ad-s:focus{outline:2px solid #ff8f5e;outline-offset:1px}
+.ad-bar2{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.ad-s{flex:1 1 260px}
+.ad-bar{height:8px;border-radius:99px;background:rgba(27,32,51,.1);min-width:90px;overflow:hidden}.ad-bar i{display:block;height:100%;background:linear-gradient(90deg,#f2b84b,#ff8f5e)}
+.ad-mo{display:grid;grid-template-columns:70px 1fr auto;gap:10px;align-items:center;color:#1b2033}
+.ad-wl{display:grid;gap:8px}.ad-wl div{display:flex;gap:10px;align-items:center;color:#2c3350}
+.ad-wl i{min-width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:#fbeceb;border:1px solid #c2391f;color:#7a2218;font-style:normal;font-size:13px;font-weight:700}
+.ad-copy{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.ad-copy code{flex:1 1 260px;min-width:0;overflow-wrap:anywhere;background:#f3f5fb;border:1px solid rgba(27,32,51,.14);border-radius:10px;padding:10px 12px;color:#7a2218;font-size:13px}
+.ad-ul{margin:0;padding-left:20px;display:grid;gap:8px;color:#2c3350}
+.ad-chk{display:flex;gap:10px;align-items:center;color:#2c3350}.ad-chk input{width:20px;height:20px}
+.ad-chat{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:16px}
+.ad-msgs{display:grid;gap:8px;max-height:340px;overflow:auto}
+.ad-m{max-width:80%;padding:10px 14px;border-radius:14px;background:#e6ebfb;color:#1b2033}.ad-m.a{justify-self:end;background:#fbeceb}
+.ad-m small{display:block;margin-top:4px}
+.ad-pc{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}.ad-pc span{display:flex;align-items:center;gap:6px;color:#2c3350}
+@media (max-width:860px){
+ .ad-app{grid-template-columns:1fr}
+ .ad-side{position:sticky;top:56px;height:auto;z-index:20;flex-direction:row;align-items:center;gap:8px;padding:8px 10px;overflow-x:auto;border-right:0;border-bottom:1px solid rgba(27,32,51,.1)}
+ .ad-br,.ad-who,.ad-out{display:none}
+ .ad-side nav{display:flex;gap:6px}
+ .ad-side nav button{width:auto;white-space:nowrap;padding:8px 14px;border:1.5px solid rgba(27,32,51,.18);border-radius:99px;min-height:40px;background:#fff}
+ .ad-side nav button.on{box-shadow:none;border-color:#c2391f}
+ .ad-chat{grid-template-columns:1fr}
+}
+@media (max-width:560px){#es>.a-hd .a-brand>div{display:none}#es>.a-hd .seg button{padding:7px 9px;font-size:12.5px}}
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=DM+Sans:wght@400;500;600;700&family=Dancing+Script:wght@600;700&display=swap">
 
@@ -1242,7 +1320,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 </div>
 <div id="es" role="dialog" aria-modal="true" aria-label="Espace Agora">
   <header class="a-hd"><div class="a-brand"><svg  viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="22" r="11" fill="#C9A24B"/><circle cx="142.2" cy="34.4" r="11" fill="#C2391F"/><circle cx="171" cy="67.6" r="11" fill="#C2391F"/><circle cx="177.2" cy="111.1" r="11" fill="#C2391F"/><circle cx="158.9" cy="151.1" r="11" fill="#C2391F"/><circle cx="122" cy="174.8" r="11" fill="#C2391F"/><circle cx="78" cy="174.8" r="11" fill="#C2391F"/><circle cx="41.1" cy="151.1" r="11" fill="#C2391F"/><circle cx="22.8" cy="111.1" r="11" fill="#C2391F"/><circle cx="29" cy="67.6" r="11" fill="#C2391F"/><circle cx="57.8" cy="34.4" r="11" fill="#C2391F"/><circle cx="100" cy="100" r="27" fill="#C2391F"/></svg><div><b>Agora</b><span>L’art oratoire · <i>by Stephen</i></span></div></div>
-    <div class="seg" role="tablist"><button type="button" role="tab" data-role="el" class="on">Élève</button><button type="button" role="tab" data-role="fo">Formateur</button></div>
+    <div class="seg" role="tablist"><button type="button" role="tab" data-role="el" class="on">Élève</button><button type="button" role="tab" data-role="tr">Formateur</button><button type="button" role="tab" data-role="fo">Admin</button></div>
     <button class="w-hl" id="agear" type="button">Mon compte</button>
     <button class="w-hl w-quit" id="esx" type="button">Quitter l’espace</button></header>
   <section id="ehero"></section>
@@ -1813,7 +1891,7 @@ function vTest(){
     if(i<TQ.length){var qi=t.ord[i],q=TQ[qi],p=perm(qi,t.tries),opts=p.map(function(k){return [k,q[1+k]]}),left=Math.max(0,P.tmq-Math.floor((Date.now()-QS)/1000));
       return '<div class="exam"><div class="ex-top"><span class="ex-n"><b>'+(i+1)+'</b> / '+TQ.length+'</span><span class="ex-warn">Chaque question est chronométrée. Pas de retour en arrière.</span><div class="ex-tm" id="ex-tm"><b id="ex-sec">'+left+'</b><small>s</small></div></div><div class="ex-prog"><i style="width:'+(i/TQ.length*100)+'%"></i></div><div class="ex-body"><p class="ex-q" key="'+i+'">'+esc(q[0])+'</p><div class="ex-o">'+opts.map(function(o,k){return '<button type="button" data-a="tans" data-k="'+o[0]+'" style="--i:'+k+'"><i>'+String.fromCharCode(65+k)+'</i><span>'+esc(o[1])+'</span></button>'}).join('')+'</div></div><div class="ex-bar"><i id="ex-bar"></i></div></div>'}
     return h+'<div class="a-c"><h3>Correction en cours…</h3></div></div>'}
-  h+='<div class="a-c"><p class="a-eb">Niveau 1 · Fondements et structure</p><h3>'+TQ.length+' questions, '+P.tmq+' secondes chacune</h3><p class="a-mu">Il couvre les 10 leçons. Les réponses se ressemblent volontairement : il faut avoir compris, pas deviné. Il faut 70 % de bonnes réponses.</p><ul class="ex-rules"><li><b>'+P.tmq+' s</b> par question : à zéro, la question est comptée fausse et on passe à la suivante.</li><li><b>Pas de retour</b> en arrière, questions et réponses dans un ordre différent à chaque passage.</li><li><b>Reste sur la page</b> : chaque sortie est notée et vue par ton formateur.</li><li>Pas de correction pendant l’épreuve. Ton formateur valide ensuite avec ton score et tes temps.</li></ul><div class="a-row">'+statusT()+'</div>'+
+  h+='<div class="a-c"><p class="a-eb">Niveau 1 · Fondements et structure</p><h3>'+TQ.length+' questions, '+P.tmq+' secondes chacune</h3><p class="a-mu">Il couvre les 10 leçons. Les réponses se ressemblent volontairement : il faut avoir compris, pas deviné. Il faut au moins '+(typeof AD!=='undefined'?AD.cfg.pass:90)+' % de bonnes réponses.</p><ul class="ex-rules"><li><b>'+P.tmq+' s</b> par question : à zéro, la question est comptée fausse et on passe à la suivante.</li><li><b>Pas de retour</b> en arrière, questions et réponses dans un ordre différent à chaque passage.</li><li><b>Reste sur la page</b> : chaque sortie est notée et vue par ton formateur.</li><li>Pas de correction pendant l’épreuve. Ton formateur valide ensuite avec ton score et tes temps.</li></ul><div class="a-row">'+statusT()+'</div>'+
     '<div class="a-f"><label for="tn">Ton prénom et nom (ils apparaîtront sur le certificat)</label><input id="tn" data-a-in="name" value="'+esc(P.name)+'" autocomplete="name"></div>'+
     (n<10?'<div class="a-call w">Le test s’ouvre quand les 10 leçons sont terminées ('+n+' sur 10 pour l’instant).</div><div><button class="btn ghost sm" data-a="all">Démo : marquer les 10 leçons comme faites</button></div>':'')+
     (t.st==='none'||t.st==='fail'||t.st==='redo'?'<div><button class="btn" data-a="tstart"'+(n<10?' disabled style="opacity:.45;cursor:not-allowed"':'')+'>'+(t.st==='none'?'Commencer le test':'Repasser le test')+'</button></div>':'')+
@@ -1949,7 +2027,7 @@ var TQI=null;
 function shufN(n){var a=[],i,j,t;for(i=0;i<n;i++)a.push(i);for(i=n-1;i>0;i--){j=Math.floor(Math.random()*(i+1));t=a[i];a[i]=a[j];a[j]=t}return a}
 function tFin(){var t1=P.t1,ok=0;t1.missed=[];TQ.forEach(function(q,i){if(t1.ans[i]===0)ok++;else t1.missed.push(q[5])});
   t1.score=Math.round(ok/TQ.length*100);t1.avg=Math.round(t1.times.reduce(function(a,b){return a+b},0)/Math.max(1,t1.times.length));t1.date=today();t1.no='AG-'+new Date().toISOString().slice(0,7).replace('-','')+'-'+String(Math.floor(Math.random()*9000)+1000);
-  if(t1.score<70)t1.st='fail';else if(!A.S.online){t1.st='queued';A.S.queue++;A.paintNet();toast('Hors ligne : test gardé, envoi automatique au retour du réseau')}else{t1.st='pending';toast('Test terminé : score '+t1.score+' %, envoyé à Stephen')}
+  if(t1.score<(typeof AD!=='undefined'?AD.cfg.pass:90))t1.st='fail';else if(!A.S.online){t1.st='queued';A.S.queue++;A.paintNet();toast('Hors ligne : test gardé, envoi automatique au retour du réseau')}else{t1.st='pending';toast('Test terminé : score '+t1.score+' %, envoyé à Stephen')}
   stopTQ()}
 function tAdv(k){var t1=P.t1;if(t1.st!=='run')return;var qi=t1.ord[t1.cur];t1.ans[qi]=k;t1.times[t1.cur]=Math.min(P.tmq,Math.round((Date.now()-QS)/100)/10);if(k<0)t1.to++;t1.cur++;QS=Date.now();if(t1.cur>=TQ.length)tFin();save();render();$('#es').scrollTop=0}
 function stopTQ(){clearInterval(TQI);TQI=null}
@@ -2005,8 +2083,8 @@ function vFo(){return '<div class="a-w wide"><div class="a-hs" role="tablist">'+
 /* ---- rendu et événements ---- */
 var es=$('#es');
 function render(){
-  var b=$('#esb'),tr=role==='fo';b.className=tr?'tr':'';$('#estab').classList.toggle('hide',tr);
-  b.innerHTML=tr?vFo():vEl();
+  var b=$('#esb'),tr=role==='fo'||role==='tr';b.className=tr?'tr':'';$('#estab').classList.toggle('hide',tr);$('#es').classList.toggle('adm',tr);
+  b.innerHTML=tr?vAdmin():vEl();
   var HE={com:['La communauté Agora','Un mouvement : on s’entraîne ensemble, on se défie, on se retrouve pour de vrai.'],home:['Agora, là où l’on prend la parole','Chez les Grecs, l’agora était la place publique : on s’y croisait, on y discutait, on s’y exprimait librement. Ici, tu apprends à y parler.'],studio:['Le Studio','Un sujet, un temps, ta voix. Entraîne-toi, puis juge honnêtement ce qui a marché.'],course:['La formation','Cinq niveaux, soixante leçons, un quiz par leçon, un test et un certificat à chaque palier.'],orators:['Les orateurs','Écoute ceux qui ont tenu une salle, et vole leur méthode, pas leur voix.'],prep:['Préparer un discours','Une trame solide avant de monter sur scène.'],proofs:['Les preuves','Un discours tient quand ses faits tiennent.'],account:['Ton compte','']};
   var hh=tr?['Espace formateur','Suivre les élèves, valider les niveaux, relire les leçons et les tests.']:(HE[P.tab]||HE.home);
   $('#ehero').innerHTML='<div class="eh-in"><span class="eh-k">'+(tr?'Formateur':'Agora · L’art oratoire')+'</span><h1>'+hh[0]+'</h1><p>'+hh[1]+'</p></div><div class="eh-il il" aria-hidden="true">'+((IHE[tr?'fo':P.tab]&&A.IL[IHE[tr?'fo':P.tab]])?A.IL[IHE[tr?'fo':P.tab]]():'')+'</div><svg class="eh-bg" viewBox="0 0 600 300" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="470" cy="150" r="40"/><circle cx="470" cy="150" r="80"/><circle cx="470" cy="150" r="120"/><circle cx="470" cy="150" r="160"/><circle cx="470" cy="150" r="200"/></g><g fill="currentColor"><circle cx="470" cy="118" r="17"/><path d="M440 190c0-24 14-38 30-38s30 14 30 38v30h-60z"/></g></svg>';
@@ -2255,6 +2333,206 @@ lpEl.addEventListener('change',function(e){var t=e.target;if(t.dataset.at==='s')
 lpEl.addEventListener('input',function(e){var t=e.target;if(t.dataset.at==='t'){atS(HUB.id).t=t.value;save()}else if(t.dataset.at==='x'){atS(HUB.id).x=t.value;save()}});
 lpEl.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&e.target.matches('[role=button]')){e.preventDefault();e.target.click()}});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&lpEl.classList.contains('on')&&!lvEl.classList.contains('on')){closeHub()}});
+
+/* ================= ADMINISTRATION AGORA (inspirée de SMC Gestion) ================= */
+var AK='agora_adm',AV='dash',AQ='',AFL='all',ASEL=null,ATSEL=1,ACH=null;
+var AN=[['dash','Tableau de bord','▦'],['dem','Demandes','✉'],['el','Élèves','👥'],['pay','Paiements & factures','🧾'],['rel','Relances','📣'],['tre','Trésorerie','💰'],['for','Formateurs & séances','🎙'],['con','Contenus','📚'],['not','Notes & tests','📝'],['cer','Certificats','🎓'],['dev','Labo développeur','🧪'],['fbk','Retours sur les cours','🗒'],['his','Historique','🕘'],['cha','Messagerie','💬'],['avi','Avis & anciens messages','🗨'],['pro','Promotions & présences','📅'],['reg','Réglages & tarifs','⚙'],['adm','Administrateurs & accès','🔑'],['jou','Journal','🛡']];
+var ANT=['dash','el','for','not','fbk','cha','pro'];
+var AM=['Mvola','Orange Money','Airtel Money','Virement','Espèces','Carte'];
+function dAgo(n){var d=new Date();d.setDate(d.getDate()-n);return d.toISOString().slice(0,10)}
+function fD(s){if(!s)return '—';var p=String(s).split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:s}
+function seedAdm(){
+  var U=[
+   ['u1','Mialy Rakoto','mialy.rakoto@exemple.mg','Antananarivo','eleve',2,31,2,'c1','actif',null],
+   ['u2','Hery Andria','hery.andria@exemple.mg','Antsiranana','formateur',3,52,0,'c1','actif',null],
+   ['u3','Sarah Martin','sarah.martin@exemple.fr','Paris','eleve',1,14,1,'c2','actif',null],
+   ['u4','Théo Bernard','theo.bernard@exemple.fr','Marseille','eleve',1,6,9,'c2','actif',null],
+   ['u5','Lalaina Razafy','lalaina.razafy@exemple.mg','Antananarivo','eleve',1,3,12,'c1','actif',null],
+   ['u6','Fanja Ando','fanja.ando@exemple.mg','Toamasina','eleve',0,0,0,'c1','attente',null],
+   ['u7','Tahina Rabe','tahina.rabe@exemple.mg','Antananarivo','eleve',0,0,0,'c1','attente',null],
+   ['u8','Compte test','test@agora.test','En ligne','eleve',0,0,0,'c1','actif',1]];
+  var users=U.map(function(r){return {id:r[0],name:r[1],email:r[2],city:r[3],role:r[4],lvl:r[5],done:r[6],seen:r[7],cohort:r[8],status:r[9],test:r[10]||0,joined:dAgo(40-+r[0].slice(1)*3),trainer:r[4]==='eleve'?'u2':'',blocked:false}});
+  return {v:1,me:'a1',
+   admins:[{id:'a1',name:'Stephen',email:'stephen@exemple.fr',role:'owner',blocked:false,added:dAgo(30)},{id:'a2',name:'Associé',email:'associe@exemple.fr',role:'admin',blocked:false,added:dAgo(12)}],
+   users:users,
+   inv:[{no:'F-2611-0001',uid:'u1',lvl:1,amt:30000,paid:true,date:dAgo(30),mode:'Mvola'},{no:'F-2611-0002',uid:'u3',lvl:1,amt:30000,paid:true,date:dAgo(14),mode:'Virement'},{no:'F-2611-0003',uid:'u4',lvl:1,amt:30000,paid:false,date:dAgo(9),mode:''},{no:'F-2611-0004',uid:'u5',lvl:1,amt:30000,paid:false,date:dAgo(3),mode:''},{no:'F-2611-0005',uid:'u1',lvl:2,amt:45000,paid:true,date:dAgo(8),mode:'Orange Money'}],
+   exp:[{id:'e1',t:'Hébergement et nom de domaine',amt:20000,date:dAgo(20)},{id:'e2',t:'Impression des fiches formateur',amt:12000,date:dAgo(6)}],
+   ses:[{id:'s1',tr:'u2',lvl:1,date:dAgo(-3),time:'18:00',mode:'visio',lieu:'Lien envoyé aux inscrits',who:['u3','u4','u5']},{id:'s2',tr:'u2',lvl:2,date:dAgo(-6),time:'16:30',mode:'reel',lieu:'Salle Agora, Antananarivo',who:['u1']}],
+   fb:[{id:'f1',tr:'u2',lesson:'c3',t:'Les exemples de la leçon 3 sont très parlants, mais la liste des connecteurs gagnerait à être un peu plus courte.',done:false,date:dAgo(4)},{id:'f2',tr:'u2',lesson:'c9',t:'Ajouter un exercice à faire à deux sur la leçon 9.',done:false,date:dAgo(2)}],
+   ms:[{id:'m1',uid:'u1',from:'u',t:'Bonjour, je n’arrive pas à ouvrir le test du niveau 2.',date:dAgo(2)},{id:'m2',uid:'u3',from:'u',t:'Merci pour l’accès, je commence ce soir.',date:dAgo(13)}],
+   rv:[{id:'r1',uid:'u1',stars:5,t:'Les leçons sont courtes et concrètes, j’ai déjà changé ma façon d’ouvrir un discours.',date:dAgo(5),arch:false},{id:'r2',uid:'u3',stars:4,t:'J’aimerais plus de sujets d’actualité dans le Studio.',date:dAgo(10),arch:false},{id:'r3',uid:'u4',stars:5,t:'Le chronomètre du test met vraiment la pression, c’est bien.',date:dAgo(8),arch:true}],
+   coh:[{id:'c1',n:'Promotion Novembre',start:dAgo(30),lvl:1},{id:'c2',n:'Promotion Décembre',start:dAgo(-20),lvl:1}],
+   att:{},res:[{id:'t1',uid:'u1',lvl:1,pct:94,date:dAgo(28),st:'ok'},{id:'t2',uid:'u1',lvl:2,pct:91,date:dAgo(7),st:'ok'},{id:'t3',uid:'u3',lvl:1,pct:88,date:dAgo(5),st:'ko'},{id:'t4',uid:'u3',lvl:1,pct:93,date:dAgo(1),st:'ok'},{id:'t5',uid:'u2',lvl:1,pct:97,date:dAgo(35),st:'ok'},{id:'t6',uid:'u2',lvl:2,pct:96,date:dAgo(25),st:'ok'},{id:'t7',uid:'u2',lvl:3,pct:92,date:dAgo(14),st:'ok'}],
+   cert:[{no:'AG-202610-1042',uid:'u1',lvl:1,date:dAgo(28),rev:false},{no:'AG-202611-2210',uid:'u1',lvl:2,date:dAgo(7),rev:false},{no:'AG-202610-1007',uid:'u2',lvl:1,date:dAgo(35),rev:false},{no:'AG-202610-1019',uid:'u2',lvl:2,date:dAgo(25),rev:false}],
+   cfg:{pass:90,minQ:30,sec:45,prices:[0,30000,45000,60000,75000,90000],pay:'Mvola 034 00 000 00 · Orange Money 032 00 000 00',trial:7,devices:2,locked:false},
+   hid:{},log:[{d:dAgo(30),by:'Stephen',a:'Création du compte administrateur'},{d:dAgo(12),by:'Stephen',a:'Création de l’accès administrateur « Associé »'}],
+   his:[{d:dAgo(1),t:'Sarah Martin a réussi le test du niveau 1 (93 %)'},{d:dAgo(2),t:'Message de Mialy Rakoto'},{d:dAgo(3),t:'Facture F-2611-0004 créée pour Lalaina Razafy'},{d:dAgo(7),t:'Mialy Rakoto a réussi le niveau 2 (91 %)'}]};
+}
+function loadAdm(){var d=null;try{d=JSON.parse(localStorage.getItem(AK)||'null')}catch(e){}if(!d||typeof d!=='object'||d.v!==1||!Array.isArray(d.users)||!Array.isArray(d.admins)||!d.cfg)d=seedAdm();['inv','exp','ses','fb','ms','rv','coh','res','cert','log','his'].forEach(function(k){if(!Array.isArray(d[k]))d[k]=[]});if(!d.att||typeof d.att!=='object')d.att={};if(!d.hid||typeof d.hid!=='object')d.hid={};if(!d.admins.some(function(a){return a.role==='owner'}))d.admins.unshift({id:'a1',name:'Stephen',email:'',role:'owner',blocked:false,added:dAgo(0)});if(!d.admins.some(function(a){return a.id===d.me}))d.me=d.admins[0].id;return d}
+var AD=loadAdm();
+function aSave(){try{localStorage.setItem(AK,JSON.stringify(AD))}catch(e){}}
+function aMe(){return AD.admins.filter(function(a){return a.id===AD.me})[0]||AD.admins[0]}
+function aOwner(){return aMe().role==='owner'}
+function aLog(t){AD.log.unshift({d:new Date().toISOString().slice(0,10),by:role==='tr'?'Formateur':aMe().name,a:t});AD.log=AD.log.slice(0,200)}
+function aHis(t){AD.his.unshift({d:new Date().toISOString().slice(0,10),t:t});AD.his=AD.his.slice(0,200)}
+function uBy(id){return AD.users.filter(function(u){return u.id===id})[0]}
+function uN(id){var u=uBy(id);return u?u.name:'Compte supprimé'}
+function money(n){return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' Ar'}
+function nextNo(p){var n=AD.inv.length+1;return p+'-'+new Date().toISOString().slice(2,7).replace('-','')+'-'+('000'+n).slice(-4)}
+function lvName(l){return LV[l]?LV[l].n:'—'}
+function aTrainerMe(){return AD.users.filter(function(u){return u.id==='u2'})[0]}
+function aStud(){return AD.users.filter(function(u){return u.role==='eleve'&&!u.test&&(role!=='tr'||u.trainer==='u2')})}
+function aPaid(){return AD.inv.filter(function(i){return i.paid}).reduce(function(s,i){return s+i.amt},0)}
+function aDue(){return AD.inv.filter(function(i){return !i.paid}).reduce(function(s,i){return s+i.amt},0)}
+function aExp(){return AD.exp.reduce(function(s,e){return s+e.amt},0)}
+function stBadge(s,b){return '<span class="ad-st '+(b?'ko':s==='actif'?'ok':s==='attente'?'wt':'ko')+'">'+(b?'bloqué':s)+'</span>'}
+function tbl(heads,rows,emp){return rows.length?'<div class="ad-tw"><table class="ad-t"><thead><tr>'+heads.map(function(h){return '<th>'+h+'</th>'}).join('')+'</tr></thead><tbody>'+rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+c+'</td>'}).join('')+'</tr>'}).join('')+'</tbody></table></div>':'<p class="ad-mu">'+(emp||'Rien à afficher pour l’instant.')+'</p>'}
+function aB(a,l,k,x){return '<button class="ad-b'+(k?' '+k:'')+'" data-ad="'+a+'"'+(x||'')+'>'+l+'</button>'}
+function aCard(h,b,c){return '<section class="ad-c'+(c?' '+c:'')+'"><h3>'+h+'</h3>'+b+'</section>'}
+function kpi(l,v,s,c){return '<div class="ad-k '+(c||'')+'"><span>'+l+'</span><b>'+v+'</b><small>'+s+'</small></div>'}
+function inp(id,l,ph,v,t){return '<label class="ad-f"><span>'+l+'</span><input id="'+id+'" type="'+(t||'text')+'" placeholder="'+(ph||'')+'" value="'+esc(v||'')+'"></label>'}
+function sel(id,l,opts,v){return '<label class="ad-f"><span>'+l+'</span><select id="'+id+'">'+opts.map(function(o){return '<option value="'+esc(o[0])+'"'+(String(o[0])===String(v)?' selected':'')+'>'+esc(o[1])+'</option>'}).join('')+'</select></label>'}
+function gv(id){var e=document.getElementById(id);return e?e.value.trim():''}
+var AR={};
+/* ---- tableau de bord ---- */
+AR.dash=function(){var S=aStud(),req=AD.users.filter(function(u){return u.status==='attente'}),act=S.filter(function(u){return u.status==='actif'&&!u.blocked}),inactive=act.filter(function(u){return u.seen>=7}).length;
+  var h='<div class="ad-kp">'+kpi('Formés actifs',act.length,S.length+' élève'+(S.length>1?'s':'')+' au total','b')+kpi('Demandes en attente',req.length,'à valider','g')+kpi('Encaissé',money(aPaid()),AD.inv.filter(function(i){return i.paid}).length+' factures payées','b')+kpi('Reste à encaisser',money(aDue()),AD.inv.filter(function(i){return !i.paid}).length+' facture(s) en attente','r')+'</div>';
+  h+='<div class="ad-two">'+aCard('Dernières demandes',tbl(['Nom','Date','État'],AD.users.filter(function(u){return u.role==='eleve'&&!u.test}).slice().sort(function(a,b){return a.joined<b.joined?1:-1}).slice(0,4).map(function(u){return [esc(u.name)+'<br><small>'+esc(u.email)+'</small>',fD(u.joined),stBadge(u.status,u.blocked)]}))+aB('go','Tout voir','',' data-v="dem"'))+
+   aCard('À surveiller','<div class="ad-wl"><div><i>'+inactive+'</i> sans connexion depuis 7 jours ou plus</div><div><i>'+AD.inv.filter(function(i){return !i.paid}).length+'</i> facture(s) impayée(s)</div><div><i>'+AD.fb.filter(function(f){return !f.done}).length+'</i> retour(s) de formateur à lire</div></div><h4>Trésorerie</h4><p class="ad-big">'+money(aPaid()-aExp())+'</p><small class="ad-mu">encaissé moins dépenses</small>')+'</div>';
+  h+=aCard('Progression des formés',tbl(['Formé','Niveaux','Leçons faites','Dernière connexion'],S.map(function(u){var p=Math.round(u.done/60*100);return [esc(u.name),u.lvl?'Niveau '+u.lvl:'—','<div class="ad-bar"><i style="width:'+p+'%"></i></div><small>'+u.done+'/60</small>',u.seen===0?'aujourd’hui':u.seen+' j']})));return h};
+/* ---- demandes ---- */
+AR.dem=function(){var req=AD.users.filter(function(u){return u.status==='attente'});var url=location.href.split('#')[0];
+  return aCard('Demandes à valider',req.length?req.map(function(u){return '<div class="ad-row"><div><b>'+esc(u.name)+'</b><small>'+esc(u.email)+' · '+esc(u.city)+' · demandé le '+fD(u.joined)+'</small></div><div class="ad-ac">'+aB('acc','Accepter','ok',' data-v="'+u.id+'"')+aB('ref','Refuser','ko',' data-v="'+u.id+'"')+'</div></div>'}).join(''):'<p class="ad-mu">Aucune demande en attente.</p>')+
+   aCard('Lien d’inscription à envoyer','<p class="ad-mu">Les personnes qui ouvrent ce lien demandent un accès. Tu les valides ici, et l’accès part par e-mail.</p><div class="ad-copy"><code id="ad-url">'+esc(url)+'</code>'+aB('copyurl','Copier le lien','')+'</div>')+
+   aCard('Dernières décisions',tbl(['Nom','État'],AD.users.filter(function(u){return u.role==='eleve'&&!u.test&&u.status!=='attente'}).slice(0,6).map(function(u){return [esc(u.name),stBadge(u.status,u.blocked)]})))};
+/* ---- élèves ---- */
+AR.el=function(){var L=AD.users.filter(function(u){return !u.test||AFL==='test'}).filter(function(u){if(role==='tr'&&u.trainer!=='u2'&&u.id!=='u2')return false;if(AFL==='eleve')return u.role==='eleve';if(AFL==='formateur')return u.role==='formateur';if(AFL==='bloque')return u.blocked;if(AFL==='test')return u.test;return true}).filter(function(u){return !AQ||(u.name+u.email+u.city).toLowerCase().indexOf(AQ.toLowerCase())>=0});
+  var h='<div class="ad-bar2"><input id="ad-q" class="ad-s" placeholder="Rechercher un nom, un e-mail, une ville" value="'+esc(AQ)+'">'+[['all','Tous'],['eleve','Élèves'],['formateur','Formateurs'],['bloque','Bloqués'],['test','Comptes test']].map(function(f){return aB('fl',f[1],AFL===f[0]?'on':'',' data-v="'+f[0]+'"')}).join('')+'</div>';
+  h+=aCard('Comptes ('+L.length+')',tbl(['Nom','Rôle','Ville','Niveau','Dernière connexion','Accès',''],L.map(function(u){return ['<b>'+esc(u.name)+'</b><br><small>'+esc(u.email)+'</small>',u.role==='formateur'?'Formateur':'Élève',esc(u.city),u.lvl?'Niveau '+u.lvl:'—',u.seen===0?'aujourd’hui':u.seen+' j',stBadge(u.status,u.blocked),aB('sel','Ouvrir','',' data-v="'+u.id+'"')+(u.blocked?aB('unb','Débloquer','ok',' data-v="'+u.id+'"'):aB('blk','Bloquer','ko',' data-v="'+u.id+'"'))+(role==='tr'?'':aB('del','Supprimer','ko',' data-v="'+u.id+'"'))]})));
+  if(ASEL&&uBy(ASEL)){var u=uBy(ASEL),cs=AD.cert.filter(function(c){return c.uid===u.id&&!c.rev}),rs=AD.res.filter(function(r){return r.uid===u.id});
+    h+=aCard(esc(u.name),'<div class="ad-two"><div><p><b>'+(u.role==='formateur'?'Formateur':'Élève')+'</b> · '+esc(u.city)+' · '+esc(u.email)+'</p><p class="ad-mu">Inscrit le '+fD(u.joined)+' · promotion : '+esc((AD.coh.filter(function(c){return c.id===u.cohort})[0]||{n:'—'}).n)+'</p><p>Niveaux validés : '+(u.lvl||'aucun')+' · '+u.done+' leçons faites</p>'+(u.role==='formateur'?'<p>Habilité à enseigner jusqu’au niveau <b>'+Math.max(0,u.lvl-1)+'</b> (il faut avoir réussi le niveau suivant).</p>':'')+'<p>'+(u.blocked?stBadge('',true)+' Accès bloqué':stBadge(u.status))+'</p></div><div><h4>Tests</h4>'+tbl(['Niveau','Note','État'],rs.map(function(r){return [r.lvl,r.pct+' %','<span class="ad-st '+(r.st==='ok'?'ok':'ko')+'">'+(r.st==='ok'?'réussi':'échoué')+'</span>']}),'Aucun test.')+'<h4>Certificats</h4>'+(cs.length?cs.map(function(c){return '<p>Niveau '+c.lvl+' · '+c.no+'</p>'}).join(''):'<p class="ad-mu">Aucun.</p>')+'</div></div><div class="ad-ac">'+aB('msgto','Écrire','',' data-v="'+u.id+'"')+aB('close','Fermer','')+'</div>')}
+  return h};
+/* ---- paiements ---- */
+AR.pay=function(){var us=AD.users.filter(function(u){return !u.test}).map(function(u){return [u.id,u.name]});
+  return '<div class="ad-two">'+aCard('Enregistrer un paiement','<div class="ad-fm">'+sel('pu','Élève',us)+sel('pl','Niveau',[1,2,3,4,5].map(function(l){return [l,'Niveau '+l+' · '+lvName(l)]}))+inp('pa','Montant (Ar)','Laisse vide pour le tarif du niveau','','number')+sel('pm','Moyen de paiement',AM.map(function(m){return [m,m]}))+'</div>'+aB('addpay','Enregistrer et numéroter la facture','ok'))+aCard('Numéros de paiement','<p>'+esc(AD.cfg.pay)+'</p><p class="ad-mu">Modifiable dans Réglages & tarifs.</p>')+'</div>'+
+   aCard('Factures ('+AD.inv.length+')',tbl(['N°','Élève','Niveau','Montant','Date','État',''],AD.inv.map(function(i,k){return [i.no,esc(uN(i.uid)),i.lvl,money(i.amt),fD(i.date),'<span class="ad-st '+(i.paid?'ok':'wt')+'">'+(i.paid?'payée · '+esc(i.mode):'à encaisser')+'</span>',i.paid?'':aB('mkpaid','Marquer payée','ok',' data-v="'+k+'"')]})))};
+/* ---- relances ---- */
+AR.rel=function(){var L=AD.inv.filter(function(i){return !i.paid});
+  return aCard('Relances prêtes à envoyer ('+L.length+')',L.length?L.map(function(i,k){var u=uBy(i.uid)||{name:'?',email:''},n=Math.max(0,Math.round((Date.now()-new Date(i.date).getTime())/864e5)),tx='Bonjour '+u.name.split(' ')[0]+', ta facture '+i.no+' ('+money(i.amt)+') pour le niveau '+i.lvl+' est en attente depuis '+n+' jours. Tu peux régler par : '+AD.cfg.pay+'. Merci, l’équipe Agora.';return '<div class="ad-row"><div><b>'+esc(u.name)+'</b><small>'+i.no+' · '+money(i.amt)+' · '+n+' j</small><p class="ad-mu">'+esc(tx)+'</p></div><div class="ad-ac">'+aB('cpy','Copier le message','',' data-t="'+esc(tx)+'"')+aB('mkpaid','Déjà payée','ok',' data-v="'+AD.inv.indexOf(i)+'"')+'</div></div>'}).join(''):'<p class="ad-mu">Aucune facture en retard.</p>')};
+/* ---- trésorerie ---- */
+AR.tre=function(){var m={};AD.inv.filter(function(i){return i.paid}).forEach(function(i){var k=i.date.slice(0,7);m[k]=(m[k]||0)+i.amt});var ks=Object.keys(m).sort(),mx=Math.max.apply(null,ks.map(function(k){return m[k]}).concat([1]));
+  return '<div class="ad-kp">'+kpi('Encaissé',money(aPaid()),'factures payées','b')+kpi('Dépenses',money(aExp()),AD.exp.length+' ligne(s)','r')+kpi('Solde',money(aPaid()-aExp()),'encaissé moins dépenses','g')+kpi('À encaisser',money(aDue()),'en attente','b')+'</div><div class="ad-two">'+
+   aCard('Encaissements par mois',ks.length?ks.map(function(k){return '<div class="ad-mo"><span>'+k.slice(5)+'/'+k.slice(0,4)+'</span><div class="ad-bar"><i style="width:'+Math.round(m[k]/mx*100)+'%"></i></div><b>'+money(m[k])+'</b></div>'}).join(''):'<p class="ad-mu">Aucun encaissement.</p>')+
+   aCard('Ajouter une dépense','<div class="ad-fm">'+inp('et','Libellé','Ex. : hébergement')+inp('ea','Montant (Ar)','','','number')+'</div>'+aB('addexp','Ajouter la dépense','ok'))+'</div>'+
+   aCard('Dépenses',tbl(['Date','Libellé','Montant',''],AD.exp.map(function(e,k){return [fD(e.date),esc(e.t),money(e.amt),aB('delexp','Retirer','ko',' data-v="'+k+'"')]})))};
+/* ---- formateurs & séances ---- */
+AR.for=function(){var T=AD.users.filter(function(u){return u.role==='formateur'&&(role!=='tr'||u.id==='u2')}),S=AD.ses.filter(function(s){return role!=='tr'||s.tr==='u2'});
+  var h=aCard('Formateurs ('+T.length+')',tbl(['Nom','Habilité','Élèves','Accès',''],T.map(function(u){return ['<b>'+esc(u.name)+'</b><br><small>'+esc(u.city)+'</small>','Niveau 1 à '+Math.max(1,u.lvl-1)+'<br><small>niveaux réussis jusqu’au '+u.lvl+'</small>',AD.users.filter(function(x){return x.trainer===u.id}).length,stBadge(u.status,u.blocked),(role==='tr'?'':u.blocked?aB('unb','Débloquer','ok',' data-v="'+u.id+'"'):aB('blk','Bloquer','ko',' data-v="'+u.id+'"'))]}),'Aucun formateur.')+(role==='tr'?'':'<p class="ad-mu">Règle : pour enseigner le niveau N, il faut avoir réussi les niveaux N et N+1.</p>'));
+  h+=aCard('Planifier une séance','<div class="ad-fm">'+sel('st','Formateur',AD.users.filter(function(u){return u.role==='formateur'}).map(function(u){return [u.id,u.name]}))+sel('sl','Niveau',[1,2,3,4,5].map(function(l){return [l,'Niveau '+l]}))+inp('sd','Date','','','date')+inp('sh','Heure','','','time')+sel('sm','Format',[['visio','En visio'],['reel','Dans un lieu']])+inp('sp','Lien ou lieu','Lien de visio ou adresse')+'</div>'+aB('addses','Planifier','ok'));
+  h+=aCard('Séances à venir',tbl(['Date','Niveau','Formateur','Format','Lien ou lieu','Présents prévus',''],S.slice().sort(function(a,b){return a.date<b.date?-1:1}).map(function(s){return [fD(s.date)+' '+esc(s.time),s.lvl,esc(uN(s.tr)),s.mode==='visio'?'Visio':'En lieu',esc(s.lieu),s.who.length,aB('delses','Annuler','ko',' data-v="'+s.id+'"')]}),'Aucune séance.'));return h};
+/* ---- contenus ---- */
+AR.con=function(){var h='<div class="ad-kp">';[1,2,3,4,5].forEach(function(l){var ls=lessonsOf(l),q=l===1?TQ.length:0,ok=l===1&&q>=AD.cfg.minQ;h+=kpi('Niveau '+l,ls.length+' leçons',(q?q+' questions':'aucune question')+(ok?' ✓':' · à compléter'),ok?'g':'r')});h+='</div>';
+  h+=aCard('Niveau',[1,2,3,4,5].map(function(l){return aB('lv',l+' · '+lvName(l),ATSEL===l?'on':'',' data-v="'+l+'"')}).join(''));
+  h+=aCard('Leçons du niveau '+ATSEL+' · '+esc(lvName(ATSEL)),tbl(['N°','Titre','Durée','Diapos','Publiée',''],lessonsOf(ATSEL).map(function(l){var sl=(window.genSlides?genSlides(l).length:'—'),hd=AD.hid[l.id];return [esc(l.n),esc(l.titre),(l.min||'—')+' min',sl,'<span class="ad-st '+(hd?'wt':'ok')+'">'+(hd?'masquée':'publiée')+'</span>',aB('tgl',hd?'Publier':'Masquer','',' data-v="'+l.id+'"')]})));
+  h+=aCard('Ce qui reste à compléter','<ul class="ad-ul"><li>Niveaux 2 à 5 : les leçons existent mais certaines sont encore générées automatiquement, sans exemples concrets.</li><li>Niveaux 2 à 5 : les tests de 30 questions minimum restent à rédiger.</li><li>Voix enregistrée par une vraie personne : à produire.</li></ul>');return h};
+/* ---- notes & tests ---- */
+AR.not=function(){var C=AD.cfg,h='';
+  if(role!=='tr')h+=aCard('Règles des tests','<div class="ad-kp">'+kpi('Seuil de réussite',C.pass+' %','pour valider un niveau','g')+kpi('Questions minimum',C.minQ,'par test','b')+kpi('Temps par question',C.sec+' s','au-delà : question comptée fausse','b')+'</div><div class="ad-fm">'+inp('cp','Seuil (%)','',C.pass,'number')+inp('cq','Questions minimum','',C.minQ,'number')+inp('cs2','Secondes par question','',C.sec,'number')+'</div>'+aB('savetest','Enregistrer les règles','ok'));
+  var R=AD.res.filter(function(r){return role!=='tr'||(uBy(r.uid)||{}).trainer==='u2'}).slice().sort(function(a,b){return a.date<b.date?1:-1});
+  h+=aCard('Résultats ('+R.length+')',tbl(['Date','Personne','Niveau','Note','État',''],R.map(function(r){var ok=r.pct>=C.pass;return [fD(r.date),esc(uN(r.uid)),r.lvl,'<b>'+r.pct+' %</b>','<span class="ad-st '+(ok?'ok':'ko')+'">'+(ok?'réussi':'échoué')+'</span>',role==='tr'?'':aB('delres','Supprimer','ko',' data-v="'+r.id+'"')]}),'Aucun résultat.'));
+  var t1=P.t1,st={none:'pas commencé',run:'en cours',pending:'à valider',queued:'en attente d’envoi',approved:'validé',fail:'échoué',redo:'à refaire'}[t1.st]||t1.st;
+  h+=aCard('Test réel de cette démo (niveau 1)','<p>État : <b>'+st+'</b>'+(t1.score?' · note '+t1.score+' %':'')+'</p>'+(t1.st==='pending'||t1.st==='queued'?'<div class="ad-ac">'+aB('t1ok','Valider','ok')+aB('t1ko','Demander une reprise','ko')+'</div>':''));return h};
+/* ---- certificats ---- */
+AR.cer=function(){var us=AD.users.filter(function(u){return !u.test}).map(function(u){return [u.id,u.name]});
+  return aCard('Certificats délivrés ('+AD.cert.length+')',tbl(['N°','Personne','Niveau','Date','État',''],AD.cert.map(function(c,k){return [c.no,esc(uN(c.uid)),c.lvl,fD(c.date),'<span class="ad-st '+(c.rev?'ko':'ok')+'">'+(c.rev?'révoqué':'valide')+'</span>',aB('rvc',c.rev?'Rétablir':'Révoquer',c.rev?'ok':'ko',' data-v="'+k+'"')]})))+
+   aCard('Émettre un certificat manuellement','<div class="ad-fm">'+sel('cu','Personne',us)+sel('cl2','Niveau',[1,2,3,4,5].map(function(l){return [l,'Niveau '+l]}))+'</div>'+aB('mkcert','Émettre le certificat','ok')+'<p class="ad-mu">Le certificat ne porte aucune mention restrictive. La mention « valable chez Agora » figure dans l’e-mail envoyé avec le certificat.</p>')};
+/* ---- labo ---- */
+AR.dev=function(){var rows=[1,2,3,4,5].map(function(l){var q=l===1?TQ.length:0,ls=lessonsOf(l),short=ls.filter(function(x){return window.genSlides&&genSlides(x).length<20}).length;return [l+' · '+esc(lvName(l)),ls.length,short?short+' sous 20 diapos':'ok',q,q>=AD.cfg.minQ?'<span class="ad-st ok">prêt</span>':'<span class="ad-st wt">à compléter</span>']});
+  return aCard('🧪 Labo développeur','<p class="ad-mu">Teste toute l’expérience avec un compte « test » : il n’entre pas dans les chiffres (élèves, encaissements, taux de retour).</p><div class="ad-ac">'+aB('mktest','Créer un compte test','')+aB('pass1','Simuler la réussite du niveau 1','')+aB('pass2','Simuler la réussite du niveau 2','')+aB('openstu','Ouvrir la vue élève','')+aB('rstadm','Remettre les données de démonstration','ko')+'</div>')+
+   aCard('Contrôle du contenu',tbl(['Niveau','Leçons','Diapositives','Questions','Test'],rows)+'<p class="ad-mu">Un test est « prêt » à partir de '+AD.cfg.minQ+' questions. Seuil de réussite : '+AD.cfg.pass+' %.</p>')+
+   aCard('Comptes de test',tbl(['Nom','E-mail','Niveau',''],AD.users.filter(function(u){return u.test}).map(function(u){return [esc(u.name),esc(u.email),u.lvl||'—',aB('del','Supprimer','ko',' data-v="'+u.id+'"')]}),'Aucun compte test.'))};
+/* ---- retours ---- */
+AR.fbk=function(){var F=AD.fb;return aCard('Retours des formateurs sur les cours ('+F.length+')',F.length?F.map(function(f,k){var l=byId(D.lessons,f.lesson);return '<div class="ad-row"><div><b>'+esc(l?l.n+' · '+l.titre:f.lesson)+'</b><small>'+esc(uN(f.tr))+' · '+fD(f.date)+'</small><p>'+esc(f.t)+'</p></div><div class="ad-ac"><span class="ad-st '+(f.done?'ok':'wt')+'">'+(f.done?'traité':'à lire')+'</span>'+aB('fbdone',f.done?'Rouvrir':'Marquer traité','',' data-v="'+k+'"')+'</div></div>'}).join(''):'<p class="ad-mu">Aucun retour.</p>')+(role==='tr'?aCard('Envoyer un retour','<div class="ad-fm">'+sel('fl2','Leçon',D.lessons.map(function(l){return [l.id,l.n+' · '+l.titre]}))+'</div><label class="ad-f"><span>Ton retour</span><textarea id="ft" rows="3"></textarea></label>'+aB('addfb','Envoyer','ok')):'')};
+/* ---- historique ---- */
+AR.his=function(){return aCard('Historique des événements',tbl(['Date','Événement'],AD.his.map(function(h){return [fD(h.d),esc(h.t)]}),'Aucun événement.'))};
+/* ---- messagerie ---- */
+AR.cha=function(){var ids=[];AD.ms.forEach(function(m){if(ids.indexOf(m.uid)<0)ids.push(m.uid)});if(ACH&&ids.indexOf(ACH)<0)ids.unshift(ACH);if(!ACH&&ids.length)ACH=ids[0];
+  var th=ACH?AD.ms.filter(function(m){return m.uid===ACH}):[];
+  return '<div class="ad-chat"><aside class="ad-c">'+(ids.length?ids.map(function(i){return aB('thr',esc(uN(i)),ACH===i?'on':'',' data-v="'+i+'"')}).join(''):'<p class="ad-mu">Aucune discussion.</p>')+'<label class="ad-f"><span>Nouveau message à</span><select id="mn">'+AD.users.filter(function(u){return !u.test}).map(function(u){return '<option value="'+u.id+'">'+esc(u.name)+'</option>'}).join('')+'</select></label>'+aB('newth','Ouvrir','')+'</aside><section class="ad-c"><h3>'+(ACH?esc(uN(ACH)):'Messagerie')+'</h3><div class="ad-msgs">'+th.map(function(m){return '<div class="ad-m '+m.from+'"><p>'+esc(m.t)+'</p><small>'+fD(m.date)+'</small></div>'}).join('')+'</div>'+(ACH?'<label class="ad-f"><span>Ta réponse</span><textarea id="mt2" rows="2"></textarea></label>'+aB('send','Envoyer','ok'):'')+'</section></div>'};
+/* ---- avis ---- */
+AR.avi=function(){var R=AD.rv;return aCard('Avis des élèves ('+R.filter(function(r){return !r.arch}).length+')',R.filter(function(r){return !r.arch}).map(function(r){return '<div class="ad-row"><div><b>'+esc(uN(r.uid))+' · '+'★'.repeat(r.stars)+'</b><small>'+fD(r.date)+'</small><p>'+esc(r.t)+'</p></div><div class="ad-ac">'+aB('arch','Archiver','',' data-v="'+r.id+'"')+'</div></div>'}).join('')||'<p class="ad-mu">Aucun avis.</p>')+aCard('Anciens messages (archivés)',R.filter(function(r){return r.arch}).map(function(r){return '<div class="ad-row"><div><b>'+esc(uN(r.uid))+' · '+'★'.repeat(r.stars)+'</b><p>'+esc(r.t)+'</p></div><div class="ad-ac">'+aB('unarch','Remettre','',' data-v="'+r.id+'"')+'</div></div>'}).join('')||'<p class="ad-mu">Aucun message archivé.</p>')};
+/* ---- promotions ---- */
+AR.pro=function(){var h=aCard('Promotions',tbl(['Promotion','Début','Niveau','Membres'],AD.coh.map(function(c){return [esc(c.n),fD(c.start),c.lvl,AD.users.filter(function(u){return u.cohort===c.id&&u.role==='eleve'&&!u.test}).length]})));
+  h+=aCard('Nouvelle promotion','<div class="ad-fm">'+inp('pn','Nom','Ex. : Promotion Janvier')+inp('ps2','Début','','','date')+sel('pl2','Niveau',[1,2,3,4,5].map(function(l){return [l,'Niveau '+l]}))+'</div>'+aB('addcoh','Créer la promotion','ok'));
+  var S=AD.ses.filter(function(s){return role!=='tr'||s.tr==='u2'});h+=aCard('Appel',S.length?S.map(function(s){return '<div class="ad-row"><div><b>'+fD(s.date)+' · niveau '+s.lvl+'</b><small>'+esc(uN(s.tr))+'</small><div class="ad-pc">'+s.who.map(function(w){var k=s.id+':'+w,p=AD.att[k];return '<span>'+esc(uN(w))+' '+aB('att',p==='p'?'Présent ✓':p==='a'?'Absent ✗':'Pointer',p==='p'?'ok':p==='a'?'ko':'',' data-v="'+k+'"')+'</span>'}).join('')+'</div></div></div>'}).join(''):'<p class="ad-mu">Aucune séance à pointer.</p>');return h};
+/* ---- réglages ---- */
+AR.reg=function(){var C=AD.cfg;return aCard('Tarifs par niveau (Ar)','<div class="ad-fm">'+[1,2,3,4,5].map(function(l){return inp('pr'+l,'Niveau '+l+' · '+lvName(l),'',C.prices[l],'number')}).join('')+'</div>')+
+   aCard('Numéros de paiement','<label class="ad-f"><span>Affichés dans les relances et factures</span><textarea id="rpay" rows="2">'+esc(C.pay)+'</textarea></label>')+
+   aCard('Accès et sécurité','<div class="ad-fm">'+inp('rtr','Jours d’essai','',C.trial,'number')+inp('rdv','Appareils par compte','',C.devices,'number')+'</div><label class="ad-chk"><input type="checkbox" id="rlk"'+(C.locked?' checked':'')+'> Suspendre l’accès de tous les élèves (coupe-circuit)</label>')+aB('savereg','Enregistrer les réglages','ok')};
+/* ---- administrateurs ---- */
+AR.adm=function(){var me=aMe(),own=me.role==='owner';
+  var h=aCard('Connecté en tant que','<p>Pour tester les droits, change de compte administrateur :</p><div class="ad-ac">'+AD.admins.map(function(a){return aB('as',esc(a.name),a.id===AD.me?'on':'',' data-v="'+a.id+'"')}).join('')+'</div>');
+  h+=aCard('Administrateurs ('+AD.admins.length+')',tbl(['Nom','E-mail','Rôle','Depuis','Accès',''],AD.admins.map(function(a){var self=a.id===AD.me;return ['<b>'+esc(a.name)+'</b>'+(self?' <small>(toi)</small>':''),esc(a.email),'Administrateur'+(a.role==='owner'?'<br><small class="ad-mu">gestion globale</small>':''),fD(a.added),'<span class="ad-st '+(a.blocked?'ko':'ok')+'">'+(a.blocked?'bloqué':'actif')+'</span>',a.role==='owner'?'<small class="ad-mu">—</small>':(own?(a.blocked?aB('ablk','Débloquer','ok',' data-v="'+a.id+'"'):aB('ablk','Bloquer','ko',' data-v="'+a.id+'"'))+aB('adel','Supprimer','ko',' data-v="'+a.id+'"'):'<small class="ad-mu">—</small>')]})));
+  h+=aCard('Créer un accès administrateur',own?'<p class="ad-mu">Un nouvel administrateur voit et gère tout : demandes, élèves, formateurs, paiements, tests.</p><div class="ad-fm">'+inp('an','Nom','Ex. : Prénom Nom')+inp('ae','E-mail','prenom@exemple.com','','email')+'</div>'+aB('addadm','Créer l’accès','ok'):'<p class="ad-mu">Les accès administrateur se gèrent depuis la gestion globale.</p>');
+  h+=aCard('Règles','<ul class="ad-ul"><li>Les deux administrateurs sont à égalité sur le travail quotidien : demandes, élèves, formateurs, paiements, contenus, tests.</li><li>La gestion globale (créer, bloquer ou retirer un accès administrateur) est tenue par Stephen.</li><li>Tout le monde (élève, formateur, administrateur) peut être bloqué. Un compte bloqué ne peut plus se connecter.</li></ul>');return h};
+/* ---- journal ---- */
+AR.jou=function(){return aCard('Journal des actions sensibles',tbl(['Date','Par','Action'],AD.log.map(function(l){return [fD(l.d),esc(l.by),esc(l.a)]}),'Aucune action.'))};
+/* ---- coque ---- */
+function vAdmin(){var me=aMe(),nav=AN.filter(function(n){return role==='tr'?ANT.indexOf(n[0])>=0:true});if(role==='tr'&&ANT.indexOf(AV)<0)AV='dash';
+  var cur=AN.filter(function(n){return n[0]===AV})[0]||AN[0],nreq=AD.users.filter(function(u){return u.status==='attente'}).length,nrel=AD.inv.filter(function(i){return !i.paid}).length;
+  var sub={dash:'Vue d’ensemble en direct',dem:'Valide ou refuse : l’accès part par e-mail',el:'Suivi, blocage et suppression des comptes',pay:'Encaissements et factures numérotées',rel:'Messages prêts à envoyer',tre:'Encaissements, dépenses et solde',for:'Habilitations, élèves, séances',con:'Tout le programme, niveau par niveau',not:'Règles des tests et résultats',cer:'Certificats délivrés',dev:'Tester toute l’expérience',fbk:'Ce que les formateurs disent des cours',his:'Ce qui s’est passé dans Agora',cha:'Discussions avec les élèves et les formateurs',avi:'Ce que les élèves t’écrivent',pro:'Promotions et appel',reg:'Tarifs, accès, sécurité',adm:'Propriétaire, administrateurs et droits',jou:'Actions sensibles'}[cur[0]];
+  var side='<aside class="ad-side"><div class="ad-br"><div class="ad-lg">A</div><div><b>Agora Gestion</b><small>BY STEPHEN</small></div></div><div class="ad-who">'+(role==='tr'?'Formateur · Hery Andria':esc(me.name)+' · '+'Administrateur')+'</div><nav>'+nav.map(function(n){var c=n[0]==='dem'&&nreq?nreq:n[0]==='rel'&&nrel?nrel:0;return '<button data-ad="go" data-v="'+n[0]+'" class="'+(AV===n[0]?'on':'')+'"><span>'+n[2]+'</span>'+n[1]+(c?'<em>'+c+'</em>':'')+'</button>'}).join('')+'</nav><button class="ad-out" data-ad="quit">Quitter</button></aside>';
+  return '<div class="ad-app">'+side+'<main class="ad-main"><div class="ad-top"><div><h1>'+cur[1]+'</h1><small>'+sub+'</small></div></div>'+(AD.cfg.locked&&role!=='tr'?'<div class="ad-warn">Coupe-circuit actif : les élèves ne peuvent plus se connecter.</div>':'')+(AR[AV]?AR[AV]():'')+'</main></div>'}
+/* ---- actions ---- */
+function aGo(v){AV=v;AQ='';AFL='all';ASEL=null;render();var m=document.querySelector('.ad-main');if(m)m.scrollTop=0;$('#es').scrollTop=0}
+es.addEventListener('input',function(e){if(e.target.id==='ad-q'){AQ=e.target.value;var p=e.target.selectionStart;render();var n=document.getElementById('ad-q');if(n){n.focus();try{n.setSelectionRange(p,p)}catch(x){}}}});
+es.addEventListener('click',function(e){var b=e.target.closest('[data-ad]');if(!b)return;var a=b.dataset.ad,v=b.dataset.v,me=aMe(),own=me.role==='owner',U;
+  switch(a){
+  case 'go':aGo(v);return;
+  case 'quit':role='el';render();$('#es').scrollTop=0;return;
+  case 'fl':AFL=v;ASEL=null;break;
+  case 'sel':ASEL=v;break;
+  case 'close':ASEL=null;break;
+  case 'copyurl':case 'cpy':{var tx=a==='cpy'?b.dataset.t:(document.getElementById('ad-url')||{}).textContent;try{navigator.clipboard.writeText(tx).then(function(){toast('Copié')},function(){toast('Copie impossible')})}catch(x){toast('Copie impossible')}return}
+  case 'acc':U=uBy(v);if(!U)return;U.status='actif';U.seen=0;AD.inv.unshift({no:nextNo('F'),uid:U.id,lvl:1,amt:AD.cfg.prices[1],paid:false,date:new Date().toISOString().slice(0,10),mode:''});aLog('Accès accordé à '+U.name);aHis('Accès accordé à '+U.name+' (e-mail envoyé)');toast('Accès accordé : e-mail envoyé à '+U.name);break;
+  case 'ref':U=uBy(v);if(!U)return;U.status='refusé';aLog('Demande refusée : '+U.name);toast('Demande refusée');break;
+  case 'blk':case 'unb':U=uBy(v);if(!U)return;U.blocked=a==='blk';aLog((U.blocked?'Accès bloqué : ':'Accès rétabli : ')+U.name);aHis((U.blocked?'Blocage de ':'Déblocage de ')+U.name);toast(U.blocked?U.name+' ne peut plus se connecter':'Accès rétabli');break;
+  case 'del':U=uBy(v);if(!U)return;if(!b.dataset.sure){b.dataset.sure='1';b.textContent='Confirmer la suppression';return}AD.users=AD.users.filter(function(x){return x.id!==v});if(ASEL===v)ASEL=null;aLog('Compte supprimé : '+U.name);toast('Compte supprimé');break;
+  case 'msgto':ACH=v;AV='cha';break;
+  case 'addpay':{var uid=gv('pu'),lv=+gv('pl'),am=+gv('pa')||AD.cfg.prices[lv];if(!uid||!am){toast('Choisis un élève et un montant');return}AD.inv.unshift({no:nextNo('F'),uid:uid,lvl:lv,amt:am,paid:true,date:new Date().toISOString().slice(0,10),mode:gv('pm')});aLog('Paiement de '+money(am)+' enregistré pour '+uN(uid));aHis('Paiement '+money(am)+' · '+uN(uid));toast('Paiement enregistré, facture numérotée');break}
+  case 'mkpaid':{var iv=AD.inv[+v];if(!iv)return;iv.paid=true;iv.mode=iv.mode||'Espèces';aLog('Facture '+iv.no+' marquée payée');toast('Facture marquée payée');break}
+  case 'addexp':{var t=gv('et'),am2=+gv('ea');if(!t||!am2){toast('Indique un libellé et un montant');return}AD.exp.unshift({id:'e'+Date.now(),t:t,amt:am2,date:new Date().toISOString().slice(0,10)});aLog('Dépense ajoutée : '+t);break}
+  case 'delexp':AD.exp.splice(+v,1);break;
+  case 'addses':{var d=gv('sd');if(!d||!gv('sp')){toast('Choisis une date et un lien ou un lieu');return}AD.ses.push({id:'s'+Date.now(),tr:gv('st'),lvl:+gv('sl'),date:d,time:gv('sh')||'18:00',mode:gv('sm'),lieu:gv('sp'),who:AD.users.filter(function(u){return u.role==='eleve'&&!u.test&&u.status==='actif'&&u.lvl>=0}).slice(0,3).map(function(u){return u.id})});aLog('Séance planifiée le '+fD(d));toast('Séance planifiée');break}
+  case 'delses':AD.ses=AD.ses.filter(function(s){return s.id!==v});break;
+  case 'lv':ATSEL=+v;break;
+  case 'tgl':AD.hid[v]=!AD.hid[v];aLog((AD.hid[v]?'Leçon masquée : ':'Leçon publiée : ')+v);break;
+  case 'savetest':{var ps=+gv('cp'),mq=+gv('cq'),sc=+gv('cs2');if(!(ps>=90&&ps<=100)||!(mq>=30)||!(sc>=10)){toast('Seuil entre 90 et 100 %, au moins 30 questions, au moins 10 secondes');return}AD.cfg.pass=ps;AD.cfg.minQ=mq;AD.cfg.sec=sc;P.tmq=sc;save();aLog('Règles des tests : seuil '+ps+' %, '+mq+' questions, '+sc+' s');toast('Règles enregistrées');break}
+  case 'delres':AD.res=AD.res.filter(function(r){return r.id!==v});break;
+  case 't1ok':P.t1.st='approved';P.pts+=50;save();aLog('Test niveau 1 validé');toast('Niveau 1 validé, certificat émis');break;
+  case 't1ko':P.t1.st='redo';P.t1.comment='Reprends le test : relis les leçons où tu as le plus hésité.';save();aLog('Reprise demandée au test niveau 1');toast('Reprise demandée');break;
+  case 'rvc':{var c=AD.cert[+v];if(!c)return;c.rev=!c.rev;aLog((c.rev?'Certificat révoqué : ':'Certificat rétabli : ')+c.no);break}
+  case 'mkcert':{var cu=gv('cu'),cl=+gv('cl2'),no='AG-'+new Date().toISOString().slice(0,7).replace('-','')+'-'+(Math.floor(Math.random()*9000)+1000);AD.cert.unshift({no:no,uid:cu,lvl:cl,date:new Date().toISOString().slice(0,10),rev:false});aLog('Certificat émis à la main : '+no);toast('Certificat '+no+' émis, e-mail envoyé');break}
+  case 'mktest':AD.users.push({id:'u'+Date.now(),name:'Compte test '+(AD.users.filter(function(u){return u.test}).length+1),email:'test'+Date.now()+'@agora.test',city:'En ligne',role:'eleve',lvl:0,done:0,seen:0,cohort:'c1',status:'actif',test:1,joined:new Date().toISOString().slice(0,10),trainer:'u2',blocked:false});aLog('Compte test créé');toast('Compte test créé');break;
+  case 'pass1':P.t1.st='approved';P.t1.score=95;P.t1.date=today();P.t1.no='AG-TEST-0001';if(!P.name)P.name='Compte test';save();toast('Niveau 1 simulé : ouvre la vue élève pour voir le certificat et le mail');break;
+  case 'pass2':(P.fmt=P.fmt||{}).v2=true;save();toast('Niveau 2 simulé');break;
+  case 'openstu':role='el';nav('course','test');$('#es').scrollTop=0;return;
+  case 'rstadm':AD=seedAdm();aLog('Données de démonstration remises à zéro');toast('Données remises à zéro');break;
+  case 'fbdone':{var f=AD.fb[+v];if(f)f.done=!f.done;break}
+  case 'addfb':{var tt=gv('ft');if(!tt){toast('Écris ton retour');return}AD.fb.unshift({id:'f'+Date.now(),tr:'u2',lesson:gv('fl2'),t:tt,done:false,date:new Date().toISOString().slice(0,10)});toast('Retour envoyé à l’administration');break}
+  case 'thr':ACH=v;break;
+  case 'newth':ACH=gv('mn');break;
+  case 'send':{var m=gv('mt2');if(!m||!ACH){toast('Écris un message');return}AD.ms.push({id:'m'+Date.now(),uid:ACH,from:'a',t:m,date:new Date().toISOString().slice(0,10)});aHis('Message à '+uN(ACH));toast('Message envoyé');break}
+  case 'arch':case 'unarch':{var r=AD.rv.filter(function(x){return x.id===v})[0];if(r)r.arch=a==='arch';break}
+  case 'addcoh':{var n=gv('pn');if(!n){toast('Donne un nom à la promotion');return}AD.coh.push({id:'c'+Date.now(),n:n,start:gv('ps2')||new Date().toISOString().slice(0,10),lvl:+gv('pl2')});toast('Promotion créée');break}
+  case 'att':{var cur=AD.att[v];AD.att[v]=cur==='p'?'a':cur==='a'?'':'p';break}
+  case 'savereg':{var pr=AD.cfg.prices.slice();[1,2,3,4,5].forEach(function(l){var x=+gv('pr'+l);if(x>=0&&gv('pr'+l)!=='')pr[l]=x});AD.cfg.prices=pr;AD.cfg.pay=gv('rpay')||AD.cfg.pay;AD.cfg.trial=+gv('rtr')||AD.cfg.trial;AD.cfg.devices=+gv('rdv')||AD.cfg.devices;AD.cfg.locked=!!(document.getElementById('rlk')&&document.getElementById('rlk').checked);aLog('Réglages enregistrés'+(AD.cfg.locked?' (coupe-circuit actif)':''));toast('Réglages enregistrés');break}
+  case 'as':AD.me=v;toast('Connecté en tant que '+aMe().name);break;
+  case 'addadm':{if(!own){toast('Action disponible depuis la gestion globale');return}var nm=gv('an'),em=gv('ae');if(!nm||em.indexOf('@')<1){toast('Indique un nom et un e-mail valide');return}AD.admins.push({id:'a'+Date.now(),name:nm,email:em,role:'admin',blocked:false,added:new Date().toISOString().slice(0,10)});aLog('Accès administrateur créé : '+nm);toast('Accès créé : identifiants envoyés à '+em);break}
+  case 'ablk':{if(!own){toast('Action disponible depuis la gestion globale');return}var ad=AD.admins.filter(function(x){return x.id===v})[0];if(!ad||ad.role==='owner'){toast('Action non disponible');return}ad.blocked=!ad.blocked;aLog((ad.blocked?'Administrateur bloqué : ':'Administrateur rétabli : ')+ad.name);break}
+  case 'adel':{if(!own){toast('Action disponible depuis la gestion globale');return}var ad2=AD.admins.filter(function(x){return x.id===v})[0];if(!ad2||ad2.role==='owner'){toast('Action non disponible');return}if(!b.dataset.sure){b.dataset.sure='1';b.textContent='Confirmer la suppression';return}AD.admins=AD.admins.filter(function(x){return x.id!==v});aLog('Administrateur supprimé : '+ad2.name);toast('Administrateur supprimé');break}
+  default:return}
+  aSave();var y=$('#es').scrollTop;render();$('#es').scrollTop=y});
 
 
 })();
