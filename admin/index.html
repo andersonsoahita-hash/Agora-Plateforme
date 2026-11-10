@@ -1138,7 +1138,8 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .a-w.acc{display:block;max-width:1100px;columns:2 360px;column-gap:20px}
 .a-w.acc>.a-c{break-inside:avoid;margin:0 0 20px;display:grid;gap:10px}
 .a-w.acc>.a-top{column-span:all;margin-bottom:16px}
-</style>
+.pay{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:6px 0 12px;display:grid;gap:6px}.pay p{font-size:14px;color:var(--mut);margin:0}.ck{display:flex;gap:10px;align-items:flex-start;font-size:14px;margin:10px 0}.ck input{width:20px;height:20px;margin-top:2px;flex:none}.lnk{margin:12px 0 0;font-size:15px}.lnk a{color:var(--red);text-decoration:underline}#form[hidden],#login[hidden]{display:none}.mail{border:1px dashed var(--line);border-radius:12px;padding:12px 14px;margin-top:10px;font-size:14px}.mail b{display:block}
+#esx,#agear{display:none!important}body>*:not(#es):not(#lv):not(#lp):not(.toast):not(script):not(style){display:none!important}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=DM+Sans:wght@400;500;600;700&family=Dancing+Script:wght@600;700&display=swap">
 
 <div class="wrap">
@@ -1146,7 +1147,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
     <div class="logo"><svg class="mk" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="22" r="11" fill="#C9A24B"/><circle cx="142.2" cy="34.4" r="11" fill="#C2391F"/><circle cx="171" cy="67.6" r="11" fill="#C2391F"/><circle cx="177.2" cy="111.1" r="11" fill="#C2391F"/><circle cx="158.9" cy="151.1" r="11" fill="#C2391F"/><circle cx="122" cy="174.8" r="11" fill="#C2391F"/><circle cx="78" cy="174.8" r="11" fill="#C2391F"/><circle cx="41.1" cy="151.1" r="11" fill="#C2391F"/><circle cx="22.8" cy="111.1" r="11" fill="#C2391F"/><circle cx="29" cy="67.6" r="11" fill="#C2391F"/><circle cx="57.8" cy="34.4" r="11" fill="#C2391F"/><circle cx="100" cy="100" r="27" fill="#C2391F"/></svg><div class="lt"><b>Agora</b><i>L’art oratoire · <em>by Stephen</em></i></div></div>
     <div class="bar-r">
       <button class="net" id="net" aria-live="polite" title="Maquette : simule le réseau"><span class="d"></span><span id="netT">En ligne</span><span class="q" id="netQ"></span></button>
-      <a class="btn sm" href="#acces">Demander l'accès</a>
+      <a class="btn sm" id="navAcc" href="#acces">Demander l'accès</a>
     </div>
   </header>
 
@@ -1300,17 +1301,40 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
     </div>
     <div class="acc">
       <form class="panel" id="form" novalidate>
-        <h3>Ta demande</h3>
-        <p>Elle prend une minute.</p>
+        <h3>Demander mon accès</h3>
+        <p>Ta demande est examinée par Stephen : si elle est validée, tu reçois ton accès par e-mail. Aucun mot de passe à créer maintenant.</p>
         <div class="two">
-          <div class="fld"><label for="fp">Prénom</label><input id="fp" autocomplete="given-name"></div>
           <div class="fld"><label for="fn">Nom</label><input id="fn" autocomplete="family-name"></div>
+          <div class="fld"><label for="fp">Prénoms</label><input id="fp" autocomplete="given-name"></div>
         </div>
         <div class="fld"><label for="fe">E-mail</label><input id="fe" type="email" autocomplete="email" inputmode="email"></div>
+        <div class="two">
+          <div class="fld"><label for="ft">Téléphone / WhatsApp</label><input id="ft" type="tel" autocomplete="tel" inputmode="tel"></div>
+          <div class="fld"><label for="fa">Âge</label><input id="fa" inputmode="numeric" autocomplete="off"></div>
+        </div>
+        <div class="fld"><label for="fr">Je demande l’accès en tant que</label><select id="fr"><option value="eleve">Élève (je suis la formation)</option><option value="formateur">Formateur</option></select></div>
+        <div class="fld"><label for="fy">Pays (pour les tarifs)</label><select id="fy"><option>Madagascar — Ariary (Ar)</option><option>Europe et autres — Euro (€)</option></select></div>
         <div class="fld"><label for="fd">Ta situation du moment</label><select id="fd"></select></div>
         <div class="fld"><label for="fc">Pourquoi maintenant ? (facultatif)</label><textarea id="fc" rows="2"></textarea></div>
+        <div class="pay"><b>Paiement</b>
+          <p>Le montant de ton niveau et la façon de payer te sont confirmés par Stephen. Si tu as déjà payé, indique ici la référence.</p>
+          <div class="fld"><label for="pm">Mode de paiement utilisé</label><select id="pm"><option value="">— pas encore payé —</option><option>MVola</option><option>Orange Money</option><option>Airtel Money</option><option>Espèces</option><option>Virement</option><option>Carte / PayPal</option></select></div>
+          <div class="fld"><label for="pr">Référence du paiement</label><input id="pr" placeholder="ex. numéro de transaction" autocomplete="off"></div>
+        </div>
+        <label class="ck"><input type="checkbox" id="cg"><span>J’ai lu et j’accepte les conditions, la politique de remboursement et l’avertissement.</span></label>
         <div class="err" id="err" role="alert"></div>
         <button class="btn" type="submit">Envoyer ma demande</button>
+        <p class="lnk"><a href="#" id="hasAcc">J’ai déjà un accès</a></p>
+      </form>
+      <form class="panel" id="login" novalidate hidden>
+        <h3>Se connecter</h3>
+        <p>Utilise l’e-mail et le mot de passe reçus par e-mail.</p>
+        <div class="fld"><label for="le">E-mail</label><input id="le" type="email" autocomplete="email" inputmode="email"></div>
+        <div class="fld"><label for="lp2">Mot de passe reçu par e-mail</label><input id="lp2" type="password" autocomplete="current-password"></div>
+        <div class="err" id="lerr" role="alert"></div>
+        <button class="btn" type="submit">Se connecter</button>
+        <p class="lnk"><a href="#" id="noAcc">Pas encore d’accès ? Faire une demande</a></p>
+        <p class="lnk" style="color:var(--mut)">Maquette : la vraie connexion arrive avec le serveur. Un seul ordinateur par compte.</p>
       </form>
       <div class="panel" id="status">
         <h3>Suivi de ta demande</h3>
@@ -1399,31 +1423,41 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
     h+=sh(sent?'done':'on',1,'Demande envoyée',s==='queued'?'Enregistrée sur ton téléphone, envoi automatique au retour du réseau.':s==='syncing'?'Envoi en cours…':'Reçue par Stephen.');
     h+=sh(s==='approved'?'done':(s==='pending'?'on':''),2,'Validation par Stephen',s==='approved'?'Accès validé.':'Il vérifie ta demande.');
     h+=sh(s==='approved'?'done':'',3,'Lien personnel',s==='approved'?'Lié à ton compte, utilisable par toi seul.':'Envoyé par e-mail après validation.');
-    h+=sh(s==='approved'?'on':'',4,'Appareils',s==='approved'?'2 appareils maximum.':'Jusqu’à 2 appareils.');
+    h+=sh(s==='approved'?'on':'',4,'Appareils',s==='approved'?'1 ordinateur (la plateforme) et 1 téléphone (l’application).':'Un seul ordinateur et un seul téléphone par compte.');
     h+='</div><p class="note"><b>'+r.p+' '+r.n+'</b> · '+r.d+(s==='queued'?' <span class="pill w">Hors ligne</span>':s==='syncing'?' <span class="pill">Synchro</span>':s==='pending'?' <span class="pill">En attente</span>':' <span class="pill ok">Validé</span>')+'</p>';
     if(s==='approved'){h+='<p class="note"><b>Ton lien personnel (exemple)</b><br><span class="tok">'+r.t+'</span></p><p class="note"><b>Autorisation hors ligne : 14 jours</b><br>Tant que tu te reconnectes avant la fin, tout reste ouvert. Sinon l’app te demande de te connecter.<span class="bar2"><i></i></span><small>Appareil 1 sur 2 utilisé</small></p>'}
+    if(s==='approved')h+='<div class="mail"><b>Ce que contient ton e-mail</b>1. Le lien de la plateforme : à ouvrir sur ton ordinateur, puis à épingler ou ajouter au Dock (Mac) <i>avant</i> de créer ton compte.<br>2. Le lien de l’application : à ouvrir sur ton téléphone, une seule fois.<br>3. Ensuite, dans ton profil : « Activer mon application ».<br><small>Tout est relié à ton compte. Une seule plateforme, une seule application.</small></div>';
     if(s==='pending')h+='<button class="btn ghost sm" id="simOk">Simuler : Stephen valide</button> ';
     h+='<button class="btn ghost sm" id="reset">Recommencer</button>';
     b.innerHTML=h;
   }
   $('#statusBody').addEventListener('click',function(e){
-    if(e.target.id==='simOk'){S.req.state='approved';S.req.t=tok();save();renderReq();toast('Accès validé (simulation)')}
-    if(e.target.id==='reset'){S.req=null;S.queue=0;save();paintNet();renderReq()}
+    if(e.target.id==='simOk'){S.req.state='approved';S.req.t=tok();S.req.ta=tok();save();renderReq();paintAcc();toast('Accès validé (simulation)')}
+    if(e.target.id==='reset'){S.req=null;S.queue=0;save();paintNet();renderReq();paintAcc()}
   });
   $('#form').addEventListener('submit',function(e){
     e.preventDefault();
-    var p=$('#fp').value.trim(),n=$('#fn').value.trim(),m=$('#fe').value.trim(),d=fd.value,er=$('#err');
-    if(!p||!n){er.textContent='Indique ton prénom et ton nom.';return}
+    var p=$('#fp').value.trim(),n=$('#fn').value.trim(),m=$('#fe').value.trim(),d=fd.value,er=$('#err'),ag=parseInt($('#fa').value,10);
+    if(!n||!p){er.textContent='Indique ton nom et tes prénoms.';return}
     if(!/^\S+@\S+\.\S+$/.test(m)){er.textContent='Cette adresse e-mail ne semble pas valide.';return}
+    if(!(ag>=8&&ag<=99)){er.textContent='Indique ton âge (en chiffres).';return}
     if(!d){er.textContent='Choisis ta situation du moment.';return}
+    if(!$('#cg').checked){er.textContent='Accepte les conditions pour envoyer ta demande.';return}
     er.textContent='';
-    S.req={p:p,n:n,d:d,state:S.online?'syncing':'queued'};
+    S.req={p:p,n:n,e:m,tel:$('#ft').value.trim(),age:ag,role:$('#fr').value,pays:$('#fy').value,d:d,pm:$('#pm').value,pr:$('#pr').value.trim(),state:S.online?'syncing':'queued'};
     if(!S.online){S.queue=1;paintNet();toast('Hors ligne : demande gardée sur ton téléphone')}
-    save();renderReq();if(S.online)sync();
+    save();renderReq();paintAcc();if(S.online)sync();
     $('#status').scrollIntoView({behavior:reduce?'auto':'smooth',block:'nearest'});
   });
+  function paintAcc(){var a=$('#navAcc');if(!a)return;var ok=S.req&&S.req.state==='approved';a.textContent=ok?'Mon espace':'Demander l\'accès';if(ok){a.removeAttribute('href');a.setAttribute('data-es','')}else{a.setAttribute('href','#acces');a.removeAttribute('data-es')}}
+  window.AG_paintAcc=paintAcc;
+  $('#hasAcc').addEventListener('click',function(e){e.preventDefault();$('#form').hidden=true;$('#login').hidden=false});
+  $('#noAcc').addEventListener('click',function(e){e.preventDefault();$('#login').hidden=true;$('#form').hidden=false});
+  $('#login').addEventListener('submit',function(e){e.preventDefault();var le=$('#le').value.trim().toLowerCase(),er=$('#lerr');
+    if(S.req&&S.req.state==='approved'&&S.req.e.toLowerCase()===le&&$('#lp2').value){er.textContent='';toast('Connecté. Ton espace est ouvert.');paintAcc();var b=document.querySelector('[data-es]');if(b)b.click()}
+    else er.textContent=S.req&&S.req.state!=='approved'?'Ta demande n’est pas encore validée.':'Aucun accès trouvé avec cet e-mail.'});
   if(S.req&&(S.req.state==='syncing'||S.req.state==='queued'))S.req.state='pending';
-  paintNet();renderReq();
+  paintNet();renderReq();paintAcc();
 
   /* visionneuse de leçon : 24 diapos */
   var SL=[
@@ -1882,6 +1916,7 @@ function vHome(){
   h+='<section class="w-resume rv"><div class="w-rt"><span class="a-eb">'+(P.name?'Bonjour '+esc(P.name.split(' ')[0])+' · ':'')+'Prochaine étape</span><h2>'+esc(r.t)+'</h2><p>'+esc(r.d)+'</p><button class="btn w-cta" data-a="reco" data-v="'+esc(JSON.stringify(r.go))+'">Continuer <span aria-hidden="true">→</span></button></div><div class="w-rg">'+ring(pc,132)+'<small>de la formation</small></div></section>';
   h+='<section class="w-sec"><div class="cm-band rv"><div><p class="a-eb">Le mouvement</p><h2>Agora n’est pas qu’une application</h2><p>Une place publique pour ceux qui veulent mieux parler : défie un ami, retrouve les autres membres, organise une rencontre, rejoins le groupe WhatsApp.</p></div><button class="btn" data-tab="com">Rejoindre la communauté →</button></div></section>';
   h+='<section class="w-sec"><div class="cm-band cm-app rv"><div><p class="a-eb">Application mobile</p><h2>Agora Studio, dans ta poche</h2><p>Les exercices et l’entraînement rapide, sans refaire les leçons : Studio, objections, recherche express, les 38 ruses. Elle s’installe sur le téléphone et fonctionne hors ligne.</p><details class="cm-how2"><summary>Comment l’installer ?</summary><p><b>iPhone</b> : ouvre le lien dans Safari, touche Partager, puis « Sur l’écran d’accueil ».<br><b>Android</b> : ouvre le lien dans Chrome, puis « Installer l’application ».</p></details></div><a class="btn" href="../mobile/" target="_blank" rel="noopener">Ouvrir Agora Studio →</a></div></section>';
+  h+=(function(){var EX=['Parler à partir d’un mot','Argumenter une idée','Raconter une histoire','Discours complet','Défendre un camp'],nl=D.lessons.filter(function(l){return !P.done[l.id]}).slice(0,3),o='',ap=(P.app&&P.app.on);nl.forEach(function(l){var lv=1;for(var q=1;q<=5;q++){if(lessonsOf(q).some(function(x){return x.id===l.id}))lv=q}o+='<div class="a-row a-sp"><div><b>'+esc(l.titre)+'</b><br><span class="a-mu">Exercice : '+EX[lv-1]+'</span></div><span class="a-st '+(ap?'ok':'')+'">'+(ap?'dans ton appli':'à faire dans l’appli')+'</span></div>'});return '<section class="w-sec"><div class="a-c rv"><span class="a-eb">Exercices</span><h3>À faire dans ton application</h3><p class="a-mu">Chaque exercice demandé par une leçon t’attend dans Agora Studio, sur ton téléphone : tu parles, ta voix est enregistrée et analysée. Plus tard, il se synchronise avec ton compte ouvert sur l’ordinateur.</p>'+(o||'<p class="a-mu">Aucun exercice en attente.</p>')+(ap?'':'<button class="btn" data-tab="account">Activer mon application</button>')+'</div></section>'})();
   h+='<section class="hm-two"><div class="hm-streak rv"><span class="a-eb">Ta régularité</span><h3>'+(st.n?st.n+' jour'+(st.n>1?'s':'')+' de suite':'Commence ta série aujourd’hui')+'</h3><div class="hm-days">'+st.days.map(function(d){return '<i class="'+(d.on?'on':'')+'"><b>'+(d.on?'★':'')+'</b><small>'+d.l+'</small></i>'}).join('')+'</div><p class="a-mu">'+n+' / '+D.lessons.length+' leçons · '+P.pts+' pts · rang '+esc(rk.r[0])+' · '+P.sessions.length+' séance'+(P.sessions.length>1?'s':'')+' au Studio</p></div>';
   var ob=OBJ.filter(function(o){return o[0]===P.obj})[0];
   h+='<div class="hm-obj rv"><span class="a-eb">Ton objectif</span><h3>'+(ob?esc(ob[1]):'Pourquoi veux-tu mieux parler ?')+'</h3><div class="hm-chips">'+OBJ.map(function(o){return '<button type="button" class="chip'+(o[0]===P.obj?' on':'')+'" data-a="obj" data-v="'+o[0]+'">'+esc(o[1])+'</button>'}).join('')+'</div>'+
@@ -2004,7 +2039,9 @@ function vProofs(){
 /* ---- Compte ---- */
 function vAccount(){
   return '<div class="a-w acc"><div class="a-top"><h1>Compte</h1><button class="a-chip" data-a="back">Retour</button></div><div class="a-c"><div class="a-f"><label for="an">Ton prénom et nom</label><input id="an" data-a-in="name" value="'+esc(P.name)+'" autocomplete="name"></div></div>'+
-  '<div class="a-c"><h3>Accès</h3><ul class="a-ls"><li class="a-sub" style="margin:4px 0"><b>Lien personnel</b> lié à ton compte</li><li class="a-sub" style="margin:4px 0"><b>Appareils</b> 1 sur 2</li><li class="a-sub" style="margin:4px 0"><b>Hors ligne</b> 14 jours de contenu, puis synchronisation obligatoire</li></ul><p class="a-mu">Réseau : '+(A.S.online?'en ligne, tout est à jour':'hors ligne, '+A.S.queue+' envoi(s) en attente')+'. Le bouton réseau en haut de la page simule la coupure.</p></div>'+
+  '<div class="a-c"><h3>Accès</h3><ul class="a-ls"><li class="a-sub" style="margin:4px 0"><b>Lien personnel</b> lié à ton compte</li><li class="a-sub" style="margin:4px 0"><b>Appareils</b> 1 ordinateur (la plateforme) + 1 téléphone (l’application)</li><li class="a-sub" style="margin:4px 0"><b>Hors ligne</b> 14 jours de contenu, puis synchronisation obligatoire</li></ul><p class="a-mu">Réseau : '+(A.S.online?'en ligne, tout est à jour':'hors ligne, '+A.S.queue+' envoi(s) en attente')+'. Le bouton réseau en haut de la page simule la coupure.</p></div>'+
+  '<div class="a-c"><h3>Mon application sur téléphone</h3>'+(function(){var ap=P.app||(P.app={on:false});return ap.on?'<p><span class="a-st ok">Application activée</span></p><p class="a-mu">Elle est reliée à ton compte. Les exercices que la plateforme te demande t’y attendent, et tes séances se synchronisent entre l’ordinateur et le téléphone. Une seule application par compte.</p>':'<p class="a-mu">Installe l’application avec le lien reçu par e-mail, sur ton téléphone, une seule fois. Ouvre-la, puis reviens ici et appuie sur le bouton : elle s’active toute seule, sans rien d’autre à faire.</p><button class="btn" data-a="appon">Activer mon application</button>'})()+'</div>'+
+  '<div class="a-c"><h3>Un seul appareil par compte</h3><p class="a-mu">La plateforme se suit sur un seul ordinateur, de préférence celui que tu utilises le plus. <b>Sur Mac</b> : ouvre le lien dans Safari, puis Fichier, Ajouter au Dock, <i>avant</i> de créer ton compte ; sinon le Mac la prend pour un autre appareil. <b>Sur Windows ou Chrome</b> : installe la page ou épingle l’onglet. Sur téléphone, seule l’application s’installe, une fois.</p></div>'+
   '<div class="a-c"><h3>Mes certificats</h3>'+(function(){var o='';[1,2,3,4,5].forEach(function(l){var T=l===1?P.t1:P.tl[l];if(T.st==='approved')o+='<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:6px 0"><button class="btn" data-a="cert" data-v="'+l+'">Voir mon certificat du niveau '+l+'</button>'+((P.fmt&&P.fmt['n'+l]==='ok')?'<span class="a-st ok">Formateur du niveau '+l+'</span>':'')+'</div>'});return o||'<p class="a-mu">Aucun certificat pour l’instant.</p>'})()+'</div>'+
   '<div class="a-c"><h3>Application mobile</h3><p class="a-mu">Agora Studio s’installe sur ton téléphone : Studio, objections, recherche express et ruses, sans refaire les leçons.</p><a class="btn" href="../mobile/" target="_blank" rel="noopener" style="justify-self:start">Ouvrir Agora Studio</a></div>'+
   '<div class="a-c"><h3>Données de la démo</h3><p class="a-mu">Tout est gardé sur cet appareil.</p><div id="rst"><button class="btn ghost" data-a="reset">Tout effacer</button></div></div></div>';
@@ -2136,7 +2173,7 @@ function render(){
 var IOo=null;function revealAll(){var els=[].slice.call(document.querySelectorAll('#esb .rv'));if(!('IntersectionObserver' in window)){els.forEach(function(x){x.classList.add('in')});return}if(IOo)IOo.disconnect();IOo=new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting){x.target.classList.add('in');IOo.unobserve(x.target)}})},{root:$('#es'),threshold:.08});els.forEach(function(x){IOo.observe(x)})}
 var IHE={com:'people',home:'orator',course:'temple',studio:'orator',orators:'people',prep:'scale',proofs:'logos',account:'medal',fo:'people'};
 var lastES=null;
-function openES(){lastES=document.activeElement;es.classList.add('on');document.body.style.overflow='hidden';render();$('#esx').focus()}
+function openES(){if(AG_MODE==='site'){var rq=A.S&&A.S.req;if(!(rq&&rq.state==='approved')){A.toast('Ton espace s’ouvre après la validation de ta demande');location.hash='acces';return}role=rq.role==='formateur'?'tr':'el'}lastES=document.activeElement;es.classList.add('on');document.body.style.overflow='hidden';render();$('#esx').focus()}
 function closeES(){es.classList.remove('on');document.body.style.overflow='';clearInterval(SD.tm);SD.run=false;if(lastES&&lastES.focus)lastES.focus()}
 document.addEventListener('click',function(e){if(e.target.closest('[data-es]'))openES()});
 $('#esx').addEventListener('click',closeES);
@@ -2167,7 +2204,8 @@ es.addEventListener('click',function(e){
   case 'les':openHub(b.dataset.v);return;
   case 'lvopen':CL=+b.dataset.v;nav('course');return;
   case 'test':setTL(1);nav('course','test');return;
-  case 'testlv':setTL(+b.dataset.v);nav('course','test');return;
+  case 'appon':(P.app=P.app||{}).on=true;save();toast('Application activée sur ton compte');render();break;
+    case 'testlv':setTL(+b.dataset.v);nav('course','test');return;
   case 'back':nav(P.tab);return;
   case 'chal':SD.type=b.dataset.t;SD.sujet=b.dataset.s;SD.stance=SD.type==='debat'?'POUR':'';SD.res=null;SD.text='';nav('studio');return;
   case 'all':D.lessons.forEach(function(l){if(lvOf(l.m)===TL&&!P.done[l.id])P.done[l.id]={s:0,n:0,d:today()}});break;
