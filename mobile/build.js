@@ -1,6 +1,6 @@
 /* Agora Studio (application mobile) : node mobile/build.js
    Dérivée de l'application Agora du dépôt (dossier ../src) SANS les leçons : on garde le Studio,
-   les objections, la recherche express, les orateurs, préparer, preuves, et les 38 ruses (fiches + quiz).
+   les objections, la recherche express, les orateurs, préparer, preuves (sans leçons ni ruses).
    Les sources sont dans mobile/src (copie des sources de l'application Agora, sans les leçons) ; ce script les lit et applique des retouches en mémoire.
    Stockage isolé (préfixe am_), cache isolé (amob-), base isolée : aucun mélange avec l'application à la racine. */
 const fs = require('fs'), path = require('path'), crypto = require('crypto');
@@ -18,7 +18,10 @@ js = js.replace('/*@@LEVELS@@*/', () => R('levels.js')).replace('/*@@PREP@@*/', 
 if (/\/\*@@/.test(js)) throw new Error('marqueur non remplacé');
 
 /* --- retouches « sans leçons » --- */
-js = must(js, "['course', 'Cours', '", "['course', 'Ruses', '");
+/* plus d'onglet Cours/Ruses : l'appli sert uniquement à s'entraîner */
+js = js.replace(/  \['course', 'Cours', '[^\n]*\n/, '');
+js = js.replace(/,\n  \{ id: 'eri', t: 'Éristicien'[^\n]*/, '');
+if (/'Ruses'|'Cours', '</.test(js)) throw new Error('onglet cours encore présent');
 js = must(js, "go: ['course', 'c5']", "go: ['studio']");
 js = must(js, "function vCourse() {", "function vCourse() { if (view.sub === 'erist-quiz') return vEristQuiz(); return vErist(); }\nfunction vCourseDesactive() {");
 /* la carte « Cours x / y » de l'accueil n'a plus de sens */

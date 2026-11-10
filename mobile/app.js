@@ -1,4 +1,4 @@
-window.AGORA_BUILD='8a2c891b88';
+window.AGORA_BUILD='b9898088ca';
 /* ============================================================
    Analyse de la voix (signal) et du texte (transcription)
    Tout se calcule dans la page. Aucun audio n'est envoyé nulle part.
@@ -1212,8 +1212,7 @@ var BADGES = [
   { id: 'poly', t: 'Polyvalent', d: 'Essaie 4 types d’exercices différents.', ok: function () { var t = {}; S.sessions.forEach(function (s) { if (s.type) t[s.type] = 1; }); return Object.keys(t).length >= 4; } },
   { id: 'c5', t: 'Cinq sur cinq', d: 'Dans « Relier ses idées », fais détecter les 5 étapes dans ton texte.', ok: function () { return S.sessions.some(function (s) { return s.type === 'connecteurs' && s.txt && s.txt.steps && s.txt.steps.count === 5; }); } },
   { id: 'exp', t: 'Éclair', d: 'Termine une « Recherche express » dans le Studio.', ok: function () { return S.sessions.some(function (s) { return s.type === 'express'; }); } },
-  { id: 'prep', t: 'Préparateur', d: 'Prépare un débat ou un discours dans « Préparer ».', ok: function () { return (S.prep || []).length >= 1; } },
-  { id: 'eri', t: 'Éristicien', d: 'Obtiens 12 sur 12 au quiz global des 38 stratagèmes.', ok: function () { return S.erist && S.erist.best >= 12; } }
+  { id: 'prep', t: 'Préparateur', d: 'Prépare un débat ou un discours dans « Préparer ».', ok: function () { return (S.prep || []).length >= 1; } }
 ];
 function badgesOk() { return BADGES.filter(function (b) { return b.ok(); }); }
 var toastBox = null;
@@ -2118,7 +2117,6 @@ function pwaBoot() {
 var TABS = [
   ['home', 'Accueil', '<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>'],
   ['studio', 'Studio', '<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/>'],
-  ['course', 'Ruses', '<path d="M4 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6M20 4v14h-6"/>'],
   ['orators', 'Orateurs', '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'],
   ['prep', 'Préparer', '<path d="M12 3v18M5 7h14M5 7l-2 7a3 3 0 0 0 6 0zM19 7l-2 7a3 3 0 0 0 6 0z"/>'],
   ['proofs', 'Preuves', '<circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/>']
