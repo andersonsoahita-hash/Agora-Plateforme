@@ -1150,7 +1150,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
   <header class="bar">
     <div class="logo"><svg class="mk" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="22" r="11" fill="#C9A24B"/><circle cx="142.2" cy="34.4" r="11" fill="#C2391F"/><circle cx="171" cy="67.6" r="11" fill="#C2391F"/><circle cx="177.2" cy="111.1" r="11" fill="#C2391F"/><circle cx="158.9" cy="151.1" r="11" fill="#C2391F"/><circle cx="122" cy="174.8" r="11" fill="#C2391F"/><circle cx="78" cy="174.8" r="11" fill="#C2391F"/><circle cx="41.1" cy="151.1" r="11" fill="#C2391F"/><circle cx="22.8" cy="111.1" r="11" fill="#C2391F"/><circle cx="29" cy="67.6" r="11" fill="#C2391F"/><circle cx="57.8" cy="34.4" r="11" fill="#C2391F"/><circle cx="100" cy="100" r="27" fill="#C2391F"/></svg><div class="lt"><b>Agora</b><i>L’art oratoire · <em>by Stephen</em></i></div></div>
     <div class="bar-r">
-      <button class="net" id="net" aria-live="polite" title="Maquette : simule le réseau"><span class="d"></span><span id="netT">En ligne</span><span class="q" id="netQ"></span></button>
+      <button class="net" id="net" aria-live="polite" title="Simule le réseau"><span class="d"></span><span id="netT">En ligne</span><span class="q" id="netQ"></span></button>
       <a class="btn sm" id="navAcc" href="#acces">Demander l'accès</a>
     </div>
   </header>
@@ -1345,7 +1345,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
       </form>
       <div class="panel" id="status">
         <h3>Suivi de ta demande</h3>
-        <p>Maquette : essaie aussi avec le réseau coupé (bouton en haut).</p>
+        <p>Essaie aussi avec le réseau coupé (bouton en haut).</p>
         <div id="statusBody"></div>
       </div>
     </div>
@@ -1925,7 +1925,7 @@ function statusT(){var m={none:['','Test pas encore passé'],queued:['wt','Hors 
 var CERTG={1:'pour avoir démontré qu’il sait ouvrir un discours, bâtir une preuve et toucher son public sans le manipuler.',2:'pour avoir démontré qu’il sait choisir ses mots, bâtir un argument solide et réfuter sans écraser.',3:'pour avoir démontré qu’il maîtrise sa voix, sa posture et son regard au service de son propos.',4:'pour avoir démontré qu’il sait parler sans notes, lire son public et garder confiance face aux questions.',5:'pour avoir démontré qu’il sait s’entraîner, débattre, improviser et parler sur tous les terrains.'};
 function mention(s){return s>=90?'mention très bien':s>=80?'mention bien':'mention assez bien'}
 function certHTML(){var src=document.querySelector('.cert-c');if(!src)return '';var c=src.cloneNode(true),q=function(s){return c.querySelector(s)};
-  q('.cc-n').textContent=P.name||'Prénom Nom';var T=TS();q('.cc-r').textContent='Résultat : '+T.score+' % · '+mention(T.score);q('.cc-no').textContent='Délivré le '+T.date+' · '+T.no;q('.cc-k').textContent='DE NIVEAU '+TL+' · '+LV[TL].n.toUpperCase();q('.cc-g').textContent=CERTG[TL];q('.cc-x').textContent='Maquette · sans valeur';return c.outerHTML}
+  q('.cc-n').textContent=P.name||'Prénom Nom';var T=TS();q('.cc-r').textContent='Résultat : '+T.score+' % · '+mention(T.score);q('.cc-no').textContent='Délivré le '+T.date+' · '+T.no;q('.cc-k').textContent='DE NIVEAU '+TL+' · '+LV[TL].n.toUpperCase();q('.cc-g').textContent=CERTG[TL];var cx=q('.cc-x');if(/^AG-TEST/.test(T.no||'')){cx.textContent='Test · sans valeur';cx.style.display=''}else cx.style.display='none';return c.outerHTML}
 function reco(){
   var n=doneN(),t=P.t1,l1=lvDone(1),nl=nextLesson();
   if(!n)return {t:'Commence ta première leçon',d:'« '+D.lessons[0].titre+' » : environ '+D.lessons[0].min+' minutes.',go:['les',D.lessons[0].id]};
@@ -2452,7 +2452,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&lpEl.classL
 /* ================= ADMINISTRATION AGORA (inspirée de SMC Gestion) ================= */
 var APW='d',AK='agora_adm',AV='dash',AQ='',AFL='all',ASEL=null,ATSEL=1,ACH=null;
 var AN=[['srv','Comptes & accès','🔐'],['pgr','Progression des élèves','📈'],['dash','Bilan du business','▦'],['dem','Demandes','✉'],['el','Élèves','👥'],['pay','Paiements & factures','🧾'],['rel','Relances','📣'],['tre','Trésorerie','💰'],['for','Formateurs & séances','🎙'],['con','Contenus','📚'],['not','Notes & tests','📝'],['cer','Certificats','🎓'],['apr','Aperçu de la plateforme','👁'],['dev','Labo développeur','🧪'],['fbk','Retours sur les cours','🗒'],['his','Historique','🕘'],['cha','Messagerie','💬'],['avi','Avis & anciens messages','🗨'],['pro','Promotions & présences','📅'],['reg','Réglages & tarifs','⚙'],['adm','Administrateurs & accès','🔑'],['jou','Journal','🛡']];
-var AHID=['dem','el','for','not','cer','fbk','his','cha','avi','pro','reg','jou'];
+var AHID=[];
 var ANT=['dash','el','for','not','fbk','cha','pro'];
 var AM=['Mvola','Orange Money','Airtel Money','Virement','Espèces','Carte'];
 function dAgo(n){var d=new Date();d.setDate(d.getDate()-n);return d.toISOString().slice(0,10)}
@@ -2549,7 +2549,7 @@ AR.cer=function(){var us=AD.users.filter(function(u){return !u.test}).map(functi
    aCard('Émettre un certificat manuellement','<div class="ad-fm">'+sel('cu','Personne',us)+sel('cl2','Niveau',[1,2,3,4,5].map(function(l){return [l,'Niveau '+l]}))+'</div>'+aB('mkcert','Émettre le certificat','ok')+'<p class="ad-mu">Le certificat ne porte aucune mention restrictive. La mention « valable chez Agora » figure dans l’e-mail envoyé avec le certificat.</p>')};
 /* ---- labo ---- */
 AR.dev0=function(){var rows=[1,2,3,4,5].map(function(l){var q=nQ(l),ls=lessonsOf(l),short=ls.filter(function(x){return window.genSlides&&genSlides(x).length<20}).length;return [l+' · '+esc(lvName(l)),ls.length,short?short+' sous 20 diapos':'ok',q,q>=AD.cfg.minQ?'<span class="ad-st ok">prêt</span>':'<span class="ad-st wt">à compléter</span>']});
-  return aCard('🧪 Labo développeur','<p class="ad-mu">Teste l’expérience élève sur cet appareil.</p><div class="ad-ac">'+aB('pass1','Simuler la réussite du niveau 1','')+aB('pass2','Simuler la réussite du niveau 2','')+aB('openstu','Ouvrir la vue élève','')+aB('rstadm','Vider les données locales de cette console','ko')+'</div>')+
+  return aCard('🧪 Parcours test : diplômes et vue élève','<p class="ad-mu">Valide un niveau en un clic, puis ouvre le diplôme et l’e-mail de félicitations tels que l’élève les voit. Rien n’est envoyé au serveur et rien n’entre dans tes statistiques : c’est ton parcours de test, sur cet appareil.</p>'+tbl(['Niveau','État du test','',''],[1,2,3,4,5].map(function(l){var T=l===1?P.t1:P.tl[l],ok=T&&T.st==='approved';return [l+' · '+esc(lvName(l)),ok?'<span class="ad-st ok">validé · '+T.score+' %</span>':'<span class="ad-st wt">non validé</span>',aB('simlv',ok?'Revalider':'Valider ce niveau','',' data-v="'+l+'"'),ok?aB('seecert','Voir le diplôme','ok',' data-v="'+l+'"'):'']}))+'<div class="ad-ac">'+aB('simall','Valider les 5 niveaux','')+aB('openstu','Ouvrir la vue élève','')+aB('rstp','Remettre le parcours test à zéro','ko')+'</div>')+aCard('Données locales de cette console','<p class="ad-mu">Vide ce que cette console garde dans ce navigateur (sections non reliées au serveur). Les vraies données du serveur ne sont jamais touchées.</p><div class="ad-ac">'+aB('rstadm','Vider les données locales de cette console','ko')+'</div>')+
    aCard('Contrôle du contenu',tbl(['Niveau','Leçons','Diapositives','Questions','Test'],rows)+'<p class="ad-mu">Un test est « prêt » à partir de '+AD.cfg.minQ+' questions. Seuil de réussite : '+AD.cfg.pass+' %.</p>')+
    aCard('Comptes de test',tbl(['Nom','E-mail','Niveau',''],AD.users.filter(function(u){return u.test}).map(function(u){return [esc(u.name),esc(u.email),u.lvl||'—',aB('del','Supprimer','ko',' data-v="'+u.id+'"')]}),'Aucun compte test.'))};
 /* ---- retours ---- */
@@ -2624,6 +2624,9 @@ es.addEventListener('click',function(e){var b=e.target.closest('[data-ad]');if(!
   case 'aprw':APW=v==='m'?'m':'d';break;
   case 'reqtest':{var te=($('#tqe').value||'').trim(),tm=$('#tqm');if(!/^\S+@\S+\.\S+$/.test(te)){tm.textContent='Indique une adresse e-mail valide.';return}tm.textContent='Envoi…';svCall({action:'demande',email:te,nom:($('#tqn').value||'Test').trim(),prenoms:($('#tqp').value||'Compte').trim(),role:'élève',projet:'Compte test (console admin)'}).then(function(r){tm.textContent=r&&r.ok?(r.etat==='en attente'?'Demande envoyée. Va dans « Comptes & accès » pour la valider.':'Cette adresse existe déjà : état « '+r.etat+' ».'):((r&&r.erreur)||'Refusé.');if(r&&r.ok&&typeof svLoad==='function')svLoad(true)}).catch(function(){tm.textContent='Connexion impossible.'});return}
   case 'olsn':openLesson(v);return;
+  case 'simlv':case 'simall':{var ls0=a==='simall'?[1,2,3,4,5]:[+v];ls0.forEach(function(l){var T=l===1?P.t1:P.tl[l];Object.assign(T,{st:'approved',score:95,date:today(),no:'AG-TEST-'+('000'+l).slice(-4)});lessonsOf(l).forEach(function(x){if(!P.done[x.id])P.done[x.id]={s:0,n:0,d:today(),demo:1}})});if(!P.name)P.name='Compte test';save();toast(a==='simall'?'Les 5 niveaux sont validés en test':'Niveau '+v+' validé en test');break}
+  case 'seecert':setTL(+v||1);role='el';nav('course','test');$('#es').scrollTop=0;return;
+  case 'rstp':if(b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent='Confirmer : tout remettre à zéro';return}try{localStorage.removeItem('agora_p5')}catch(x){}location.reload();return;
   case 'rstadm':AD=seedAdm();aLog('Données de démonstration remises à zéro');toast('Données remises à zéro');break;
   case 'fbdone':{var f=AD.fb[+v];if(f)f.done=!f.done;break}
   case 'addfb':{var tt=gv('ft');if(!tt){toast('Écris ton retour');return}AD.fb.unshift({id:'f'+Date.now(),tr:'u2',lesson:gv('fl2'),t:tt,done:false,date:new Date().toISOString().slice(0,10)});toast('Retour envoyé à l’administration');break}
