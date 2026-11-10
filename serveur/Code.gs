@@ -8,18 +8,19 @@ var FEUILLES = {
   comptes: ['Date', 'Nom', 'Prénoms', 'Email', 'Téléphone', 'Âge', 'Rôle', 'Pays', 'Situation', 'Projet', 'Statut', 'Code d’activation', 'Expire le', 'Dernière connexion', 'Ordinateur', 'Téléphone (appli)', 'Mot de passe (empreinte)', 'Session', 'Session appli'],
   journal: ['Date', 'Action'],
   admins: ['Date', 'Nom', 'Email', 'Droits', 'Clé (empreinte)', 'Statut', 'Dernière activité', 'Créé par'],
+  compta: ['Mis à jour', 'Id', 'Type', 'Date', 'Libellé', 'Email', 'Niveau', 'Montant (Ar)', 'Payé le', 'Mode', 'Catégorie', 'Par'],
   progres: ['Mis à jour', 'Email', 'Leçon', 'Niveau', 'Date', 'Score', 'Sur', 'Appareil'],
   seances: ['Reçu le', 'Email', 'Id', 'Date', 'Sujet', 'Type', 'Durée (s)', 'Mots', 'Mots/min', 'Tics', 'Logos', 'Ethos', 'Pathos', 'Source', 'Transcription', 'Détail (JSON)']
 };
-var CLEF = { 'Comptes': 'comptes', 'Journal': 'journal', 'Séances': 'seances', 'Admins': 'admins', 'Progrès': 'progres' };
-var NPRO = 8, MAXPRO = 60;
+var CLEF = { 'Comptes': 'comptes', 'Journal': 'journal', 'Séances': 'seances', 'Admins': 'admins', 'Progrès': 'progres', 'Compta': 'compta' };
+var NPRO = 8, MAXPRO = 60, NCPT = 12;
 var C = { date: 0, nom: 1, pre: 2, mail: 3, tel: 4, age: 5, role: 6, pays: 7, sit: 8, proj: 9, st: 10, code: 11, exp: 12, last: 13, pc: 14, mob: 15, pw: 16, tok: 17, mtok: 18 };
 var NCOL = 19;
 var Q = { rec: 0, mail: 1, id: 2, date: 3, sujet: 4, type: 5, dur: 6, mots: 7, wpm: 8, tics: 9, lo: 10, et: 11, pa: 12, src: 13, txt: 14, det: 15 };
 var NSEA = 16;
 var AD = { date: 0, nom: 1, mail: 2, dr: 3, cle: 4, st: 5, last: 6, par: 7 }, NADM = 8;
 /* ce qu'un administrateur peut avoir le droit de faire (le propriétaire a tout) */
-var DROITS = { voir: 'Voir les comptes et le journal', valider: 'Valider, renvoyer un code, débloquer, fixer la fin d’accès', bloquer: 'Bloquer un compte', appareils: 'Libérer l’ordinateur ou le téléphone', seances: 'Voir les séances et les transcriptions', supprimer: 'Supprimer un compte et l’effacer définitivement' };
+var DROITS = { voir: 'Voir les comptes et le journal', valider: 'Valider, renvoyer un code, débloquer, fixer la fin d’accès', bloquer: 'Bloquer un compte', appareils: 'Libérer l’ordinateur ou le téléphone', seances: 'Voir les séances et les transcriptions', supprimer: 'Supprimer un compte et l’effacer définitivement' , finances: 'Paiements, dépenses, trésorerie et bilan'};
 var OPDROIT = { /* progrès : voir 'voir', effacer 'supprimer' */ valider: 'valider', debloquer: 'valider', expire: 'valider', bloquer: 'bloquer', appareil: 'appareils', mobile: 'appareils', supprimer: 'supprimer', effacer: 'supprimer' };
 var CONSOLE_URL = 'https://andersonsoahita-hash.github.io/Agora-Plateforme/admin/';
 var EMAIL_ADMIN = 'stephenandersonsoahita@gmail.com'; // l'adresse qui reçoit la clé admin
@@ -28,7 +29,7 @@ var DUREE_CODE = 600; // le code de liaison du téléphone vaut 10 minutes
 function feuille_(nom) {
   var ss = SpreadsheetApp.getActiveSpreadsheet(), sh = ss.getSheetByName(nom), cle = CLEF[nom];
   if (!sh) { sh = ss.insertSheet(nom); sh.appendRow(FEUILLES[cle]); sh.setFrozenRows(1); if (nom === 'Séances') sh.getRange(1, 4, sh.getMaxRows(), 1).setNumberFormat('@'); }
-  var nc = nom === 'Comptes' ? NCOL : (nom === 'Séances' ? NSEA : (nom === 'Admins' ? NADM : (nom === 'Progrès' ? NPRO : 0)));
+  var nc = nom === 'Comptes' ? NCOL : (nom === 'Séances' ? NSEA : (nom === 'Admins' ? NADM : (nom === 'Progrès' ? NPRO : (nom === 'Compta' ? NCPT : 0))));
   if (nc) {
     if (sh.getMaxColumns() < nc) sh.insertColumnsAfter(sh.getMaxColumns(), nc - sh.getMaxColumns());
     sh.getRange(1, 1, 1, nc).setValues([FEUILLES[cle]]);
@@ -36,7 +37,7 @@ function feuille_(nom) {
   return sh;
 }
 function installer() { // à lancer une fois (et après chaque mise à jour du code)
-  ['Comptes', 'Journal', 'Séances', 'Admins', 'Progrès'].forEach(feuille_);
+  ['Comptes', 'Journal', 'Séances', 'Admins', 'Progrès', 'Compta'].forEach(feuille_);
   var s = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Feuille 1'); if (s && s.getLastRow() === 0) s.setName('Notes');
   var nouvelle = !PropertiesService.getScriptProperties().getProperty('CLE_ADMIN');
   if (nouvelle) PropertiesService.getScriptProperties().setProperty('CLE_ADMIN', Utilities.getUuid());
@@ -174,6 +175,42 @@ function lireProgres_(email) {
   var sh = feuille_('Progrès'), n = sh.getLastRow(); if (n < 2) return [];
   return sh.getRange(2, 1, n - 1, NPRO).getValues().filter(function (r) { return !email || String(r[1]).toLowerCase() === email; })
     .map(function (r) { return { em: String(r[1]).toLowerCase(), id: String(r[2]), lv: Number(r[3]) || 0, d: String(r[4]), s: Number(r[5]) || 0, n: Number(r[6]) || 0, app: String(r[7]) }; });
+}
+/* ---- comptabilité : factures et dépenses, une seule feuille « Compta » ---- */
+function tarifs_() {
+  var p = PropertiesService.getScriptProperties().getProperty('TARIFS'), d = null;
+  try { d = JSON.parse(p); } catch (e) {}
+  if (!d || !Array.isArray(d.prix)) d = { prix: [0, 30000, 45000, 60000, 75000, 90000], pay: '' };
+  return d;
+}
+function lireCompta_() {
+  var sh = feuille_('Compta'), n = sh.getLastRow(); if (n < 2) return [];
+  return sh.getRange(2, 1, n - 1, NCPT).getValues().map(function (r) {
+    return { id: String(r[1]), type: String(r[2]), date: String(r[3]), lib: String(r[4]), em: String(r[5]).toLowerCase(), lv: Number(r[6]) || 0, mt: Number(r[7]) || 0, paye: String(r[8]), mode: String(r[9]), cat: String(r[10]), par: String(r[11]) };
+  });
+}
+function iso_(x) { return /^\d{4}-\d{2}-\d{2}$/.test(String(x || '')) ? String(x) : Utilities.formatDate(new Date(), 'Europe/Paris', 'yyyy-MM-dd'); }
+function ecrireCompta_(b, par) {
+  var sh = feuille_('Compta'), n = sh.getLastRow(), type = b.type === 'depense' ? 'depense' : 'facture', ligne = null, id = cut_(b.id, 40).replace(/[^\w.-]/g, '');
+  var d = n > 1 ? sh.getRange(2, 1, n - 1, NCPT).getValues() : [], pos = 0, maxNo = 0, pref = 'F-' + Utilities.formatDate(new Date(), 'Europe/Paris', 'yyMM') + '-';
+  for (var i = 0; i < d.length; i++) {
+    if (id && String(d[i][1]) === id) pos = i + 2;
+    var m = /^F-\d{4}-(\d{4})$/.exec(String(d[i][1])); if (m && String(d[i][1]).indexOf(pref) === 0) maxNo = Math.max(maxNo, Number(m[1]));
+  }
+  var mt = Math.max(0, Math.round(Number(b.mt) || 0)); if (!mt) return { erreur: 'Montant invalide.' };
+  if (type === 'depense' && !String(b.lib || '').trim()) return { erreur: 'Indique un libellé.' };
+  if (type === 'facture' && !/^\S+@\S+\.\S+$/.test(String(b.em || ''))) return { erreur: 'Choisis un élève.' };
+  if (!pos) id = type === 'facture' ? pref + ('000' + (maxNo + 1)).slice(-4) : 'D' + Date.now();
+  var paye = type === 'facture' && b.paye ? iso_(b.paye) : '';
+  ligne = [new Date(), id, type, iso_(b.date), cut_(b.lib, 200), String(b.em || '').toLowerCase(), num_(b.lv) || '', mt, paye, cut_(b.mode, 30), cut_(b.cat, 40), par];
+  if (pos) sh.getRange(pos, 1, 1, NCPT).setValues([ligne]); else sh.appendRow(ligne);
+  return { ok: true, id: id };
+}
+function effacerCompta_(id) {
+  var sh = feuille_('Compta'), n = sh.getLastRow(); if (n < 2) return 0;
+  var d = sh.getRange(2, 2, n - 1, 1).getValues();
+  for (var i = d.length - 1; i >= 0; i--) if (String(d[i][0]) === id) { sh.deleteRow(i + 2); return 1; }
+  return 0;
 }
 function effacerProgres_(email, lecon) { // lecon vide = tout le compte
   var sh = feuille_('Progrès'), n = sh.getLastRow(), k = 0; if (n < 2) return 0;
@@ -379,6 +416,24 @@ function doPost(e) {
       if (!peut_(qe, 'supprimer')) return rep_({ ok: false, erreur: 'Tu n’as pas le droit de supprimer.' });
       var ke = effacerProgres_(em, String(b.lecon || '')); journal_('Progrès effacé (' + ke + ') : ' + em + (b.lecon ? ' · ' + b.lecon : '') + ' ↳ fait par ' + qe.nom);
       return rep_({ ok: true, effaces: ke });
+    }
+
+    if (a === 'compta') {
+      var qc = qui_(b); if (!qc) return rep_({ ok: false, erreur: 'Clé invalide' });
+      if (!peut_(qc, 'finances')) return rep_({ ok: false, erreur: 'Tu n’as pas le droit de voir les finances.' });
+      return rep_({ ok: true, lignes: lireCompta_(), tarifs: tarifs_() });
+    }
+    if (a === 'comptaSet' || a === 'comptaDel' || a === 'tarifsSet') {
+      var qf = qui_(b); if (!qf) return rep_({ ok: false, erreur: 'Clé invalide' });
+      if (!peut_(qf, 'finances')) return rep_({ ok: false, erreur: 'Tu n’as pas le droit de modifier les finances.' });
+      if (a === 'comptaDel') { var kd = effacerCompta_(String(b.id || '')); journal_('Compta : ligne effacée ' + b.id + ' ↳ fait par ' + qf.nom); return rep_({ ok: true, effaces: kd }); }
+      if (a === 'tarifsSet') {
+        var pr = (Array.isArray(b.prix) ? b.prix : []).slice(0, 6).map(function (x) { return Math.max(0, Math.round(Number(x) || 0)); }); while (pr.length < 6) pr.push(0); pr[0] = 0;
+        PropertiesService.getScriptProperties().setProperty('TARIFS', JSON.stringify({ prix: pr, pay: cut_(b.pay, 400) }));
+        journal_('Tarifs modifiés ↳ fait par ' + qf.nom); return rep_({ ok: true, tarifs: tarifs_() });
+      }
+      var rc = ecrireCompta_(b, qf.nom); if (!rc.ok) return rep_({ ok: false, erreur: rc.erreur });
+      journal_('Compta : ' + (b.type === 'depense' ? 'dépense' : 'facture') + ' ' + rc.id + ' ↳ fait par ' + qf.nom); return rep_({ ok: true, id: rc.id });
     }
 
     if (a === 'seances') { // console admin : séances d'un compte (ou les plus récentes de tous)
