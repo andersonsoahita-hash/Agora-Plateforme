@@ -1121,15 +1121,22 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .ad-m{max-width:80%;padding:10px 14px;border-radius:14px;background:#e6ebfb;color:#1b2033}.ad-m.a{justify-self:end;background:#fbeceb}
 .ad-m small{display:block;margin-top:4px}
 .ad-pc{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}.ad-pc span{display:flex;align-items:center;gap:6px;color:#2c3350}
+.ad-mb,.ad-bd{display:none}
 @media (max-width:860px){
  .ad-app{grid-template-columns:1fr}
- .ad-side{position:sticky;top:0;height:auto;z-index:20;flex-direction:row;align-items:center;gap:8px;padding:8px 10px;overflow-x:auto;border-right:0;border-bottom:1px solid rgba(27,32,51,.1)}
- .ad-br,.ad-who,.ad-out{display:none}
- .ad-side nav{display:flex;gap:6px}
- .ad-side nav button{width:auto;white-space:nowrap;padding:8px 14px;border:1.5px solid rgba(27,32,51,.18);border-radius:99px;min-height:40px;background:#fff}
- .ad-side nav button.on{box-shadow:none;border-color:#c2391f}
+ .ad-mb{display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:20;padding:8px max(12px,env(safe-area-inset-left,0px));background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid rgba(27,32,51,.1)}
+ .ad-mb b{font:700 18px Fraunces,Georgia,serif;color:#1b2033;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+ .ad-hb{display:flex;align-items:center;gap:8px;border:1.5px solid rgba(27,32,51,.18);background:#fff;border-radius:99px;min-height:44px;padding:0 16px;font:700 15px 'DM Sans',sans-serif;color:#7a2218;cursor:pointer;flex:none}
+ .ad-hb i{font-style:normal;font-size:20px;line-height:1}
+ .ad-side{position:fixed;left:0;top:0;bottom:0;height:auto;width:min(86vw,330px);z-index:400;transform:translateX(-105%);transition:transform .25s ease;overflow-y:auto;background:#fff;border-right:1px solid rgba(27,32,51,.1);box-shadow:none;padding:calc(14px + env(safe-area-inset-top,0px)) 12px calc(20px + env(safe-area-inset-bottom,0px))}
+ #es.ad-open .ad-side{transform:none;box-shadow:12px 0 40px rgba(20,16,30,.28)}
+ .ad-bd{display:block;position:fixed;inset:0;z-index:399;background:rgba(20,16,30,.45);opacity:0;pointer-events:none;transition:opacity .25s}
+ #es.ad-open .ad-bd{opacity:1;pointer-events:auto}
+ .ad-out{display:block}
  .ad-chat{grid-template-columns:1fr}
+ #es.adm>.a-hd,#es.adm>#estab{display:none}
 }
+@media (prefers-reduced-motion:reduce){.ad-side,.ad-bd{transition:none}}
 @media (max-width:560px){#es>.a-hd .a-brand>div{display:none}#es>.a-hd .seg button{padding:7px 9px;font-size:12.5px}}
 @media(max-width:700px){#es{padding-top:env(safe-area-inset-top,0px)}#es>.a-hd{position:static}#estab{top:0}}
 .ad-f-wrap .ad-b{border:0;border-radius:99px;padding:11px 18px;font:600 14px 'DM Sans',sans-serif;background:#fff;box-shadow:inset 0 0 0 1.5px rgba(27,32,51,.18);cursor:pointer;color:#1b2033}
@@ -2585,7 +2592,7 @@ function vAdmin(){var me=aMe(),nav=AN.filter(function(n){return role==='tr'?ANT.
   var cur=AN.filter(function(n){return n[0]===AV})[0]||AN[0],nreq=AD.users.filter(function(u){return u.status==='attente'}).length,nrel=AD.inv.filter(function(i){return !i.paid}).length;
   var sub={srv:'Les vrais comptes : validation, code d’activation, blocage, appareils',dash:'Le bilan réel du business, calculé sur tes vraies données',dem:'Valide ou refuse : l’accès part par e-mail',el:'Suivi, blocage et suppression des comptes',pay:'Encaissements et factures numérotées',rel:'Messages prêts à envoyer',tre:'Encaissements, dépenses et solde',for:'Habilitations, élèves, séances',con:'Tout le programme, niveau par niveau',not:'Règles des tests et résultats',cer:'Certificats délivrés',pgr:'Qui a fait quelle leçon : les vraies statistiques',dev:'Tester toute l’expérience',apr:'La plateforme telle que la voit un élève',fbk:'Ce que les formateurs disent des cours',his:'Ce qui s’est passé dans Agora',cha:'Discussions avec les élèves et les formateurs',avi:'Ce que les élèves t’écrivent',pro:'Promotions et appel',reg:'Tarifs, accès, sécurité',adm:'Propriétaire, administrateurs et droits',jou:'Actions sensibles'}[cur[0]];
   var side='<aside class="ad-side"><div class="ad-br"><div class="ad-lg">A</div><div><b>Agora Gestion</b><small>BY STEPHEN</small></div></div><div class="ad-who">'+(role==='tr'?'Formateur':(SV.me?esc(SV.me.nom)+' · '+(SV.me.owner?'Propriétaire':'Administrateur'):esc(me.name)+' · Administrateur'))+'</div><nav>'+nav.map(function(n){var c=n[0]==='dem'&&nreq?nreq:n[0]==='rel'&&nrel?nrel:0;return '<button data-ad="go" data-v="'+n[0]+'" class="'+(AV===n[0]?'on':'')+'"><span>'+n[2]+'</span>'+n[1]+(c?'<em>'+c+'</em>':'')+'</button>'}).join('')+'</nav><button class="ad-out" data-ad="quit">Quitter</button></aside>';
-  return '<div class="ad-app">'+side+'<main class="ad-main"><div class="ad-top"><div><h1>'+cur[1]+'</h1><small>'+sub+'</small></div></div>'+(AD.cfg.locked&&role!=='tr'?'<div class="ad-warn">Coupe-circuit actif : les élèves ne peuvent plus se connecter.</div>':'')+(AV!=='srv'&&AV!=='pgr'&&AV!=='dash'&&AV!=='pay'&&AV!=='rel'&&AV!=='tre'&&AV!=='con'&&AV!=='adm'&&AV!=='apr'&&AV!=='dev'&&role!=='tr'?'<div class="ad-warn" style="background:#e6ebfb;border-color:#9aa8e8;color:#2a3a8c">Cette section est vide et n’est pas encore reliée au serveur. Les vrais comptes sont dans « Comptes &amp; accès ».</div>':'')+(AR[AV]?AR[AV]():'')+'</main></div>'}
+  return '<div class="ad-app"><div class="ad-mb"><button class="ad-hb" data-ad="menu" aria-label="Ouvrir le menu"><i>☰</i>Menu</button><b>'+cur[1]+'</b></div><div class="ad-bd" data-ad="menux"></div>'+side+'<main class="ad-main"><div class="ad-top"><div><h1>'+cur[1]+'</h1><small>'+sub+'</small></div></div>'+(AD.cfg.locked&&role!=='tr'?'<div class="ad-warn">Coupe-circuit actif : les élèves ne peuvent plus se connecter.</div>':'')+(AV!=='srv'&&AV!=='pgr'&&AV!=='dash'&&AV!=='pay'&&AV!=='rel'&&AV!=='tre'&&AV!=='con'&&AV!=='adm'&&AV!=='apr'&&AV!=='dev'&&role!=='tr'?'<div class="ad-warn" style="background:#e6ebfb;border-color:#9aa8e8;color:#2a3a8c">Cette section est vide et n’est pas encore reliée au serveur. Les vrais comptes sont dans « Comptes &amp; accès ».</div>':'')+(AR[AV]?AR[AV]():'')+'</main></div>'}
 /* ---- actions ---- */
 function aGo(v){AV=v;AQ='';AFL='all';ASEL=null;render();var m=document.querySelector('.ad-main');if(m)m.scrollTop=0;$('#es').scrollTop=0}
 es.addEventListener('input',function(e){if(e.target.id==='ad-q'){AQ=e.target.value;var p=e.target.selectionStart;render();var n=document.getElementById('ad-q');if(n){n.focus();try{n.setSelectionRange(p,p)}catch(x){}}}});
@@ -2888,6 +2895,10 @@ function prSync(){var a=lkAuth();if(!a||PR.busy)return;var l=prList(),h=JSON.str
   A.srv(a).then(function(r){PR.busy=false;if(r&&r.ok&&r.etat==='validé'){P.prH=a.email+h;save()}}).catch(function(){PR.busy=false})}
 var finishLesson0=finishLesson;finishLesson=function(){finishLesson0();setTimeout(prSync,300)};
 setInterval(prSync,20000);setTimeout(prSync,4000);
+/* l'écran d'accueil animé ne s'affiche pas pendant un test chronométré */
+window.AGbusy=function(){try{return TS().st==='run'}catch(x){return false}};
+
+(function(){var E=document.getElementById('es');if(!E)return;E.addEventListener('click',function(ev){var t=ev.target.closest&&ev.target.closest('[data-ad]');if(!t)return;var a=t.getAttribute('data-ad');if(a==='menu')E.classList.add('ad-open');else if(a==='menux'||a==='go'||a==='quit')E.classList.remove('ad-open')});document.addEventListener('keydown',function(ev){if(ev.key==='Escape')E.classList.remove('ad-open')})})();
 
 
 if(AG_MODE==="admin"){role="fo";AV="srv";svGate()}

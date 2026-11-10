@@ -1,4 +1,65 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#9E2B16"><meta name="color-scheme" content="light"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/svg+xml" href="icons/mark.svg"><link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Agora"><meta name="apple-mobile-web-app-status-bar-style" content="default"><style>@media (pointer:coarse){input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea{font-size:16px!important}}</style><title>Agora, l'art oratoire</title>
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#9E2B16"><meta name="color-scheme" content="light"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/svg+xml" href="icons/mark.svg"><link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Agora"><meta name="apple-mobile-web-app-status-bar-style" content="default"><style>@media (pointer:coarse){input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea{font-size:16px!important}}</style><style id="sp-css">
+#splash{position:fixed;inset:0;z-index:2147483000;display:none;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:max(24px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left));background:radial-gradient(120% 90% at 50% 38%,#b5341e 0%,#7c1f12 46%,#2a0a07 100%);color:#fff;text-align:center;cursor:pointer;overflow:hidden;-webkit-tap-highlight-color:transparent;transition:opacity .6s ease,visibility .6s}
+#splash.on{display:flex}
+#splash.out{opacity:0;visibility:hidden;pointer-events:none}
+#splash.first{animation:spSafe .6s ease 7s forwards}
+@keyframes spSafe{to{opacity:0;visibility:hidden;pointer-events:none}}
+#splash .sp-glow{position:absolute;left:50%;top:38%;width:130vmin;height:130vmin;margin:-65vmin 0 0 -65vmin;border-radius:50%;background:radial-gradient(circle,rgba(233,194,90,.22),rgba(233,194,90,0) 60%);animation:spGlow 4.5s ease-in-out infinite}
+@keyframes spGlow{0%,100%{transform:scale(.85);opacity:.55}50%{transform:scale(1.08);opacity:1}}
+#splash .sp-stage{position:relative;width:min(300px,62vw);aspect-ratio:1;flex:none}
+#splash .sp-d{position:absolute;left:50%;top:50%;width:7%;aspect-ratio:1;margin:-3.5% 0 0 -3.5%;border-radius:50%;background:#fff;opacity:0;--ty:-514%;transform:rotate(calc(var(--i)*30deg)) translateY(var(--ty)) scale(1);animation:spIn 1.15s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(.1s + var(--i)*.075s)}
+#splash .sp-d.g{background:#e9c25a;width:8.6%;margin:-4.3% 0 0 -4.3%;--ty:-419%}
+@keyframes spIn{0%{opacity:0;transform:rotate(calc(var(--i)*30deg + 70deg)) translateY(calc(var(--ty)*3.4)) scale(.2)}55%{opacity:1}100%{opacity:1;transform:rotate(calc(var(--i)*30deg)) translateY(var(--ty)) scale(1)}}
+#splash .sp-c{position:absolute;left:50%;top:50%;width:22%;aspect-ratio:1;margin:-11% 0 0 -11%;border-radius:50%;background:#e9c25a;box-shadow:0 0 0 0 rgba(233,194,90,.5);opacity:0;transform:scale(.2);animation:spC .9s cubic-bezier(.2,1.2,.3,1) 1.05s forwards,spPulse 2.4s ease-in-out 2.1s infinite}
+@keyframes spC{to{opacity:1;transform:scale(1)}}
+@keyframes spPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+#splash .sp-r{position:absolute;left:50%;top:50%;width:22%;aspect-ratio:1;margin:-11% 0 0 -11%;border-radius:50%;border:2px solid rgba(233,194,90,.8);opacity:0;animation:spRing 2.8s ease-out infinite}
+#splash .sp-r:nth-of-type(2){animation-delay:1.4s}
+@keyframes spRing{0%{opacity:0;transform:scale(1)}12%{opacity:.9}100%{opacity:0;transform:scale(5.2)}}
+#splash .sp-h{margin:30px 0 0;font:700 clamp(54px,15vw,92px)/1 'Dancing Script','Fraunces',Georgia,cursive;opacity:0;transform:translateY(14px);filter:blur(6px);animation:spTxt .9s ease 1.7s forwards;text-shadow:0 6px 30px rgba(0,0,0,.35)}
+#splash .sp-s{margin:14px 0 0;font:600 clamp(13px,3.6vw,16px)/1.3 'DM Sans',system-ui,sans-serif;letter-spacing:.2em;text-transform:uppercase;opacity:0;transform:translateY(10px);animation:spTxt .8s ease 2.15s forwards}
+#splash .sp-s b{color:#e9c25a;font-weight:700}
+#splash .sp-l{width:0;height:2px;margin:18px 0 0;background:linear-gradient(90deg,transparent,#e9c25a,transparent);animation:spLine 1s ease 2.3s forwards}
+@keyframes spLine{to{width:min(260px,60vw)}}
+#splash .sp-q{margin:18px 0 0;max-width:30ch;font:500 clamp(18px,5vw,24px)/1.35 'Fraunces',Georgia,serif;opacity:0;transform:translateY(10px);animation:spTxt .9s ease 2.6s forwards;text-wrap:balance}
+#splash .sp-t{position:absolute;left:0;right:0;bottom:max(28px,env(safe-area-inset-bottom));font:600 13px/1 'DM Sans',system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.75);opacity:0;animation:spTxt .8s ease 3.4s forwards,spBlink 2.4s ease-in-out 4.2s infinite}
+@keyframes spTxt{to{opacity:1;transform:none;filter:none}}
+@keyframes spBlink{0%,100%{opacity:.35}50%{opacity:.95}}
+@media (prefers-reduced-motion:reduce){#splash *{animation:none!important;opacity:1!important;transform:none!important;filter:none!important}#splash .sp-d{transform:rotate(calc(var(--i)*30deg)) translateY(var(--ty))!important}#splash .sp-r,#splash .sp-glow{display:none}#splash .sp-l{width:min(260px,60vw)!important}}
+</style>
+<div id="splash" class="on first" role="dialog" aria-modal="true" aria-label="Agora, la plateforme d’art oratoire" tabindex="-1">
+  <div class="sp-glow"></div>
+  <div class="sp-stage" aria-hidden="true">
+    <i class="sp-r"></i><i class="sp-r"></i>
+    <i class="sp-d g" style="--i:0"></i><i class="sp-d" style="--i:1"></i><i class="sp-d" style="--i:2"></i><i class="sp-d" style="--i:3"></i><i class="sp-d" style="--i:4"></i><i class="sp-d" style="--i:5"></i><i class="sp-d" style="--i:6"></i><i class="sp-d" style="--i:7"></i><i class="sp-d" style="--i:8"></i><i class="sp-d" style="--i:9"></i><i class="sp-d" style="--i:10"></i><i class="sp-d" style="--i:11"></i>
+    <i class="sp-c"></i>
+  </div>
+  <h1 class="sp-h">Agora</h1>
+  <p class="sp-s">La plateforme d’art oratoire · <b>by Stephen</b></p>
+  <i class="sp-l"></i>
+  <p class="sp-q">Là où l’on prend la parole.</p>
+  <span class="sp-t">Touche pour entrer</span>
+</div>
+<script>
+(function(){
+  var sp=document.getElementById('splash');if(!sp)return;
+  var IDLE=180000,tm=null,shownAt=Date.now(),last=Date.now(),first=true,autoTm=null,prev=null;
+  function busy(){try{var lv=document.getElementById('lv');if(lv&&lv.classList.contains('on'))return true;if(window.AGbusy&&window.AGbusy())return true}catch(e){}return false}
+  function hide(){if(!sp.classList.contains('on')||sp.classList.contains('out'))return;clearTimeout(autoTm);sp.classList.remove('first');sp.classList.add('out');document.documentElement.style.overflow='';setTimeout(function(){sp.classList.remove('on');if(prev&&prev.focus&&document.contains(prev)){try{prev.focus({preventScroll:true})}catch(e){}}arm()},650)}
+  function show(){if(sp.classList.contains('on')&&!sp.classList.contains('out'))return;prev=document.activeElement;var c=sp.cloneNode(true);c.classList.remove('out','first');c.classList.add('on');sp.parentNode.replaceChild(c,sp);sp=c;bind();document.documentElement.style.overflow='hidden';sp.focus({preventScroll:true});shownAt=Date.now()}
+  function bind(){sp.addEventListener('click',hide);sp.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '||e.key==='Escape'){e.preventDefault();hide()}});sp.addEventListener('touchmove',function(e){e.preventDefault()},{passive:false})}
+  function arm(){clearTimeout(tm);tm=setTimeout(idle,IDLE)}
+  function idle(){if(document.hidden||busy()){if(document.hidden){return}arm();return}show()}
+  function act(){last=Date.now();if(!sp.classList.contains('on'))arm()}
+  ['pointerdown','keydown','touchstart','wheel','scroll','input'].forEach(function(ev){addEventListener(ev,act,{passive:true,capture:true})});
+  var mv=0;addEventListener('mousemove',function(){var n=Date.now();if(n-mv>1500){mv=n;act()}},{passive:true});
+  document.addEventListener('visibilitychange',function(){if(document.hidden)return;if(Date.now()-last>=IDLE&&!busy()&&!sp.classList.contains('on'))show();else if(!sp.classList.contains('on'))arm()});
+  bind();document.documentElement.style.overflow='hidden';
+  autoTm=setTimeout(function(){if(first){first=false;hide()}},4600);
+  sp.addEventListener('click',function(){first=false});
+})();
+</script>
+<title>Agora, l'art oratoire</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* Mise en page : arrivée directe sur l'art oratoire (une diapo de leçon, un exercice, un certificat), puis 5 niveaux en cartes qui se recouvrent, le cycle d'une leçon, les variantes, l'accès. Sombre par choix. */
@@ -1121,15 +1182,22 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .ad-m{max-width:80%;padding:10px 14px;border-radius:14px;background:#e6ebfb;color:#1b2033}.ad-m.a{justify-self:end;background:#fbeceb}
 .ad-m small{display:block;margin-top:4px}
 .ad-pc{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}.ad-pc span{display:flex;align-items:center;gap:6px;color:#2c3350}
+.ad-mb,.ad-bd{display:none}
 @media (max-width:860px){
  .ad-app{grid-template-columns:1fr}
- .ad-side{position:sticky;top:0;height:auto;z-index:20;flex-direction:row;align-items:center;gap:8px;padding:8px 10px;overflow-x:auto;border-right:0;border-bottom:1px solid rgba(27,32,51,.1)}
- .ad-br,.ad-who,.ad-out{display:none}
- .ad-side nav{display:flex;gap:6px}
- .ad-side nav button{width:auto;white-space:nowrap;padding:8px 14px;border:1.5px solid rgba(27,32,51,.18);border-radius:99px;min-height:40px;background:#fff}
- .ad-side nav button.on{box-shadow:none;border-color:#c2391f}
+ .ad-mb{display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:20;padding:8px max(12px,env(safe-area-inset-left,0px));background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid rgba(27,32,51,.1)}
+ .ad-mb b{font:700 18px Fraunces,Georgia,serif;color:#1b2033;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+ .ad-hb{display:flex;align-items:center;gap:8px;border:1.5px solid rgba(27,32,51,.18);background:#fff;border-radius:99px;min-height:44px;padding:0 16px;font:700 15px 'DM Sans',sans-serif;color:#7a2218;cursor:pointer;flex:none}
+ .ad-hb i{font-style:normal;font-size:20px;line-height:1}
+ .ad-side{position:fixed;left:0;top:0;bottom:0;height:auto;width:min(86vw,330px);z-index:400;transform:translateX(-105%);transition:transform .25s ease;overflow-y:auto;background:#fff;border-right:1px solid rgba(27,32,51,.1);box-shadow:none;padding:calc(14px + env(safe-area-inset-top,0px)) 12px calc(20px + env(safe-area-inset-bottom,0px))}
+ #es.ad-open .ad-side{transform:none;box-shadow:12px 0 40px rgba(20,16,30,.28)}
+ .ad-bd{display:block;position:fixed;inset:0;z-index:399;background:rgba(20,16,30,.45);opacity:0;pointer-events:none;transition:opacity .25s}
+ #es.ad-open .ad-bd{opacity:1;pointer-events:auto}
+ .ad-out{display:block}
  .ad-chat{grid-template-columns:1fr}
+ #es.adm>.a-hd,#es.adm>#estab{display:none}
 }
+@media (prefers-reduced-motion:reduce){.ad-side,.ad-bd{transition:none}}
 @media (max-width:560px){#es>.a-hd .a-brand>div{display:none}#es>.a-hd .seg button{padding:7px 9px;font-size:12.5px}}
 @media(max-width:700px){#es{padding-top:env(safe-area-inset-top,0px)}#es>.a-hd{position:static}#estab{top:0}}
 .ad-f-wrap .ad-b{border:0;border-radius:99px;padding:11px 18px;font:600 14px 'DM Sans',sans-serif;background:#fff;box-shadow:inset 0 0 0 1.5px rgba(27,32,51,.18);cursor:pointer;color:#1b2033}
@@ -2585,7 +2653,7 @@ function vAdmin(){var me=aMe(),nav=AN.filter(function(n){return role==='tr'?ANT.
   var cur=AN.filter(function(n){return n[0]===AV})[0]||AN[0],nreq=AD.users.filter(function(u){return u.status==='attente'}).length,nrel=AD.inv.filter(function(i){return !i.paid}).length;
   var sub={srv:'Les vrais comptes : validation, code d’activation, blocage, appareils',dash:'Le bilan réel du business, calculé sur tes vraies données',dem:'Valide ou refuse : l’accès part par e-mail',el:'Suivi, blocage et suppression des comptes',pay:'Encaissements et factures numérotées',rel:'Messages prêts à envoyer',tre:'Encaissements, dépenses et solde',for:'Habilitations, élèves, séances',con:'Tout le programme, niveau par niveau',not:'Règles des tests et résultats',cer:'Certificats délivrés',pgr:'Qui a fait quelle leçon : les vraies statistiques',dev:'Tester toute l’expérience',apr:'La plateforme telle que la voit un élève',fbk:'Ce que les formateurs disent des cours',his:'Ce qui s’est passé dans Agora',cha:'Discussions avec les élèves et les formateurs',avi:'Ce que les élèves t’écrivent',pro:'Promotions et appel',reg:'Tarifs, accès, sécurité',adm:'Propriétaire, administrateurs et droits',jou:'Actions sensibles'}[cur[0]];
   var side='<aside class="ad-side"><div class="ad-br"><div class="ad-lg">A</div><div><b>Agora Gestion</b><small>BY STEPHEN</small></div></div><div class="ad-who">'+(role==='tr'?'Formateur':(SV.me?esc(SV.me.nom)+' · '+(SV.me.owner?'Propriétaire':'Administrateur'):esc(me.name)+' · Administrateur'))+'</div><nav>'+nav.map(function(n){var c=n[0]==='dem'&&nreq?nreq:n[0]==='rel'&&nrel?nrel:0;return '<button data-ad="go" data-v="'+n[0]+'" class="'+(AV===n[0]?'on':'')+'"><span>'+n[2]+'</span>'+n[1]+(c?'<em>'+c+'</em>':'')+'</button>'}).join('')+'</nav><button class="ad-out" data-ad="quit">Quitter</button></aside>';
-  return '<div class="ad-app">'+side+'<main class="ad-main"><div class="ad-top"><div><h1>'+cur[1]+'</h1><small>'+sub+'</small></div></div>'+(AD.cfg.locked&&role!=='tr'?'<div class="ad-warn">Coupe-circuit actif : les élèves ne peuvent plus se connecter.</div>':'')+(AV!=='srv'&&AV!=='pgr'&&AV!=='dash'&&AV!=='pay'&&AV!=='rel'&&AV!=='tre'&&AV!=='con'&&AV!=='adm'&&AV!=='apr'&&AV!=='dev'&&role!=='tr'?'<div class="ad-warn" style="background:#e6ebfb;border-color:#9aa8e8;color:#2a3a8c">Cette section est vide et n’est pas encore reliée au serveur. Les vrais comptes sont dans « Comptes &amp; accès ».</div>':'')+(AR[AV]?AR[AV]():'')+'</main></div>'}
+  return '<div class="ad-app"><div class="ad-mb"><button class="ad-hb" data-ad="menu" aria-label="Ouvrir le menu"><i>☰</i>Menu</button><b>'+cur[1]+'</b></div><div class="ad-bd" data-ad="menux"></div>'+side+'<main class="ad-main"><div class="ad-top"><div><h1>'+cur[1]+'</h1><small>'+sub+'</small></div></div>'+(AD.cfg.locked&&role!=='tr'?'<div class="ad-warn">Coupe-circuit actif : les élèves ne peuvent plus se connecter.</div>':'')+(AV!=='srv'&&AV!=='pgr'&&AV!=='dash'&&AV!=='pay'&&AV!=='rel'&&AV!=='tre'&&AV!=='con'&&AV!=='adm'&&AV!=='apr'&&AV!=='dev'&&role!=='tr'?'<div class="ad-warn" style="background:#e6ebfb;border-color:#9aa8e8;color:#2a3a8c">Cette section est vide et n’est pas encore reliée au serveur. Les vrais comptes sont dans « Comptes &amp; accès ».</div>':'')+(AR[AV]?AR[AV]():'')+'</main></div>'}
 /* ---- actions ---- */
 function aGo(v){AV=v;AQ='';AFL='all';ASEL=null;render();var m=document.querySelector('.ad-main');if(m)m.scrollTop=0;$('#es').scrollTop=0}
 es.addEventListener('input',function(e){if(e.target.id==='ad-q'){AQ=e.target.value;var p=e.target.selectionStart;render();var n=document.getElementById('ad-q');if(n){n.focus();try{n.setSelectionRange(p,p)}catch(x){}}}});
@@ -2888,6 +2956,10 @@ function prSync(){var a=lkAuth();if(!a||PR.busy)return;var l=prList(),h=JSON.str
   A.srv(a).then(function(r){PR.busy=false;if(r&&r.ok&&r.etat==='validé'){P.prH=a.email+h;save()}}).catch(function(){PR.busy=false})}
 var finishLesson0=finishLesson;finishLesson=function(){finishLesson0();setTimeout(prSync,300)};
 setInterval(prSync,20000);setTimeout(prSync,4000);
+/* l'écran d'accueil animé ne s'affiche pas pendant un test chronométré */
+window.AGbusy=function(){try{return TS().st==='run'}catch(x){return false}};
+
+(function(){var E=document.getElementById('es');if(!E)return;E.addEventListener('click',function(ev){var t=ev.target.closest&&ev.target.closest('[data-ad]');if(!t)return;var a=t.getAttribute('data-ad');if(a==='menu')E.classList.add('ad-open');else if(a==='menux'||a==='go'||a==='quit')E.classList.remove('ad-open')});document.addEventListener('keydown',function(ev){if(ev.key==='Escape')E.classList.remove('ad-open')})})();
 
 
 if(AG_MODE==="admin"){role="fo";AV="srv";svGate()}
