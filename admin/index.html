@@ -1327,14 +1327,17 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
         <p class="lnk"><a href="#" id="hasAcc">J’ai déjà un accès</a></p>
       </form>
       <form class="panel" id="login" novalidate hidden>
-        <h3>Se connecter</h3>
-        <p>Utilise l’e-mail et le mot de passe reçus par e-mail.</p>
-        <div class="fld"><label for="le">E-mail</label><input id="le" type="email" autocomplete="email" inputmode="email"></div>
-        <div class="fld"><label for="lp2">Mot de passe reçu par e-mail</label><input id="lp2" type="password" autocomplete="current-password"></div>
+        <h3 id="lgT">Se connecter</h3>
+        <p id="lgD">Entre ton e-mail et le mot de passe que tu as créé.</p>
+        <div class="fld"><label for="le">E-mail</label><input id="le" type="email" autocomplete="email" inputmode="email" autocapitalize="off"></div>
+        <div class="fld" id="lcF" hidden><label for="lc">Code d’activation (reçu par e-mail)</label><input id="lc" type="text" autocomplete="off" autocapitalize="characters" maxlength="12"></div>
+        <div class="fld"><label for="lp2" id="lpL">Mot de passe</label><input id="lp2" type="password" autocomplete="current-password"></div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:15px;margin:2px 0 10px"><input type="checkbox" id="lshow" style="width:auto;margin:0"> Afficher le mot de passe</label>
         <div class="err" id="lerr" role="alert"></div>
-        <button class="btn" type="submit">Se connecter</button>
+        <button class="btn" type="submit" id="lgBtn">Se connecter</button>
+        <p class="lnk"><a href="#" id="lgMode">J’ai un code d’activation</a></p>
         <p class="lnk"><a href="#" id="noAcc">Pas encore d’accès ? Faire une demande</a></p>
-        <p class="lnk" style="color:var(--mut)">Maquette : la vraie connexion arrive avec le serveur. Un seul ordinateur par compte.</p>
+        <p class="lnk" style="color:var(--mut)">Un seul ordinateur par compte.</p>
       </form>
       <div class="panel" id="status">
         <h3>Suivi de ta demande</h3>
@@ -1413,26 +1416,30 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 
   function paintNet(){$('#net').classList.toggle('off',!S.online);$('#netT').textContent=S.online?'En ligne':'Hors ligne';$('#netQ').textContent=S.queue?('· '+S.queue+' en attente'):(S.online?'· à jour':'')}
   $('#net').addEventListener('click',function(){S.online=!S.online;paintNet();if(S.online&&S.queue){toast('Réseau de retour : synchronisation…');sync()}else toast(S.online?'Réseau de retour. Tout est à jour.':'Hors ligne : ton travail reste sur ton téléphone.')});
-  function sync(){setTimeout(function(){if(S.online&&S.queue&&!(S.req&&(S.req.state==='syncing'||S.req.state==='queued'))){S.queue=0;paintNet();toast('Ton retour est synchronisé')}},1600);if(S.req&&S.req.state==='queued'){S.req.state='syncing';renderReq()}setTimeout(function(){if(!S.online)return;if(S.req&&(S.req.state==='syncing'||S.req.state==='queued')){S.req.state='pending';S.queue=0;save();paintNet();renderReq();toast('Demande envoyée à Stephen')}},1500)}
+  var SRV="https://script.google.com/macros/s/AKfycbwFkSJld9L17j4QCa8dH3wxFkfUDSXY6k9r3I5e0ZqARdDjRZP0LT0dRLIACaofe5qT/exec";
+  function srv(o){return fetch(SRV,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(o)}).then(function(r){return r.json()})}
+  function dev(){var d=null;try{d=localStorage.getItem('agora_p_dev');if(!d){d='d'+Math.random().toString(36).slice(2,10)+Date.now().toString(36);localStorage.setItem('agora_p_dev',d)}}catch(e){}return d||'d0'}
+  var ERRG='Une erreur est survenue. Veuillez vous reconnecter. Si le problème persiste, prévenez votre administrateur.';
   var ch='ABCDEFGHJKMNPQRSTUVWXYZ23456789';function tok(){var s='AG';for(var k=0;k<2;k++){s+='-';for(var m=0;m<4;m++)s+=ch[Math.floor(Math.random()*ch.length)]}return s}
   function sh(c,n,t,d){return '<div class="st '+c+'"><i>'+(c==='done'?'✓':n)+'</i><div><b>'+t+'</b><span>'+d+'</span></div></div>'}
   function renderReq(){
     var b=$('#statusBody'),r=S.req;
-    if(!r){b.innerHTML='<p class="empty">Aucune demande pour l’instant. Remplis le formulaire pour voir les étapes apparaître.</p>';return}
-    var s=r.state,sent=(s==='pending'||s==='approved'),h='<div class="steps">';
-    h+=sh(sent?'done':'on',1,'Demande envoyée',s==='queued'?'Enregistrée sur ton téléphone, envoi automatique au retour du réseau.':s==='syncing'?'Envoi en cours…':'Reçue par Stephen.');
-    h+=sh(s==='approved'?'done':(s==='pending'?'on':''),2,'Validation par Stephen',s==='approved'?'Accès validé.':'Il vérifie ta demande.');
-    h+=sh(s==='approved'?'done':'',3,'Lien personnel',s==='approved'?'Lié à ton compte, utilisable par toi seul.':'Envoyé par e-mail après validation.');
-    h+=sh(s==='approved'?'on':'',4,'Appareils',s==='approved'?'1 ordinateur (la plateforme) et 1 téléphone (l’application).':'Un seul ordinateur et un seul téléphone par compte.');
-    h+='</div><p class="note"><b>'+r.p+' '+r.n+'</b> · '+r.d+(s==='queued'?' <span class="pill w">Hors ligne</span>':s==='syncing'?' <span class="pill">Synchro</span>':s==='pending'?' <span class="pill">En attente</span>':' <span class="pill ok">Validé</span>')+'</p>';
-    if(s==='approved'){h+='<p class="note"><b>Ton lien personnel (exemple)</b><br><span class="tok">'+r.t+'</span></p><p class="note"><b>Autorisation hors ligne : 14 jours</b><br>Tant que tu te reconnectes avant la fin, tout reste ouvert. Sinon l’app te demande de te connecter.<span class="bar2"><i></i></span><small>Appareil 1 sur 2 utilisé</small></p>'}
-    if(s==='approved')h+='<div class="mail"><b>Ce que contient ton e-mail</b>1. Le lien de la plateforme : à ouvrir sur ton ordinateur, puis à épingler ou ajouter au Dock (Mac) <i>avant</i> de créer ton compte.<br>2. Le lien de l’application : à ouvrir sur ton téléphone, une seule fois.<br>3. Ensuite, dans ton profil : « Activer mon application ».<br><small>Tout est relié à ton compte. Une seule plateforme, une seule application.</small></div>';
-    if(s==='pending')h+='<button class="btn ghost sm" id="simOk">Simuler : Stephen valide</button> ';
-    h+='<button class="btn ghost sm" id="reset">Recommencer</button>';
+    if(!r||!r.p){b.innerHTML='<p class="empty">Aucune demande pour l’instant. Remplis le formulaire pour voir les étapes apparaître.</p>';return}
+    var s=r.state,sent=(s==='pending'||s==='approved'||s==='out'),ok=(s==='approved'||s==='out'),h='<div class="steps">';
+    h+=sh(sent?'done':'on',1,'Demande envoyée',s==='syncing'?'Envoi en cours…':'Reçue par Stephen.');
+    h+=sh(ok?'done':(s==='pending'?'on':''),2,'Validation par Stephen',ok?'Accès validé.':'Il vérifie ta demande.');
+    h+=sh(ok?'done':'',3,'Code d’activation',ok?'Utilisé : ton mot de passe est créé.':'Envoyé par e-mail après validation, valable une seule fois.');
+    h+=sh(ok?'on':'',4,'Appareils',ok?'1 ordinateur (la plateforme) et 1 téléphone (l’application).':'Un seul ordinateur et un seul téléphone par compte.');
+    h+='</div><p class="note"><b>'+r.p+' '+r.n+'</b> · '+(r.d||'')+(s==='syncing'?' <span class="pill">Envoi</span>':s==='pending'?' <span class="pill">En attente</span>':' <span class="pill ok">Validé</span>')+'</p>';
+    if(s==='pending')h+='<button class="btn sm" id="haveCode">J’ai reçu mon code</button> ';
+    if(s==='out')h+='<button class="btn sm" id="haveCode">Me reconnecter</button> ';
+    if(s==='approved')h+='<p class="note"><b>Connecté.</b> Ouvre « Mon espace » en haut de la page. Autorisation hors ligne : 14 jours, tant que tu te reconnectes avant la fin.</p>';
+    if(s!=='approved')h+='<button class="btn ghost sm" id="reset">Recommencer</button>';
     b.innerHTML=h;
   }
+  function openLogin(mode){$('#form').hidden=true;$('#login').hidden=false;setMode(mode||'login');var em=(S.req&&S.req.e)||'';if(em&&!$('#le').value)$('#le').value=em;$('#login').scrollIntoView({block:'nearest'})}
   $('#statusBody').addEventListener('click',function(e){
-    if(e.target.id==='simOk'){S.req.state='approved';S.req.t=tok();S.req.ta=tok();save();renderReq();paintAcc();toast('Accès validé (simulation)')}
+    if(e.target.id==='haveCode')openLogin(S.req&&S.req.state==='pending'?'code':'login');
     if(e.target.id==='reset'){S.req=null;S.queue=0;save();paintNet();renderReq();paintAcc()}
   });
   $('#form').addEventListener('submit',function(e){
@@ -1444,19 +1451,42 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
     if(!d){er.textContent='Choisis ta situation du moment.';return}
     if(!$('#cg').checked){er.textContent='Accepte les conditions pour envoyer ta demande.';return}
     er.textContent='';
-    S.req={p:p,n:n,e:m,tel:$('#ft').value.trim(),age:ag,role:$('#fr').value,pays:$('#fy').value,d:d,pm:$('#pm').value,pr:$('#pr').value.trim(),state:S.online?'syncing':'queued'};
-    if(!S.online){S.queue=1;paintNet();toast('Hors ligne : demande gardée sur ton téléphone')}
-    save();renderReq();paintAcc();if(S.online)sync();
+    var req={p:p,n:n,e:m,tel:$('#ft').value.trim(),age:ag,role:$('#fr').value,pays:$('#fy').value,d:d,pm:$('#pm').value,pr:$('#pr').value.trim(),state:'syncing'};
+    S.req=req;save();renderReq();paintAcc();
+    srv({action:'demande',nom:n,prenoms:p,email:m,tel:req.tel,age:ag,role:req.role,pays:req.pays,situation:d,projet:(req.pm?'Paiement : '+req.pm+'. ':'')+req.pr}).then(function(r){
+      if(!r||!r.ok){S.req=null;save();renderReq();paintAcc();er.textContent=(r&&r.erreur)||'Demande refusée.';return}
+      req.state='pending';save();renderReq();paintAcc();toast('Demande envoyée à Stephen')
+    }).catch(function(){S.req=null;save();renderReq();paintAcc();er.textContent='Connexion impossible. Vérifie ton réseau et réessaie.'});
     $('#status').scrollIntoView({behavior:reduce?'auto':'smooth',block:'nearest'});
   });
-  function paintAcc(){var a=$('#navAcc');if(!a)return;var ok=S.req&&S.req.state==='approved';a.textContent=ok?'Mon espace':'Demander l\'accès';if(ok){a.removeAttribute('href');a.setAttribute('data-es','')}else{a.setAttribute('href','#acces');a.removeAttribute('data-es')}}
+  function paintAcc(){var a=$('#navAcc');if(!a)return;var ok=S.req&&S.req.state==='approved'&&!S.req.blocked;a.textContent=ok?'Mon espace':(S.req&&(S.req.state==='out'||S.req.blocked)?'Me reconnecter':'Demander l\'accès');if(ok){a.removeAttribute('href');a.setAttribute('data-es','')}else{a.setAttribute('href','#acces');a.removeAttribute('data-es')}}
   window.AG_paintAcc=paintAcc;
   $('#hasAcc').addEventListener('click',function(e){e.preventDefault();$('#form').hidden=true;$('#login').hidden=false});
   $('#noAcc').addEventListener('click',function(e){e.preventDefault();$('#login').hidden=true;$('#form').hidden=false});
-  $('#login').addEventListener('submit',function(e){e.preventDefault();var le=$('#le').value.trim().toLowerCase(),er=$('#lerr');
-    if(S.req&&S.req.state==='approved'&&S.req.e.toLowerCase()===le&&$('#lp2').value){er.textContent='';toast('Connecté. Ton espace est ouvert.');paintAcc();var b=document.querySelector('[data-es]');if(b)b.click()}
-    else er.textContent=S.req&&S.req.state!=='approved'?'Ta demande n’est pas encore validée.':'Aucun accès trouvé avec cet e-mail.'});
-  if(S.req&&(S.req.state==='syncing'||S.req.state==='queued'))S.req.state='pending';
+  var LM='login';
+  function setMode(m){LM=m;var c=m==='code';$('#lcF').hidden=!c;$('#lgT').textContent=c?'J’ai un code d’activation':'Se connecter';$('#lgD').textContent=c?'Entre ton e-mail, le code reçu (il ne marche qu’une fois) et crée ton mot de passe. Il lie ce compte à cet ordinateur.':'Entre ton e-mail et le mot de passe que tu as créé.';$('#lpL').textContent=c?'Crée ton mot de passe (6 caractères minimum)':'Mot de passe';$('#lgBtn').textContent=c?'Activer mon compte':'Se connecter';$('#lgMode').textContent=c?'J’ai déjà un mot de passe : me connecter':'J’ai un code d’activation';$('#lp2').autocomplete=c?'new-password':'current-password';$('#lerr').textContent=''}
+  $('#lgMode').addEventListener('click',function(e){e.preventDefault();setMode(LM==='code'?'login':'code')});
+  $('#lshow').addEventListener('change',function(){$('#lp2').type=this.checked?'text':'password'});
+  $('#hasAcc').addEventListener('click',function(){setMode('login')});
+  function logged(r,em){var q=S.req||{};q.e=em;q.p=r.prenoms||q.p||'';q.n=r.nom||q.n||'';q.role=r.role==='formateur'?'formateur':'eleve';q.tok=r.jeton;q.state='approved';q.blocked=false;S.req=q;save();renderReq();paintAcc()}
+  $('#login').addEventListener('submit',function(e){e.preventDefault();var em=$('#le').value.trim().toLowerCase(),er=$('#lerr'),btn=$('#lgBtn'),lab=btn.textContent;
+    if(!/^\S+@\S+\.\S+$/.test(em)){er.textContent='Adresse e-mail invalide.';return}
+    var body=LM==='code'?{action:'activer',email:em,code:$('#lc').value.trim(),mdp:$('#lp2').value,appareil:dev()}:{action:'connexion',email:em,mdp:$('#lp2').value,appareil:dev()};
+    btn.disabled=true;btn.textContent='Un instant…';er.textContent='';
+    srv(body).then(function(r){btn.disabled=false;btn.textContent=lab;
+      if(!r||!r.ok){er.textContent=(r&&r.erreur)||ERRG;return}
+      if(r.etat==='validé'&&r.jeton){logged(r,em);$('#lp2').value='';toast('Connecté. Ton espace est ouvert.');var b2=document.querySelector('[data-es]');if(b2)b2.click();return}
+      er.textContent=ERRG;
+    }).catch(function(){btn.disabled=false;btn.textContent=lab;er.textContent='Connexion impossible. Vérifie ton réseau et réessaie.'})});
+  /* vérification de l'accès : blocage, suppression, rétablissement */
+  function chk(){var q=S.req;if(!q||!q.tok||!q.e||document.visibilityState==='hidden')return;
+    srv({action:'etat',email:q.e,jeton:q.tok,appareil:dev()}).then(function(r){if(!r||!r.ok)return;var q=S.req;if(!q)return;
+      if(r.etat==='validé'){if(q.blocked){q.blocked=false;save();paintAcc();renderReq();toast('Accès rétabli')}if(r.prenoms&&q.p!==r.prenoms){q.p=r.prenoms;save()}return}
+      if(r.etat==='supprimé'||r.etat==='inconnu'){S.req=null;save();if(window.AG&&window.AG.closeES)window.AG.closeES();renderReq();paintAcc();return}
+      if(r.etat==='session'){q.state='out';q.tok='';save();if(window.AG&&window.AG.closeES)window.AG.closeES();renderReq();paintAcc();toast(ERRG);return}
+      if(!q.blocked){q.blocked=true;save();if(window.AG&&window.AG.closeES)window.AG.closeES();renderReq();paintAcc();toast(ERRG)}
+    }).catch(function(){})}
+  setInterval(chk,15000);document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')chk()});setTimeout(chk,800);
   paintNet();renderReq();paintAcc();
 
   /* visionneuse de leçon : 24 diapos */
@@ -2173,9 +2203,10 @@ function render(){
 var IOo=null;function revealAll(){var els=[].slice.call(document.querySelectorAll('#esb .rv'));if(!('IntersectionObserver' in window)){els.forEach(function(x){x.classList.add('in')});return}if(IOo)IOo.disconnect();IOo=new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting){x.target.classList.add('in');IOo.unobserve(x.target)}})},{root:$('#es'),threshold:.08});els.forEach(function(x){IOo.observe(x)})}
 var IHE={com:'people',home:'orator',course:'temple',studio:'orator',orators:'people',prep:'scale',proofs:'logos',account:'medal',fo:'people'};
 var lastES=null;
-function openES(){if(AG_MODE==='site'){var rq=A.S&&A.S.req;if(!(rq&&rq.state==='approved')){A.toast('Ton espace s’ouvre après la validation de ta demande');location.hash='acces';return}role=rq.role==='formateur'?'tr':'el'}lastES=document.activeElement;es.classList.add('on');document.body.style.overflow='hidden';render();$('#esx').focus()}
+function openES(){if(AG_MODE==='site'){var rq=A.S&&A.S.req;if(!(rq&&rq.state==='approved'&&!rq.blocked)){A.toast('Ton espace s’ouvre après la validation de ta demande');location.hash='acces';return}role=rq.role==='formateur'?'tr':'el'}lastES=document.activeElement;es.classList.add('on');document.body.style.overflow='hidden';render();$('#esx').focus()}
 function closeES(){es.classList.remove('on');document.body.style.overflow='';clearInterval(SD.tm);SD.run=false;if(lastES&&lastES.focus)lastES.focus()}
 document.addEventListener('click',function(e){if(e.target.closest('[data-es]'))openES()});
+A.closeES=closeES;
 $('#esx').addEventListener('click',closeES);
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(lvEl.classList.contains('on'))closeLesson();else if(es.classList.contains('on'))closeES()}});
 es.addEventListener('input',function(e){var k=e.target.dataset.aIn;if(!k)return;var v=e.target.value;

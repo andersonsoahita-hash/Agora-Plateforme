@@ -8,3 +8,8 @@ L'application Agora personnelle reste dans son propre dépôt, séparé. Stockag
 ## Deux plateformes
 - `plateforme/` : élèves et formateurs (le formateur ne voit que ses élèves, jamais la trésorerie).
 - `admin/` : Agora Gestion, réservée aux administrateurs.
+
+## Comptes et accès (serveur Google Sheet)
+- `serveur/Code.gs` : serveur des comptes (Apps Script), à coller dans le Sheet de la plateforme.
+- `admin/acces/` : page de gestion des accès (valider, bloquer, supprimer, libérer les appareils).
+- Les élèves, paiements et séances de l'espace restent des données de démonstration pour l'instant.
