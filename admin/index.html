@@ -2749,7 +2749,7 @@ function pgBar(p){return '<div class="ad-bar"><i style="width:'+Math.max(0,Math.
 AR.pgr=function(){
   if(!SV.data&&!SV.loading&&!SV.err)svLoad();
   if(!PG.rows&&!PG.loading&&!PG.err)pgLoad();
-  if(PG.err&&!PG.rows)return aCard('Progression des élèves','<p>'+esc(PG.err)+'</p><button class="ad-b ok" data-pg="reload">Réessayer</button>');
+  if(PG.err&&!PG.rows)return aCard('Progression des élèves','<p>'+esc(svOld(PG.err))+'</p><button class="ad-b ok" data-pg="reload">Réessayer</button>');
   if(!PG.rows||!SV.data)return aCard('Progression des élèves','<p>Chargement…</p>');
   var C=(SV.data.comptes||[]).filter(function(x){return x.role!=='formateur'}),act=C.filter(function(x){return x.statut==='validé'});
   var R=PG.rows,by={},byL={};R.forEach(function(r){(by[r.em]=by[r.em]||[]).push(r);(byL[r.id]=byL[r.id]||[]).push(r)});
@@ -2781,12 +2781,13 @@ setInterval(function(){if(role==='fo'&&AV==='pgr'&&document.visibilityState==='v
 /* ---- finances réelles : paiements, dépenses, trésorerie, relances, bilan (serveur) ---- */
 var FN={rows:null,tarifs:null,loading:false,err:'',t:0,mo:''};
 var FCAT=['Hébergement et outils','Impression','Publicité','Salaires et formateurs','Frais de paiement','Déplacements','Autre'];
+function svOld(e){return e==='Action inconnue'?'Ton serveur Google n’est pas à jour : il ne connaît pas encore cette fonction. Colle le dernier Code.gs dans Apps Script, lance « installer », puis fais Déployer → Gérer les déploiements → Nouvelle version. Recharge ensuite cette page.':e}
 function fnMsg(el,txt){if(el)el.textContent=txt;toast(txt)}
 function fnLoad(){if(FN.loading)return;FN.loading=true;svCall({action:'compta',cle:svKey()}).then(function(r){FN.loading=false;if(r&&r.ok){FN.rows=r.lignes||[];FN.tarifs=r.tarifs;FN.err='';FN.t=Date.now()}else FN.err=(r&&r.erreur)||'Refusé.';if(role==='fo'&&/^(dash|pay|rel|tre)$/.test(AV))render()}).catch(function(){FN.loading=false;FN.err='Connexion impossible.';if(role==='fo'&&/^(dash|pay|rel|tre)$/.test(AV))render()})}
 function fnGate(titre){
   if(!SV.data&&!SV.loading&&!SV.err)svLoad();
   if(!FN.rows&&!FN.loading&&!FN.err)fnLoad();
-  if(FN.err&&!FN.rows)return aCard(titre,'<p>'+esc(FN.err)+'</p><button class="ad-b ok" data-fn="reload">Réessayer</button>');
+  if(FN.err&&!FN.rows)return aCard(titre,'<p>'+esc(svOld(FN.err))+'</p><button class="ad-b ok" data-fn="reload">Réessayer</button>')+(titre==='Paiements & factures'&&fnOwner()?aCard('Option développeur · Anderson','<p class="ad-mu">Elle apparaîtra ici dès que le serveur sera à jour : tu pourras créer des factures et dépenses de test, puis les effacer d’un clic.</p>'):'');
   if(!FN.rows||!SV.data||!FN.tarifs)return aCard(titre,'<p>Chargement…</p>');
   return ''}
 function fnNom(em){var c=(SV.data.comptes||[]).filter(function(x){return String(x.email).toLowerCase()===em})[0];return c?c.nom:em}
