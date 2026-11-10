@@ -7,20 +7,26 @@ var APP_URL = 'https://andersonsoahita-hash.github.io/Agora-Plateforme/plateform
 var FEUILLES = {
   comptes: ['Date', 'Nom', 'Prénoms', 'Email', 'Téléphone', 'Âge', 'Rôle', 'Pays', 'Situation', 'Projet', 'Statut', 'Code d’activation', 'Expire le', 'Dernière connexion', 'Ordinateur', 'Téléphone (appli)', 'Mot de passe (empreinte)', 'Session', 'Session appli'],
   journal: ['Date', 'Action'],
+  admins: ['Date', 'Nom', 'Email', 'Droits', 'Clé (empreinte)', 'Statut', 'Dernière activité', 'Créé par'],
   seances: ['Reçu le', 'Email', 'Id', 'Date', 'Sujet', 'Type', 'Durée (s)', 'Mots', 'Mots/min', 'Tics', 'Logos', 'Ethos', 'Pathos', 'Source', 'Transcription', 'Détail (JSON)']
 };
-var CLEF = { 'Comptes': 'comptes', 'Journal': 'journal', 'Séances': 'seances' };
+var CLEF = { 'Comptes': 'comptes', 'Journal': 'journal', 'Séances': 'seances', 'Admins': 'admins' };
 var C = { date: 0, nom: 1, pre: 2, mail: 3, tel: 4, age: 5, role: 6, pays: 7, sit: 8, proj: 9, st: 10, code: 11, exp: 12, last: 13, pc: 14, mob: 15, pw: 16, tok: 17, mtok: 18 };
 var NCOL = 19;
 var Q = { rec: 0, mail: 1, id: 2, date: 3, sujet: 4, type: 5, dur: 6, mots: 7, wpm: 8, tics: 9, lo: 10, et: 11, pa: 12, src: 13, txt: 14, det: 15 };
 var NSEA = 16;
+var AD = { date: 0, nom: 1, mail: 2, dr: 3, cle: 4, st: 5, last: 6, par: 7 }, NADM = 8;
+/* ce qu'un administrateur peut avoir le droit de faire (le propriétaire a tout) */
+var DROITS = { voir: 'Voir les comptes et le journal', valider: 'Valider, renvoyer un code, débloquer, fixer la fin d’accès', bloquer: 'Bloquer un compte', appareils: 'Libérer l’ordinateur ou le téléphone', seances: 'Voir les séances et les transcriptions', supprimer: 'Supprimer un compte et l’effacer définitivement' };
+var OPDROIT = { valider: 'valider', debloquer: 'valider', expire: 'valider', bloquer: 'bloquer', appareil: 'appareils', mobile: 'appareils', supprimer: 'supprimer', effacer: 'supprimer' };
+var CONSOLE_URL = 'https://andersonsoahita-hash.github.io/Agora-Plateforme/admin/';
 var EMAIL_ADMIN = 'stephenandersonsoahita@gmail.com'; // l'adresse qui reçoit la clé admin
 var DUREE_CODE = 600; // le code de liaison du téléphone vaut 10 minutes
 
 function feuille_(nom) {
   var ss = SpreadsheetApp.getActiveSpreadsheet(), sh = ss.getSheetByName(nom), cle = CLEF[nom];
   if (!sh) { sh = ss.insertSheet(nom); sh.appendRow(FEUILLES[cle]); sh.setFrozenRows(1); if (nom === 'Séances') sh.getRange(1, 4, sh.getMaxRows(), 1).setNumberFormat('@'); }
-  var nc = nom === 'Comptes' ? NCOL : (nom === 'Séances' ? NSEA : 0);
+  var nc = nom === 'Comptes' ? NCOL : (nom === 'Séances' ? NSEA : (nom === 'Admins' ? NADM : 0));
   if (nc) {
     if (sh.getMaxColumns() < nc) sh.insertColumnsAfter(sh.getMaxColumns(), nc - sh.getMaxColumns());
     sh.getRange(1, 1, 1, nc).setValues([FEUILLES[cle]]);
@@ -28,7 +34,7 @@ function feuille_(nom) {
   return sh;
 }
 function installer() { // à lancer une fois (et après chaque mise à jour du code)
-  ['Comptes', 'Journal', 'Séances'].forEach(feuille_);
+  ['Comptes', 'Journal', 'Séances', 'Admins'].forEach(feuille_);
   var s = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Feuille 1'); if (s && s.getLastRow() === 0) s.setName('Notes');
   var nouvelle = !PropertiesService.getScriptProperties().getProperty('CLE_ADMIN');
   if (nouvelle) PropertiesService.getScriptProperties().setProperty('CLE_ADMIN', Utilities.getUuid());
@@ -180,6 +186,37 @@ function agir_(op, email, date) {
 
 /* ---------- API ---------- */
 function admin_(b) { return b.cle === PropertiesService.getScriptProperties().getProperty('CLE_ADMIN'); }
+function hashCle_(cle) {
+  return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, 'cle-admin|' + cle + '|agora-plateforme')
+    .map(function (x) { return ('0' + (x & 255).toString(16)).slice(-2); }).join('');
+}
+function cleAdmin_() { var a = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; return 'AG-' + alea_(4, a) + '-' + alea_(4, a) + '-' + alea_(4, a); }
+/* qui est derrière la clé ? le propriétaire (clé du Sheet) ou un administrateur de l'onglet Admins */
+function qui_(b) {
+  var cle = String(b.cle || '').trim(); if (!cle) return null;
+  if (admin_({ cle: cle })) return { owner: true, nom: 'Stephen', email: EMAIL_ADMIN, droits: Object.keys(DROITS) };
+  var sh = feuille_('Admins'), n = sh.getLastRow(); if (n < 2) return null;
+  var h = hashCle_(cle), d = sh.getRange(2, 1, n - 1, NADM).getValues();
+  for (var i = 0; i < d.length; i++) {
+    if (d[i][AD.cle] === h && d[i][AD.st] === 'actif') {
+      if (!d[i][AD.last] || new Date() - new Date(d[i][AD.last]) > 300000) sh.getRange(i + 2, AD.last + 1).setValue(new Date());
+      return { owner: false, nom: String(d[i][AD.nom]), email: String(d[i][AD.mail]), droits: String(d[i][AD.dr]).split(',').filter(function (x) { return DROITS[x]; }) };
+    }
+  }
+  return null;
+}
+function peut_(q, d) { return !!q && (q.owner || q.droits.indexOf(d) >= 0); }
+function droitsPropres_(l) { return (Array.isArray(l) ? l : String(l || '').split(',')).filter(function (x) { return DROITS[x]; }).filter(function (x, i, a) { return a.indexOf(x) === i; }); }
+function trouverAdmin_(email) {
+  var sh = feuille_('Admins'), n = sh.getLastRow(); if (n < 2 || !email) return null;
+  var d = sh.getRange(2, 1, n - 1, NADM).getValues();
+  for (var i = 0; i < d.length; i++) if (String(d[i][AD.mail]).toLowerCase() === email) return { sh: sh, r: i + 2, v: d[i] };
+  return null;
+}
+function mailAdmin_(nom, email, cle, droits, nouveau) {
+  MailApp.sendEmail({ to: email, subject: nouveau ? 'Ton accès à la console Agora' : 'Ta nouvelle clé pour la console Agora',
+    body: 'Bonjour ' + nom + ',\n\n' + (nouveau ? 'Stephen t’a donné accès à la console de gestion Agora.' : 'Voici ta nouvelle clé pour la console de gestion Agora. L’ancienne ne marche plus.') + '\n\n1. Ouvre la console :\n' + CONSOLE_URL + '\n\n2. Colle ta clé personnelle quand elle te la demande :\n\n      ' + cle + '\n\nCe que tu peux faire :\n' + (droits.length ? droits.map(function (d) { return ' - ' + DROITS[d]; }).join('\n') : ' - rien pour l’instant (Stephen doit encore te donner des droits)') + '\n\nNe partage pas cette clé : elle est liée à toi, et tout ce que tu fais est noté dans le journal.\n\nStephen' });
+}
 function profil_(v) { return { prenoms: v[C.pre], nom: v[C.nom], role: v[C.role] }; }
 function doPost(e) {
   var lock = LockService.getScriptLock(); lock.waitLock(20000);
@@ -267,21 +304,55 @@ function doPost(e) {
       return rep_(r5);
     }
 
+    if (a === 'moi') { // la console demande qui je suis et ce que j'ai le droit de faire
+      var qm = qui_(b); if (!qm) return rep_({ ok: false, erreur: 'Clé invalide' });
+      return rep_({ ok: true, nom: qm.nom, email: qm.email, owner: qm.owner, droits: qm.droits, tous: DROITS });
+    }
+    if (a === 'admins' || a.indexOf('admin') === 0 && a !== 'admin') { // gestion des administrateurs : propriétaire seulement
+      var qa = qui_(b); if (!qa) return rep_({ ok: false, erreur: 'Clé invalide' });
+      if (!qa.owner) return rep_({ ok: false, erreur: 'Réservé au propriétaire.' });
+      var ta = trouverAdmin_(em), dr = droitsPropres_(b.droits);
+      if (a === 'adminAjouter') {
+        if (!/^\S+@\S+\.\S+$/.test(em) || !String(b.nom || '').trim()) return rep_({ ok: false, erreur: 'Indique un nom et un e-mail valides.' });
+        if (ta && ta.v[AD.st] === 'actif') return rep_({ ok: false, erreur: 'Cet administrateur existe déjà.' });
+        var ck = cleAdmin_(), nomA = cut_(b.nom, 80).trim();
+        if (ta) { ta.sh.deleteRow(ta.r); }
+        feuille_('Admins').appendRow([new Date(), nomA, em, dr.join(','), hashCle_(ck), 'actif', '', qa.nom]);
+        mailAdmin_(nomA, em, ck, dr, true); journal_('Administrateur ajouté : ' + em + ' (droits : ' + (dr.join(', ') || 'aucun') + ')');
+        return rep_({ ok: true });
+      }
+      if (a === 'adminListe') {
+        var sa = feuille_('Admins'), na = sa.getLastRow(), da = na > 1 ? sa.getRange(2, 1, na - 1, NADM).getValues() : [];
+        return rep_({ ok: true, tous: DROITS, admins: da.map(function (x) { return { nom: x[AD.nom], email: x[AD.mail], droits: String(x[AD.dr]).split(',').filter(function (y) { return DROITS[y]; }), statut: x[AD.st], derniere: x[AD.last], date: x[AD.date], par: x[AD.par] }; }) });
+      }
+      if (!ta) return rep_({ ok: false, erreur: 'Administrateur introuvable.' });
+      if (a === 'adminDroits') { ta.sh.getRange(ta.r, AD.dr + 1).setValue(dr.join(',')); journal_('Droits modifiés : ' + em + ' (' + (dr.join(', ') || 'aucun') + ')'); return rep_({ ok: true }); }
+      if (a === 'adminStatut') { var nv = b.statut === 'actif' ? 'actif' : 'révoqué'; ta.sh.getRange(ta.r, AD.st + 1).setValue(nv); journal_('Administrateur ' + (nv === 'actif' ? 'réactivé' : 'révoqué') + ' : ' + em); return rep_({ ok: true }); }
+      if (a === 'adminCle') { var nc2 = cleAdmin_(); ta.sh.getRange(ta.r, AD.cle + 1).setValue(hashCle_(nc2)); ta.sh.getRange(ta.r, AD.st + 1).setValue('actif'); mailAdmin_(String(ta.v[AD.nom]), em, nc2, String(ta.v[AD.dr]).split(',').filter(function (y) { return DROITS[y]; }), false); journal_('Nouvelle clé envoyée à l’administrateur : ' + em); return rep_({ ok: true }); }
+      if (a === 'adminSupprimer') { ta.sh.deleteRow(ta.r); journal_('Administrateur supprimé : ' + em); return rep_({ ok: true }); }
+      return rep_({ ok: false, erreur: 'Action inconnue' });
+    }
+
     if (a === 'liste') {
-      if (!admin_(b)) return rep_({ ok: false, erreur: 'Clé invalide' });
+      var ql = qui_(b); if (!ql) return rep_({ ok: false, erreur: 'Clé invalide' });
+      if (!peut_(ql, 'voir')) return rep_({ ok: false, erreur: 'Tu n’as pas le droit de voir les comptes.' });
       var sh = feuille_('Comptes'), n = sh.getLastRow(), d = n > 1 ? sh.getRange(2, 1, n - 1, NCOL).getValues() : [], ag = agregat_();
       var sj = feuille_('Journal'), nj = sj.getLastRow(), dj = nj > 1 ? sj.getRange(Math.max(2, nj - 39), 1, Math.min(40, nj - 1), 2).getValues() : [];
       return rep_({ ok: true, journal: dj,
         comptes: d.map(function (x) { var g = ag[String(x[C.mail]).toLowerCase()] || { n: 0, der: '' }; return { nom: x[C.nom] + ' ' + x[C.pre], email: x[C.mail], tel: x[C.tel], age: x[C.age], role: x[C.role], pays: x[C.pays], situation: x[C.sit], projet: x[C.proj], demande: x[C.date], statut: etat_(x), derniere: x[C.last], expire: x[C.exp], pc: !!x[C.pc], mob: !!x[C.mob], active: !!x[C.pw], code: !!x[C.code], seances: g.n, derniereSeance: g.der }; }) });
     }
     if (a === 'seances') { // console admin : séances d'un compte (ou les plus récentes de tous)
-      if (!admin_(b)) return rep_({ ok: false, erreur: 'Clé invalide' });
+      var qs = qui_(b); if (!qs) return rep_({ ok: false, erreur: 'Clé invalide' });
+      if (!peut_(qs, 'seances')) return rep_({ ok: false, erreur: 'Tu n’as pas le droit de voir les séances.' });
       return rep_({ ok: true, seances: lireSeances_(em, em ? 60 : 100, 8000) });
     }
 
     if (a === 'admin') {
-      if (!admin_(b)) return rep_({ ok: false, erreur: 'Clé invalide' });
-      return rep_(agir_(b.op, em, b.date));
+      var qo = qui_(b); if (!qo) return rep_({ ok: false, erreur: 'Clé invalide' });
+      if (!OPDROIT[b.op] || !peut_(qo, OPDROIT[b.op])) return rep_({ ok: false, erreur: 'Tu n’as pas le droit de faire ça.' });
+      var ro = agir_(b.op, em, b.date);
+      if (ro.ok && !qo.owner) journal_('   ↳ fait par ' + qo.nom + ' (' + b.op + ')');
+      return rep_(ro);
     }
     return rep_({ ok: false, erreur: 'Action inconnue' });
   } catch (err) { return rep_({ ok: false, erreur: String(err) }); }

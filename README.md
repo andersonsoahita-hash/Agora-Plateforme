@@ -21,3 +21,9 @@ L'application Agora personnelle reste dans son propre dépôt, séparé. Stockag
 - Blocage, expiration ou téléphone libéré : l'appli affiche le message neutre et reprend seule dès que l'accès revient.
 - Code du téléphone : `mobile/sync.js` et `mobile/sync.css`, insérés par `mobile/build.js`.
 - Après une mise à jour de `serveur/Code.gs` : lancer `installer`, puis Déployer > Gérer les déploiements > Nouvelle version.
+
+## Administrateurs et droits
+- Le propriétaire (clé du Sheet, envoyée par e-mail à l'installation) ajoute des administrateurs depuis la console : onglet « Administrateurs ».
+- Chaque administrateur reçoit par e-mail le lien de la console et sa clé personnelle (stockée hachée dans l'onglet `Admins`).
+- Droits au choix : voir, valider, bloquer, libérer les appareils, voir les séances et transcriptions, supprimer/effacer. Gabarits : lecture seule, gestionnaire, tous les droits.
+- Le propriétaire peut modifier les droits, renvoyer une clé, révoquer, réactiver ou supprimer. Le journal note qui a fait quoi.
