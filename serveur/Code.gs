@@ -8,12 +8,12 @@ var FEUILLES = {
   comptes: ['Date', 'Nom', 'Prénoms', 'Email', 'Téléphone', 'Âge', 'Rôle', 'Pays', 'Situation', 'Projet', 'Statut', 'Code d’activation', 'Expire le', 'Dernière connexion', 'Ordinateur', 'Téléphone (appli)', 'Mot de passe (empreinte)', 'Session', 'Session appli'],
   journal: ['Date', 'Action'],
   admins: ['Date', 'Nom', 'Email', 'Droits', 'Clé (empreinte)', 'Statut', 'Dernière activité', 'Créé par'],
-  compta: ['Mis à jour', 'Id', 'Type', 'Date', 'Libellé', 'Email', 'Niveau', 'Montant (Ar)', 'Payé le', 'Mode', 'Catégorie', 'Par'],
+  compta: ['Mis à jour', 'Id', 'Type', 'Date', 'Libellé', 'Email', 'Niveau', 'Montant (Ar)', 'Payé le', 'Mode', 'Catégorie', 'Par', 'Test'],
   progres: ['Mis à jour', 'Email', 'Leçon', 'Niveau', 'Date', 'Score', 'Sur', 'Appareil'],
   seances: ['Reçu le', 'Email', 'Id', 'Date', 'Sujet', 'Type', 'Durée (s)', 'Mots', 'Mots/min', 'Tics', 'Logos', 'Ethos', 'Pathos', 'Source', 'Transcription', 'Détail (JSON)']
 };
 var CLEF = { 'Comptes': 'comptes', 'Journal': 'journal', 'Séances': 'seances', 'Admins': 'admins', 'Progrès': 'progres', 'Compta': 'compta' };
-var NPRO = 8, MAXPRO = 60, NCPT = 12;
+var NPRO = 8, MAXPRO = 60, NCPT = 13;
 var C = { date: 0, nom: 1, pre: 2, mail: 3, tel: 4, age: 5, role: 6, pays: 7, sit: 8, proj: 9, st: 10, code: 11, exp: 12, last: 13, pc: 14, mob: 15, pw: 16, tok: 17, mtok: 18 };
 var NCOL = 19;
 var Q = { rec: 0, mail: 1, id: 2, date: 3, sujet: 4, type: 5, dur: 6, mots: 7, wpm: 8, tics: 9, lo: 10, et: 11, pa: 12, src: 13, txt: 14, det: 15 };
@@ -186,23 +186,23 @@ function tarifs_() {
 function lireCompta_() {
   var sh = feuille_('Compta'), n = sh.getLastRow(); if (n < 2) return [];
   return sh.getRange(2, 1, n - 1, NCPT).getValues().map(function (r) {
-    return { id: String(r[1]), type: String(r[2]), date: String(r[3]), lib: String(r[4]), em: String(r[5]).toLowerCase(), lv: Number(r[6]) || 0, mt: Number(r[7]) || 0, paye: String(r[8]), mode: String(r[9]), cat: String(r[10]), par: String(r[11]) };
+    return { id: String(r[1]), type: String(r[2]), date: String(r[3]), lib: String(r[4]), em: String(r[5]).toLowerCase(), lv: Number(r[6]) || 0, mt: Number(r[7]) || 0, paye: String(r[8]), mode: String(r[9]), cat: String(r[10]), par: String(r[11]), test: String(r[12]) === 'oui' };
   });
 }
 function iso_(x) { return /^\d{4}-\d{2}-\d{2}$/.test(String(x || '')) ? String(x) : Utilities.formatDate(new Date(), 'Europe/Paris', 'yyyy-MM-dd'); }
 function ecrireCompta_(b, par) {
   var sh = feuille_('Compta'), n = sh.getLastRow(), type = b.type === 'depense' ? 'depense' : 'facture', ligne = null, id = cut_(b.id, 40).replace(/[^\w.-]/g, '');
-  var d = n > 1 ? sh.getRange(2, 1, n - 1, NCPT).getValues() : [], pos = 0, maxNo = 0, pref = 'F-' + Utilities.formatDate(new Date(), 'Europe/Paris', 'yyMM') + '-';
+  var d = n > 1 ? sh.getRange(2, 1, n - 1, NCPT).getValues() : [], pos = 0, maxNo = 0, pref = (b.test ? 'T-' : 'F-') + Utilities.formatDate(new Date(), 'Europe/Paris', 'yyMM') + '-';
   for (var i = 0; i < d.length; i++) {
     if (id && String(d[i][1]) === id) pos = i + 2;
-    var m = /^F-\d{4}-(\d{4})$/.exec(String(d[i][1])); if (m && String(d[i][1]).indexOf(pref) === 0) maxNo = Math.max(maxNo, Number(m[1]));
+    var m = /^[FT]-\d{4}-(\d{4})$/.exec(String(d[i][1])); if (m && String(d[i][1]).indexOf(pref) === 0) maxNo = Math.max(maxNo, Number(m[1]));
   }
   var mt = Math.max(0, Math.round(Number(b.mt) || 0)); if (!mt) return { erreur: 'Montant invalide.' };
   if (type === 'depense' && !String(b.lib || '').trim()) return { erreur: 'Indique un libellé.' };
   if (type === 'facture' && !/^\S+@\S+\.\S+$/.test(String(b.em || ''))) return { erreur: 'Choisis un élève.' };
   if (!pos) id = type === 'facture' ? pref + ('000' + (maxNo + 1)).slice(-4) : 'D' + Date.now();
   var paye = type === 'facture' && b.paye ? iso_(b.paye) : '';
-  ligne = [new Date(), id, type, iso_(b.date), cut_(b.lib, 200), String(b.em || '').toLowerCase(), num_(b.lv) || '', mt, paye, cut_(b.mode, 30), cut_(b.cat, 40), par];
+  ligne = [new Date(), id, type, iso_(b.date), cut_(b.lib, 200), String(b.em || '').toLowerCase(), num_(b.lv) || '', mt, paye, cut_(b.mode, 30), cut_(b.cat, 40), par, b.test ? 'oui' : ''];
   if (pos) sh.getRange(pos, 1, 1, NCPT).setValues([ligne]); else sh.appendRow(ligne);
   return { ok: true, id: id };
 }
@@ -211,6 +211,12 @@ function effacerCompta_(id) {
   var d = sh.getRange(2, 2, n - 1, 1).getValues();
   for (var i = d.length - 1; i >= 0; i--) if (String(d[i][0]) === id) { sh.deleteRow(i + 2); return 1; }
   return 0;
+}
+function effacerTestCompta_() {
+  var sh = feuille_('Compta'), n = sh.getLastRow(), k = 0; if (n < 2) return 0;
+  var d = sh.getRange(2, 13, n - 1, 1).getValues();
+  for (var i = d.length - 1; i >= 0; i--) if (String(d[i][0]) === 'oui') { sh.deleteRow(i + 2); k++; }
+  return k;
 }
 function effacerProgres_(email, lecon) { // lecon vide = tout le compte
   var sh = feuille_('Progrès'), n = sh.getLastRow(), k = 0; if (n < 2) return 0;
@@ -292,7 +298,7 @@ function doPost(e) {
       if (ex) { effacerSeances_(em); effacerProgres_(em, ''); ex.sh.deleteRow(ex.r); }
       var role = String(b.role || '').toLowerCase().indexOf('form') === 0 ? 'formateur' : 'élève';
       feuille_('Comptes').appendRow([new Date(), b.nom, b.prenoms, em, b.tel || '', b.age || '', role, b.pays || '', b.situation || '', String(b.projet || '').slice(0, 500), 'en attente', '', '', '', '', '', '', '', '']);
-      journal_('Nouvelle demande (' + role + ') : ' + em);
+      journal_('Nouvelle demande (' + role + ') : ' + em + (b.cgu ? ' · conditions acceptées (version ' + cut_(b.cgu, 10) + ')' : ''));
       return rep_({ ok: true, etat: 'en attente' });
     }
 
@@ -423,15 +429,17 @@ function doPost(e) {
       if (!peut_(qc, 'finances')) return rep_({ ok: false, erreur: 'Tu n’as pas le droit de voir les finances.' });
       return rep_({ ok: true, lignes: lireCompta_(), tarifs: tarifs_() });
     }
-    if (a === 'comptaSet' || a === 'comptaDel' || a === 'tarifsSet') {
+    if (a === 'comptaSet' || a === 'comptaDel' || a === 'tarifsSet' || a === 'comptaEffacerTest') {
       var qf = qui_(b); if (!qf) return rep_({ ok: false, erreur: 'Clé invalide' });
       if (!peut_(qf, 'finances')) return rep_({ ok: false, erreur: 'Tu n’as pas le droit de modifier les finances.' });
+      if (a === 'comptaEffacerTest') { if (!qf.owner) return rep_({ ok: false, erreur: 'Réservé au propriétaire.' }); var kt = effacerTestCompta_(); journal_('Compta : ' + kt + ' ligne(s) de test effacée(s) ↳ fait par ' + qf.nom); return rep_({ ok: true, effaces: kt }); }
       if (a === 'comptaDel') { var kd = effacerCompta_(String(b.id || '')); journal_('Compta : ligne effacée ' + b.id + ' ↳ fait par ' + qf.nom); return rep_({ ok: true, effaces: kd }); }
       if (a === 'tarifsSet') {
         var pr = (Array.isArray(b.prix) ? b.prix : []).slice(0, 6).map(function (x) { return Math.max(0, Math.round(Number(x) || 0)); }); while (pr.length < 6) pr.push(0); pr[0] = 0;
         PropertiesService.getScriptProperties().setProperty('TARIFS', JSON.stringify({ prix: pr, pay: cut_(b.pay, 400) }));
         journal_('Tarifs modifiés ↳ fait par ' + qf.nom); return rep_({ ok: true, tarifs: tarifs_() });
       }
+      if (b.test && !qf.owner) return rep_({ ok: false, erreur: 'Le mode test est réservé au propriétaire.' });
       var rc = ecrireCompta_(b, qf.nom); if (!rc.ok) return rep_({ ok: false, erreur: rc.erreur });
       journal_('Compta : ' + (b.type === 'depense' ? 'dépense' : 'facture') + ' ' + rc.id + ' ↳ fait par ' + qf.nom); return rep_({ ok: true, id: rc.id });
     }
