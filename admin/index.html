@@ -1613,7 +1613,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
   function vNet(){var v=$('#vnet');v.textContent=S.online?'En ligne':'Hors ligne'+(S.queue?' · '+S.queue+' en attente':'');v.classList.toggle('off',!S.online)}
   var _pn=paintNet;paintNet=function(){_pn();vNet()};
   var lastF=null;
-  window.AG={S:S,toast:toast,paintNet:paintNet,IL:IL};
+  window.AG={S:S,toast:toast,paintNet:paintNet,srv:srv,dev:dev,IL:IL};
   function openV(){lastF=document.activeElement;vw.classList.add('on');document.body.style.overflow='hidden';vNet();go(ST.cur,1);$('#vn').focus()}
   function closeV(){vw.classList.remove('on');document.body.style.overflow='';if(lastF&&lastF.focus)lastF.focus()}
   document.addEventListener('click',function(e){var b=e.target.closest('[data-open]');if(b)openV()});
@@ -1937,7 +1937,7 @@ function lvMin(lv){return lessonsOf(lv).reduce(function(a,l){return a+l.min},0)}
 var LVC=['','#7a2218','#235887','#5a3277','#8a6212','#1f6b52'];
 var OBJ=[['jury','Convaincre un jury ou un recruteur',['c8','c5','c11'],'qr'],['pitch','Défendre un projet devant des investisseurs',['c7','c9','c14'],'discours'],['debat','Gagner un débat',['c6','c12','c10'],'debat'],['ecoute','Être écouté au quotidien',['c11','c13','c8'],'mot'],['expose','Réussir mes exposés',['c5','c10','c3'],'argumenter']];
 var TILES=[['course','La formation','60 leçons, 5 niveaux, un test et un certificat par palier','temple','#7a2218,#35100b'],['studio','Le Studio','9 exercices chronométrés, transcription et analyse','orator','#235887,#0f2742'],['orators','Les orateurs','16 grands orateurs décortiqués, avec un exercice chacun','people','#5a3277,#2a1440'],['prep','Préparer','Une trame de discours ou de débat en une minute','scale','#8a6212,#3d2b07'],['proofs','Les preuves','Ta banque de faits, chiffres et sources vérifiées','logos','#1f6b52,#0f2b24']];
-function actDays(){var s={};Object.keys(P.done).forEach(function(k){if(P.done[k].d)s[P.done[k].d]=1});P.sessions.forEach(function(x){if(x.date)s[x.date]=1});return s}
+function actDays(){var s={};Object.keys(P.done).forEach(function(k){if(P.done[k].d)s[P.done[k].d]=1});P.sessions.forEach(function(x){if(x.date)s[x.date]=1});if(LK.data&&LK.data.seances)LK.data.seances.forEach(function(x){if(x.date)s[lkFr(x.date)]=1});return s}
 function streakInfo(){var s=actDays(),out=[],i,d,streak=0,ok=true;for(i=6;i>=0;i--){d=new Date(Date.now()-i*864e5);out.push({l:d.toLocaleDateString('fr-FR',{weekday:'short'}).slice(0,3),on:!!s[d.toLocaleDateString('fr-FR')]})}
   for(i=0;i<60;i++){d=new Date(Date.now()-i*864e5).toLocaleDateString('fr-FR');if(s[d])streak++;else if(i>0)break}return {days:out,n:streak}}
 function vHome(){
@@ -2020,7 +2020,8 @@ function analyze(t,sec){
     ethos:w<20?'':(et>0?et+' marque'+(et>1?'s':'')+' d’expérience':''),pathos:w<20?'':(em>0?em+' mot'+(em>1?'s':'')+' d’émotion':'')}
 }
 function tfmt(s){return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
-function vStudio(){
+function vStudio(){var h=vStudio0();lkFetch();return h.replace(/<\/div>$/,phoneHtml()+'</div>')}
+function vStudio0(){
   if(!SD.sujet)newSubj();var t=byId(D.types,SD.type),h='<div class="a-w"><div class="a-top"><h1>Studio</h1></div>';
   if(SD.res){var r=SD.res,a=r.an;
     h+='<div class="a-c"><div class="a-eb">Résultat de ta séance</div><h3>'+esc(SD.sujet)+'</h3><div class="a-sts"><div><b>'+a.words+'</b><span>mots</span></div><div><b>'+(a.wpm||'—')+'</b><span>mots par minute (cible 110 à 160)</span></div><div><b>'+a.per100+'</b><span>tics pour 100 mots ('+a.fill+')</span></div><div><b>'+a.conp+'</b><span>connecteurs pour 100 mots</span></div></div>'+pilHtml(a)+'<p class="a-mu">Ces indices comptent ce que tu as réellement dit, d’après le texte. Ils ne jugent pas la qualité du fond. « Non observé » veut dire : pas assez de matière pour juger.</p></div>';
@@ -2070,7 +2071,7 @@ function vProofs(){
 function vAccount(){
   return '<div class="a-w acc"><div class="a-top"><h1>Compte</h1><button class="a-chip" data-a="back">Retour</button></div><div class="a-c"><div class="a-f"><label for="an">Ton prénom et nom</label><input id="an" data-a-in="name" value="'+esc(P.name)+'" autocomplete="name"></div></div>'+
   '<div class="a-c"><h3>Accès</h3><ul class="a-ls"><li class="a-sub" style="margin:4px 0"><b>Lien personnel</b> lié à ton compte</li><li class="a-sub" style="margin:4px 0"><b>Appareils</b> 1 ordinateur (la plateforme) + 1 téléphone (l’application)</li><li class="a-sub" style="margin:4px 0"><b>Hors ligne</b> 14 jours de contenu, puis synchronisation obligatoire</li></ul><p class="a-mu">Réseau : '+(A.S.online?'en ligne, tout est à jour':'hors ligne, '+A.S.queue+' envoi(s) en attente')+'. Le bouton réseau en haut de la page simule la coupure.</p></div>'+
-  '<div class="a-c"><h3>Mon application sur téléphone</h3>'+(function(){var ap=P.app||(P.app={on:false});return ap.on?'<p><span class="a-st ok">Application activée</span></p><p class="a-mu">Elle est reliée à ton compte. Les exercices que la plateforme te demande t’y attendent, et tes séances se synchronisent entre l’ordinateur et le téléphone. Une seule application par compte.</p>':'<p class="a-mu">Installe l’application avec le lien reçu par e-mail, sur ton téléphone, une seule fois. Ouvre-la, puis reviens ici et appuie sur le bouton : elle s’active toute seule, sans rien d’autre à faire.</p><button class="btn" data-a="appon">Activer mon application</button>'})()+'</div>'+
+  appCardHtml()+
   '<div class="a-c"><h3>Un seul appareil par compte</h3><p class="a-mu">La plateforme se suit sur un seul ordinateur, de préférence celui que tu utilises le plus. <b>Sur Mac</b> : ouvre le lien dans Safari, puis Fichier, Ajouter au Dock, <i>avant</i> de créer ton compte ; sinon le Mac la prend pour un autre appareil. <b>Sur Windows ou Chrome</b> : installe la page ou épingle l’onglet. Sur téléphone, seule l’application s’installe, une fois.</p></div>'+
   '<div class="a-c"><h3>Mes certificats</h3>'+(function(){var o='';[1,2,3,4,5].forEach(function(l){var T=l===1?P.t1:P.tl[l];if(T.st==='approved')o+='<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:6px 0"><button class="btn" data-a="cert" data-v="'+l+'">Voir mon certificat du niveau '+l+'</button>'+((P.fmt&&P.fmt['n'+l]==='ok')?'<span class="a-st ok">Formateur du niveau '+l+'</span>':'')+'</div>'});return o||'<p class="a-mu">Aucun certificat pour l’instant.</p>'})()+'</div>'+
   '<div class="a-c"><h3>Application mobile</h3><p class="a-mu">Agora Studio s’installe sur ton téléphone : Studio, objections, recherche express et ruses, sans refaire les leçons.</p><a class="btn" href="../mobile/" target="_blank" rel="noopener" style="justify-self:start">Ouvrir Agora Studio</a></div>'+
@@ -2235,7 +2236,7 @@ es.addEventListener('click',function(e){
   case 'les':openHub(b.dataset.v);return;
   case 'lvopen':CL=+b.dataset.v;nav('course');return;
   case 'test':setTL(1);nav('course','test');return;
-  case 'appon':(P.app=P.app||{}).on=true;save();toast('Application activée sur ton compte');render();break;
+  case 'appon':lkMake();return;
     case 'testlv':setTL(+b.dataset.v);nav('course','test');return;
   case 'back':nav(P.tab);return;
   case 'chal':SD.type=b.dataset.t;SD.sujet=b.dataset.s;SD.stance=SD.type==='debat'?'POUR':'';SD.res=null;SD.text='';nav('studio');return;
@@ -2680,19 +2681,25 @@ function svActs(x){var e=esc(x.email),st=x.statut,h='';
   if(st!=='supprimé')h+=B('supprimer','Supprimer','ko');
   h+=B('effacer','Effacer définitivement','ko');
   return '<div style="display:flex;flex-wrap:wrap;gap:8px">'+h+'</div>'}
+var SVS={};
+function svSes(x){var e=esc(x.email),o=SVS[x.email],h='<small><b>Séances :</b> '+(x.seances||0)+(x.derniereSeance?' · dernière le '+esc(x.derniereSeance):'')+(x.mob?'':' · téléphone non lié')+'</small>';
+  if(x.seances)h+='<div><button class="ad-b" data-sv="seances" data-e="'+e+'">'+(o&&o.open?'Masquer les séances':'Voir les séances et transcriptions')+'</button></div>';
+  if(o&&o.open){h+=o.err?'<p>'+esc(o.err)+'</p>':(!o.list?'<p>Chargement…</p>':o.list.map(function(s){return '<details style="border-top:1px solid rgba(27,32,51,.1);padding:8px 0"><summary style="cursor:pointer"><b>'+esc(s.sujet||'Séance')+'</b> <small>'+esc(s.date)+' · '+esc(s.type||'')+(s.dur?' · '+s.dur+' s':'')+(s.mots?' · '+s.mots+' mots':'')+' · L/E/P '+[s.logos,s.ethos,s.pathos].map(function(v){return v===''||v==null?'–':v}).join('/')+'</small></summary>'+(s.transcript?'<p style="white-space:pre-wrap;line-height:1.6;overflow-wrap:anywhere;margin:8px 0 0">'+esc(s.transcript)+'</p>':'<small>Pas de transcription.</small>')+'</details>'}).join(''))}
+  return h}
 function svEtat(x){if(x.statut!=='validé')return '—';return x.active?'Compte activé'+(x.pc?' · ordinateur lié':'')+(x.mob?' · téléphone lié':''):(x.code?'Code envoyé, pas encore activé':'Validé')}
 AR.srv=function(){
   if(!SV.data&&!SV.loading&&!SV.err)svLoad();
   if(SV.err&&!SV.data)return aCard('Comptes & accès','<p>'+esc(SV.err)+'</p><button class="ad-b ok" data-sv="reload">Réessayer</button>');
   if(!SV.data)return aCard('Comptes & accès','<p>Chargement…</p>');
   var c=SV.data.comptes||[],j=SV.data.journal||[],n=function(s){return c.filter(function(x){return x.statut===s}).length};
-  var h='<div class="ad-kp">'+kpi('En attente',n('en attente'),'à valider',n('en attente')?'r':'g')+kpi('Actifs',n('validé'),'comptes ouverts','g')+kpi('Bloqués',n('bloqué'),'accès coupés','g')+kpi('Comptes',c.length,'au total','g')+'</div>';
+  var h='<div class="ad-kp">'+kpi('En attente',n('en attente'),'à valider',n('en attente')?'r':'g')+kpi('Actifs',n('validé'),'comptes ouverts','g')+kpi('Bloqués',n('bloqué'),'accès coupés','g')+kpi('Séances',c.reduce(function(a,x){return a+(x.seances||0)},0),'reçues des téléphones','g')+kpi('Comptes',c.length,'au total','g')+'</div>';
   h+=aCard('Lien de la plateforme à envoyer','<p style="margin:0">La personne ouvre ce lien, fait sa demande, puis tu la valides ici.</p><div style="display:flex;flex-wrap:wrap;gap:8px"><input type="text" id="svl" readonly value="https://andersonsoahita-hash.github.io/Agora-Plateforme/plateforme/" style="flex:1;min-width:220px;padding:10px;border-radius:10px;border:1.5px solid rgba(27,32,51,.22);font:14px \'DM Sans\',sans-serif"><button class="ad-b ok" data-sv="copy">Copier le lien</button></div>');
-  h+=aCard('Comptes ('+c.length+')',c.length?c.map(function(x){var b=SVB[x.statut]||['wt',esc(x.statut)];return '<div style="border:1px solid rgba(27,32,51,.1);border-radius:16px;padding:14px;display:grid;gap:8px;background:#fff"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><b>'+esc(x.nom)+'</b> · '+esc(x.role||'élève')+'<br><small>'+esc(x.email)+(x.tel?' · '+esc(x.tel):'')+(x.age?' · '+esc(x.age)+' ans':'')+(x.pays?' · '+esc(x.pays):'')+'</small></div><span class="ad-st '+b[0]+'">'+b[1]+'</span></div><small>Demande du '+svFd(x.demande).split(' ')[0]+' · '+svEtat(x)+' · dernière connexion : '+svFd(x.derniere)+' · fin d’accès : '+(x.expire?svFd(x.expire).split(' ')[0]:'sans limite')+'</small>'+(x.situation?'<small><b>Situation :</b> '+esc(x.situation)+(x.projet?' — '+esc(x.projet):'')+'</small>':'')+svActs(x)+'</div>'}).join(''):'<p>Aucune demande pour l’instant.</p>');
+  h+=aCard('Comptes ('+c.length+')',c.length?c.map(function(x){var b=SVB[x.statut]||['wt',esc(x.statut)];return '<div style="border:1px solid rgba(27,32,51,.1);border-radius:16px;padding:14px;display:grid;gap:8px;background:#fff"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><b>'+esc(x.nom)+'</b> · '+esc(x.role||'élève')+'<br><small>'+esc(x.email)+(x.tel?' · '+esc(x.tel):'')+(x.age?' · '+esc(x.age)+' ans':'')+(x.pays?' · '+esc(x.pays):'')+'</small></div><span class="ad-st '+b[0]+'">'+b[1]+'</span></div><small>Demande du '+svFd(x.demande).split(' ')[0]+' · '+svEtat(x)+' · dernière connexion : '+svFd(x.derniere)+' · fin d’accès : '+(x.expire?svFd(x.expire).split(' ')[0]:'sans limite')+'</small>'+(x.situation?'<small><b>Situation :</b> '+esc(x.situation)+(x.projet?' — '+esc(x.projet):'')+'</small>':'')+svSes(x)+svActs(x)+'</div>'}).join(''):'<p>Aucune demande pour l’instant.</p>');
   h+=aCard('Journal',j.length?'<ul style="margin:0;padding-left:18px">'+j.slice().reverse().map(function(l){return '<li>'+svFd(l[0])+' — '+esc(l[1])+'</li>'}).join('')+'</ul>':'<p>Rien pour l’instant.</p>');
   h+='<div><button class="ad-b" data-sv="reload">Actualiser</button> <small>Mise à jour automatique toutes les 20 secondes.</small></div>';
   return h};
 es.addEventListener('click',function(ev){var b=ev.target.closest('[data-sv]');if(!b)return;var op=b.dataset.sv,em=b.dataset.e;
+  if(op==='seances'){if(SVS[em]&&SVS[em].open){SVS[em].open=false;render();return}SVS[em]=SVS[em]||{list:null};SVS[em].open=true;render();svCall({action:'seances',cle:svKey(),email:em}).then(function(r){SVS[em].list=r&&r.ok?r.seances:[];SVS[em].err=r&&r.ok?'':((r&&r.erreur)||'Refusé.');render()}).catch(function(){SVS[em].err='Connexion impossible.';render()});return}
   if(op==='reload'){SV.err='';svLoad();return}
   if(op==='copy'){var i=document.getElementById('svl');try{navigator.clipboard.writeText(i.value).then(function(){toast('Lien copié')},function(){i.select();toast('Sélectionné : fais Cmd+C')})}catch(x){i.select();toast('Sélectionné : fais Cmd+C')}return}
   if((op==='supprimer'||op==='effacer')&&b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent=op==='effacer'?'Confirmer : effacer pour toujours':'Confirmer la suppression';return}
@@ -2711,6 +2718,35 @@ function svGate(){
     svCall({action:'liste',cle:v}).then(function(r){b.disabled=false;if(!r||!r.ok){er.textContent=(r&&r.erreur)||'Refusé.';return}try{localStorage.setItem(SVK,v)}catch(x){}SV.data=r;SV.err='';enter()}).catch(function(){b.disabled=false;er.textContent='Connexion impossible.'})};
   if(svKey())svCall({action:'liste',cle:svKey()}).then(function(r){if(r&&r.ok){SV.data=r;enter()}}).catch(function(){});
 }
+
+/* ---- téléphone : liaison du compte et avancement synchronisé (serveur Google Sheet) ---- */
+var LK={code:'',exp:0,mobile:false,data:null,loading:false,t:0,err:'',busy:false,tm:null};
+function lkAuth(){var q=A.S&&A.S.req;return q&&q.state==='approved'&&q.tok&&q.e&&!q.blocked&&A.srv?{email:q.e,jeton:q.tok,appareil:A.dev()}:null}
+function lkBusyField(){var e=document.activeElement;return e&&/INPUT|TEXTAREA|SELECT/.test(e.tagName)}
+function lkFetch(force){var a=lkAuth();if(!a||LK.loading)return;if(!force&&Date.now()-LK.t<30000)return;LK.loading=true;LK.t=Date.now();a.action='avancement';a.canal='p';
+  A.srv(a).then(function(r){LK.loading=false;if(r&&r.ok&&r.etat==='validé'){var same=JSON.stringify(LK.data)===JSON.stringify(r);LK.data=r;LK.mobile=!!r.mobile;if(LK.mobile)LK.code='';if(!same&&['studio','account','home'].indexOf(P.tab)>-1&&!lkBusyField())render()}}).catch(function(){LK.loading=false})}
+function lkMake(){var a=lkAuth();if(!a){A.toast('Connecte-toi d’abord avec ton compte');return}if(LK.busy)return;LK.busy=true;LK.err='';a.action='liaison';render();
+  A.srv(a).then(function(r){LK.busy=false;if(r&&r.ok&&r.code){LK.code=r.code;LK.exp=Date.now()+(r.secondes||600)*1000;LK.mobile=!!r.mobile;lkTick()}else LK.err='Impossible de créer le code pour l’instant. Réessaie.';render()}).catch(function(){LK.busy=false;LK.err='Connexion impossible. Vérifie ton réseau.';render()})}
+function lkTick(){clearInterval(LK.tm);var n=0;LK.tm=setInterval(function(){n++;var s=Math.max(0,Math.round((LK.exp-Date.now())/1000)),e=document.getElementById('lkcd');
+  if(!LK.code||P.tab!=='account'&&n>3){if(P.tab!=='account'){clearInterval(LK.tm);return}}
+  if(s<=0){clearInterval(LK.tm);LK.code='';render();return}
+  if(e)e.textContent=Math.floor(s/60)+':'+('0'+s%60).slice(-2);
+  if(n%4===0)lkFetch(true)},1000)}
+function lkCode(c){return c.slice(0,4)+' '+c.slice(4)}
+function lkFr(iso){try{return new Date(iso+'T12:00:00').toLocaleDateString('fr-FR')}catch(x){return ''}}
+function lkLong(iso){try{return new Date(iso+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})}catch(x){return iso}}
+function appCardHtml(){
+  var h='<div class="a-c"><h3>Mon application sur téléphone</h3>';
+  if(!lkAuth())return h+'<p class="a-mu">Connecte-toi avec ton compte pour relier ton application.</p></div>';
+  lkFetch();
+  if(LK.mobile){var b=LK.data&&LK.data.bilan;return h+'<p><span class="a-st ok">Application reliée</span></p><p class="a-mu">Ton téléphone est lié à ce compte. Chaque séance faite dans l’application, avec le texte de ce que tu as dit, arrive dans ton avancement (onglet Studio) ; elle apparaît aussi sur ton téléphone. Un seul téléphone par compte : pour en changer, demande à ton administrateur de libérer l’ancien.</p>'+(b&&b.total?'<p class="a-mu"><b>'+b.total+'</b> séance'+(b.total>1?'s':'')+' reçue'+(b.total>1?'s':'')+(b.derniere?' · dernière le '+lkLong(b.derniere):'')+'</p>':'<p class="a-mu">Aucune séance reçue pour l’instant.</p>')+'</div>'}
+  if(LK.code&&LK.exp>Date.now()){var s=Math.max(0,Math.round((LK.exp-Date.now())/1000));return h+'<p class="a-mu">Sur ton téléphone, ouvre <b>Agora Studio</b>, appuie sur <b>Relier mon compte</b> et saisis ce code :</p><div style="font:700 34px/1.1 Fraunces,Georgia,serif;letter-spacing:.14em;text-align:center;padding:14px 8px;border:1.5px dashed currentColor;border-radius:14px;margin:8px 0" id="lkcode" aria-live="polite">'+lkCode(LK.code)+'</div><p class="a-mu" style="text-align:center">Valable encore <b id="lkcd">'+Math.floor(s/60)+':'+('0'+s%60).slice(-2)+'</b>. Il ne marche qu’une fois. Cette page se met à jour toute seule quand c’est fait.</p><div class="a-row"><button class="btn ghost" data-a="appon">Nouveau code</button></div></div>'}
+  return h+'<p class="a-mu">Installe l’application avec le lien reçu, sur ton téléphone, une seule fois. Appuie ensuite sur le bouton : un code s’affiche, tu le saisis dans l’application, et ton compte est relié. Tes séances (voix transcrite) arrivent alors ici.</p>'+(LK.err?'<p class="a-call">'+esc(LK.err)+'</p>':'')+'<button class="btn" data-a="appon"'+(LK.busy?' disabled':'')+'>'+(LK.busy?'Création du code…':'Activer mon application')+'</button></div>'}
+function phoneHtml(){
+  if(!lkAuth())return '';lkFetch();var d=LK.data;if(!d||!d.mobile&&!(d.seances&&d.seances.length))return '';
+  var b=d.bilan||{total:0,jours:0,mots:0},sc=function(x){return x==null||x===''?'–':x};
+  return '<div class="a-c"><div class="a-eb">Synchronisé depuis ton téléphone</div><h3>Mes séances sur téléphone</h3><div class="a-sts"><div><b>'+b.total+'</b><span>séance'+(b.total>1?'s':'')+'</span></div><div><b>'+b.jours+'</b><span>jour'+(b.jours>1?'s':'')+' actif'+(b.jours>1?'s':'')+'</span></div><div><b>'+b.mots+'</b><span>mots dits</span></div></div>'+
+  (d.seances.length?d.seances.map(function(s){return '<details style="border-top:1px solid rgba(27,32,51,.12);padding:10px 0"><summary style="cursor:pointer"><b>'+esc(s.sujet||'Séance')+'</b><br><span class="a-mu">'+esc(lkLong(s.date))+' · '+esc(s.type||'')+(s.dur?' · '+(s.dur<60?s.dur+' s':Math.round(s.dur/60)+' min'):'')+(s.mots?' · '+s.mots+' mots':'')+(s.wpm?' · '+s.wpm+' mots/min':'')+' · Logos / Ethos / Pathos '+sc(s.logos)+' / '+sc(s.ethos)+' / '+sc(s.pathos)+'</span></summary>'+(s.transcript?'<p style="white-space:pre-wrap;line-height:1.65;margin:10px 0 0;overflow-wrap:anywhere">'+esc(s.transcript)+'</p>':'<p class="a-mu">Pas de transcription pour cette séance.</p>')+'</details>'}).join(''):'<p class="a-mu">Aucune séance reçue pour l’instant.</p>')+'</div>'}
 
 
 if(AG_MODE==="admin"){role="fo";AV="srv";svGate()}

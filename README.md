@@ -13,3 +13,11 @@ L'application Agora personnelle reste dans son propre dépôt, séparé. Stockag
 - `serveur/Code.gs` : serveur des comptes (Apps Script), à coller dans le Sheet de la plateforme.
 - `admin/` : console de gestion unique, protégée par la clé admin. L'onglet « Comptes & accès » gère les vrais comptes (valider, bloquer, supprimer, libérer les appareils) ; les autres onglets sont encore en démonstration.
 - Les élèves, paiements et séances de l'espace restent des données de démonstration pour l'instant.
+
+## Téléphone relié au compte (voix transcrite, avancement)
+- Sur la plateforme, « Mon compte » puis « Activer mon application » donne un code à 8 caractères (10 minutes, une seule utilisation). Il se saisit dans Agora Studio (« Relier mon compte »). Un seul téléphone par compte ; l'admin le libère au besoin.
+- Chaque séance du téléphone part au serveur : date, sujet, durée, résultats et **texte transcrit** (jamais l'audio). Elle apparaît dans l'avancement du téléphone, dans l'onglet Studio de la plateforme et dans la console admin.
+- Hors ligne, les séances attendent sur le téléphone et partent toutes seules au retour du réseau.
+- Blocage, expiration ou téléphone libéré : l'appli affiche le message neutre et reprend seule dès que l'accès revient.
+- Code du téléphone : `mobile/sync.js` et `mobile/sync.css`, insérés par `mobile/build.js`.
+- Après une mise à jour de `serveur/Code.gs` : lancer `installer`, puis Déployer > Gérer les déploiements > Nouvelle version.

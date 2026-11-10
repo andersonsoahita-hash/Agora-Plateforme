@@ -14,7 +14,7 @@ const parts = ['analysis.js', 'data-orators.js', 'data-eristic.js', 'data-exerci
 const shim = "window.AO_DATA = window.AO_DATA || {}; window.AO_DATA.lessons = []; window.AO_DATA.modules = [];";
 let js = [R(parts[0]), shim].concat(parts.slice(1).map(R)).join('\n;\n');
 js = js.replace('/*@@LEVELS@@*/', () => R('levels.js')).replace('/*@@PREP@@*/', () => R('prep.js')).replace('/*@@ERIST@@*/', () => R('erist.js'))
-  .replace('/*@@EXPRESS@@*/', () => R('express.js')).replace('/*@@OBJ@@*/', () => R('objections.js')).replace('/*@@PWA@@*/', () => R('pwa.js'));
+  .replace('/*@@EXPRESS@@*/', () => R('express.js')).replace('/*@@OBJ@@*/', () => R('objections.js')).replace('/*@@PWA@@*/', () => R('pwa.js') + '\n' + RL('sync.js'));
 if (/\/\*@@/.test(js)) throw new Error('marqueur non remplacé');
 
 /* --- retouches « sans leçons » --- */
@@ -31,7 +31,20 @@ js = js.split('<button class="btn small ghost" data-act="course-back">← Cours<
 js = js.replace(/(['"])ao_/g, '$1am_').replace(/'agora_db'/g, "'agora_m_db'");
 if (/['"]ao_/.test(js)) throw new Error('clé de stockage non isolée');
 
-let css = R('styles.css') + '\n' + R('pwa.css');
+/* --- compte Agora : liaison du téléphone et synchronisation de l'avancement (mobile/sync.js) --- */
+js = must(js, "settings: vSettings }[view.tab]", "settings: vSettings, sync: vSync }[view.tab]");
+js = must(js, "S.sessions.unshift(rec); S.sessions = S.sessions.slice(0, 200);", "S.sessions.unshift(rec); S.sessions = S.sessions.slice(0, 200); syQueue(rec);");
+js = must(js, "<h1>Bonjour, Stephen</h1>", "<h1>Bonjour' + syHello() + '</h1>");
+js = must(js, "  h += exResultHtml(s);\n", "  h += exResultHtml(s);\n  h += syResultHtml(s);\n");
+js = must(js, "function homeBanners() {\n  var h = '';", "function homeBanners() {\n  var h = syBanner();");
+js = must(js, "function pwaAct(act, v, el, ev) {\n", "function pwaAct(act, v, el, ev) {\n  if (syAct(act, v, el)) return true;\n");
+js = must(js, "function pwaBoot() {\n  applyTheme(themePref());", "function pwaBoot() {\n  applyTheme(themePref());\n  syBoot();");
+js = must(js, "  h += '<div class=\"card stack\"><h3>Apparence</h3>", "  h += sySettingsHtml();\n  h += '<div class=\"card stack\"><h3>Apparence</h3>");
+js = must(js, "Tout est gardé sur ton appareil, rien n’est envoyé sur internet. Dernière sauvegarde", "Tout est gardé sur ton appareil. ' + syPriv() + ' Dernière sauvegarde");
+js = must(js, "Usage personnel : pas de compte, pas de paiement, aucune clé, aucun suivi.", "Pas de paiement, aucune clé, aucune publicité. Un compte Agora ne sert qu’à synchroniser ton avancement avec la plateforme.");
+js = must(js, "Sans texte, seule la voix est analysée.", "Astuce : le micro du clavier permet de dicter. Sans texte, seule la voix est analysée.");
+
+let css = R('styles.css') + '\n' + R('pwa.css') + '\n' + RL('sync.css');
 const mark = R('../icons/mark.svg').trim();
 const assets = fs.readdirSync(path.join(__dirname, 'fonts')).filter(f => f.endsWith('.woff2')).map(f => 'fonts/' + f)
   .concat(['icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png', 'icons/mark.svg']);
@@ -40,6 +53,7 @@ let html = R('index.template.html');
 html = must(html, '<title>Agora · L’art oratoire</title>', '<title>Agora Studio · by Stephen</title>');
 html = must(html, 'content="Agora, l’art oratoire, by Stephen. Ton coach de prise de parole."', 'content="Agora Studio, by Stephen. S’entraîner à parler, vite et partout."');
 html = must(html, 'name="apple-mobile-web-app-title" content="Agora"', 'name="apple-mobile-web-app-title" content="Agora Studio"');
+html = must(html, "connect-src 'self' data: blob:", "connect-src 'self' data: blob: https://script.google.com https://script.googleusercontent.com");
 html = html.replace(/(['"])ao_/g, '$1am_');
 let man = JSON.parse(R('manifest.template.json'));
 man.name = 'Agora Studio · by Stephen'; man.short_name = 'Agora Studio'; man.description = 'S’entraîner à parler, vite et partout. Agora, by Stephen.'; man.id = './mobile/'; 
