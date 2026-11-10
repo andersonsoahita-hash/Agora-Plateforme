@@ -2244,7 +2244,7 @@ es.addEventListener('click',function(e){
     case 'testlv':setTL(+b.dataset.v);nav('course','test');return;
   case 'back':nav(P.tab);return;
   case 'chal':SD.type=b.dataset.t;SD.sujet=b.dataset.s;SD.stance=SD.type==='debat'?'POUR':'';SD.res=null;SD.text='';nav('studio');return;
-  case 'all':D.lessons.forEach(function(l){if(lvOf(l.m)===TL&&!P.done[l.id])P.done[l.id]={s:0,n:0,d:today()}});break;
+  case 'all':D.lessons.forEach(function(l){if(lvOf(l.m)===TL&&!P.done[l.id])P.done[l.id]={s:0,n:0,d:today(),demo:1}});break;
   case 'tstart':if(!P.name.trim()){toast('Indique d’abord ton prénom et nom');return}t1.st='run';t1.cur=0;t1.ans=[];t1.times=[];t1.tabs=0;t1.to=0;t1.tries++;t1.ord=shufN(TQ.length);QS=Date.now();break;
   case 'tans':tAdv(+b.dataset.k);return;
   case 'tmq':P.tmq=+b.dataset.v;break;
@@ -2451,7 +2451,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&lpEl.classL
 
 /* ================= ADMINISTRATION AGORA (inspirée de SMC Gestion) ================= */
 var APW='d',AK='agora_adm',AV='dash',AQ='',AFL='all',ASEL=null,ATSEL=1,ACH=null;
-var AN=[['srv','Comptes & accès','🔐'],['dash','Tableau de bord','▦'],['dem','Demandes','✉'],['el','Élèves','👥'],['pay','Paiements & factures','🧾'],['rel','Relances','📣'],['tre','Trésorerie','💰'],['for','Formateurs & séances','🎙'],['con','Contenus','📚'],['not','Notes & tests','📝'],['cer','Certificats','🎓'],['apr','Aperçu de la plateforme','👁'],['dev','Labo développeur','🧪'],['fbk','Retours sur les cours','🗒'],['his','Historique','🕘'],['cha','Messagerie','💬'],['avi','Avis & anciens messages','🗨'],['pro','Promotions & présences','📅'],['reg','Réglages & tarifs','⚙'],['adm','Administrateurs & accès','🔑'],['jou','Journal','🛡']];
+var AN=[['srv','Comptes & accès','🔐'],['pgr','Progression des élèves','📈'],['dash','Tableau de bord','▦'],['dem','Demandes','✉'],['el','Élèves','👥'],['pay','Paiements & factures','🧾'],['rel','Relances','📣'],['tre','Trésorerie','💰'],['for','Formateurs & séances','🎙'],['con','Contenus','📚'],['not','Notes & tests','📝'],['cer','Certificats','🎓'],['apr','Aperçu de la plateforme','👁'],['dev','Labo développeur','🧪'],['fbk','Retours sur les cours','🗒'],['his','Historique','🕘'],['cha','Messagerie','💬'],['avi','Avis & anciens messages','🗨'],['pro','Promotions & présences','📅'],['reg','Réglages & tarifs','⚙'],['adm','Administrateurs & accès','🔑'],['jou','Journal','🛡']];
 var ANT=['dash','el','for','not','fbk','cha','pro'];
 var AM=['Mvola','Orange Money','Airtel Money','Virement','Espèces','Carte'];
 function dAgo(n){var d=new Date();d.setDate(d.getDate()-n);return d.toISOString().slice(0,10)}
@@ -2582,9 +2582,9 @@ AR.jou=function(){return aCard('Journal des actions sensibles',tbl(['Date','Par'
 /* ---- coque ---- */
 function vAdmin(){var me=aMe(),nav=AN.filter(function(n){return role==='tr'?ANT.indexOf(n[0])>=0:(n[0]!=='adm'||(SV.me&&SV.me.owner))});if(role==='tr'&&ANT.indexOf(AV)<0)AV='dash';
   var cur=AN.filter(function(n){return n[0]===AV})[0]||AN[0],nreq=AD.users.filter(function(u){return u.status==='attente'}).length,nrel=AD.inv.filter(function(i){return !i.paid}).length;
-  var sub={srv:'Les vrais comptes : validation, code d’activation, blocage, appareils',dash:'Vue d’ensemble en direct',dem:'Valide ou refuse : l’accès part par e-mail',el:'Suivi, blocage et suppression des comptes',pay:'Encaissements et factures numérotées',rel:'Messages prêts à envoyer',tre:'Encaissements, dépenses et solde',for:'Habilitations, élèves, séances',con:'Tout le programme, niveau par niveau',not:'Règles des tests et résultats',cer:'Certificats délivrés',dev:'Tester toute l’expérience',apr:'La plateforme telle que la voit un élève',fbk:'Ce que les formateurs disent des cours',his:'Ce qui s’est passé dans Agora',cha:'Discussions avec les élèves et les formateurs',avi:'Ce que les élèves t’écrivent',pro:'Promotions et appel',reg:'Tarifs, accès, sécurité',adm:'Propriétaire, administrateurs et droits',jou:'Actions sensibles'}[cur[0]];
+  var sub={srv:'Les vrais comptes : validation, code d’activation, blocage, appareils',dash:'Vue d’ensemble en direct',dem:'Valide ou refuse : l’accès part par e-mail',el:'Suivi, blocage et suppression des comptes',pay:'Encaissements et factures numérotées',rel:'Messages prêts à envoyer',tre:'Encaissements, dépenses et solde',for:'Habilitations, élèves, séances',con:'Tout le programme, niveau par niveau',not:'Règles des tests et résultats',cer:'Certificats délivrés',pgr:'Qui a fait quelle leçon : les vraies statistiques',dev:'Tester toute l’expérience',apr:'La plateforme telle que la voit un élève',fbk:'Ce que les formateurs disent des cours',his:'Ce qui s’est passé dans Agora',cha:'Discussions avec les élèves et les formateurs',avi:'Ce que les élèves t’écrivent',pro:'Promotions et appel',reg:'Tarifs, accès, sécurité',adm:'Propriétaire, administrateurs et droits',jou:'Actions sensibles'}[cur[0]];
   var side='<aside class="ad-side"><div class="ad-br"><div class="ad-lg">A</div><div><b>Agora Gestion</b><small>BY STEPHEN</small></div></div><div class="ad-who">'+(role==='tr'?'Formateur':(SV.me?esc(SV.me.nom)+' · '+(SV.me.owner?'Propriétaire':'Administrateur'):esc(me.name)+' · Administrateur'))+'</div><nav>'+nav.map(function(n){var c=n[0]==='dem'&&nreq?nreq:n[0]==='rel'&&nrel?nrel:0;return '<button data-ad="go" data-v="'+n[0]+'" class="'+(AV===n[0]?'on':'')+'"><span>'+n[2]+'</span>'+n[1]+(c?'<em>'+c+'</em>':'')+'</button>'}).join('')+'</nav><button class="ad-out" data-ad="quit">Quitter</button></aside>';
-  return '<div class="ad-app">'+side+'<main class="ad-main"><div class="ad-top"><div><h1>'+cur[1]+'</h1><small>'+sub+'</small></div></div>'+(AD.cfg.locked&&role!=='tr'?'<div class="ad-warn">Coupe-circuit actif : les élèves ne peuvent plus se connecter.</div>':'')+(AV!=='srv'&&AV!=='adm'&&AV!=='apr'&&AV!=='dev'&&role!=='tr'?'<div class="ad-warn" style="background:#e6ebfb;border-color:#9aa8e8;color:#2a3a8c">Cette section est vide et n’est pas encore reliée au serveur. Les vrais comptes sont dans « Comptes &amp; accès ».</div>':'')+(AR[AV]?AR[AV]():'')+'</main></div>'}
+  return '<div class="ad-app">'+side+'<main class="ad-main"><div class="ad-top"><div><h1>'+cur[1]+'</h1><small>'+sub+'</small></div></div>'+(AD.cfg.locked&&role!=='tr'?'<div class="ad-warn">Coupe-circuit actif : les élèves ne peuvent plus se connecter.</div>':'')+(AV!=='srv'&&AV!=='pgr'&&AV!=='adm'&&AV!=='apr'&&AV!=='dev'&&role!=='tr'?'<div class="ad-warn" style="background:#e6ebfb;border-color:#9aa8e8;color:#2a3a8c">Cette section est vide et n’est pas encore reliée au serveur. Les vrais comptes sont dans « Comptes &amp; accès ».</div>':'')+(AR[AV]?AR[AV]():'')+'</main></div>'}
 /* ---- actions ---- */
 function aGo(v){AV=v;AQ='';AFL='all';ASEL=null;render();var m=document.querySelector('.ad-main');if(m)m.scrollTop=0;$('#es').scrollTop=0}
 es.addEventListener('input',function(e){if(e.target.id==='ad-q'){AQ=e.target.value;var p=e.target.selectionStart;render();var n=document.getElementById('ad-q');if(n){n.focus();try{n.setSelectionRange(p,p)}catch(x){}}}});
@@ -2739,6 +2739,43 @@ es.addEventListener('click',function(ev){var b=ev.target.closest('[data-sa]');if
   if(op==='stat'){go({action:'adminStatut',email:em,statut:b.dataset.s},b.dataset.s==='actif'?'Accès réactivé':'Accès révoqué');return}
   if(op==='del'){if(b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent='Confirmer la suppression';return}go({action:'adminSupprimer',email:em},'Administrateur supprimé')}
 });
+/* ---- progression réelle : qui a fait quelle leçon (données du serveur) ---- */
+var PG={rows:null,loading:false,err:'',sel:'',t:0};
+function pgLoad(){if(PG.loading)return;PG.loading=true;svCall({action:'progressions',cle:svKey()}).then(function(r){PG.loading=false;if(r&&r.ok){PG.rows=r.lecons||[];PG.err='';PG.t=Date.now()}else PG.err=(r&&r.erreur)||'Refusé.';if(role==='fo'&&AV==='pgr')render()}).catch(function(){PG.loading=false;PG.err='Connexion impossible.';if(role==='fo'&&AV==='pgr')render()})}
+function pgPct(a,b){return b?Math.round(100*a/b)+' %':'—'}
+function pgBar(p){return '<div class="ad-bar"><i style="width:'+Math.max(0,Math.min(100,p))+'%"></i></div>'}
+AR.pgr=function(){
+  if(!SV.data&&!SV.loading&&!SV.err)svLoad();
+  if(!PG.rows&&!PG.loading&&!PG.err)pgLoad();
+  if(PG.err&&!PG.rows)return aCard('Progression des élèves','<p>'+esc(PG.err)+'</p><button class="ad-b ok" data-pg="reload">Réessayer</button>');
+  if(!PG.rows||!SV.data)return aCard('Progression des élèves','<p>Chargement…</p>');
+  var C=(SV.data.comptes||[]).filter(function(x){return x.role!=='formateur'}),act=C.filter(function(x){return x.statut==='validé'});
+  var R=PG.rows,by={},byL={};R.forEach(function(r){(by[r.em]=by[r.em]||[]).push(r);(byL[r.id]=byL[r.id]||[]).push(r)});
+  var tot=D.lessons.length,started=Object.keys(by).length,sum=0,sn=0;R.forEach(function(r){if(r.n>0){sum+=r.s;sn+=r.n}});
+  var h='<div class="ad-kp">'+kpi('Élèves actifs',act.length,'comptes ouverts','g')+kpi('Ont commencé',started,'au moins une leçon',started?'g':'')+kpi('Leçons terminées',R.length,'au total','g')+kpi('Note moyenne',pgPct(sum,sn),'aux questions des leçons','g')+kpi('Complétion',pgPct(R.length,act.length*tot),'des leçons possibles','g')+'</div>';
+  h+='<div class="ad-ac"><button class="ad-b" data-pg="reload">Actualiser</button><small class="ad-mu">Mis à jour '+(PG.t?new Date(PG.t).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}):'')+' · les leçons arrivent dès que l’élève les termine, connecté à son compte.</small></div>';
+  /* bilan par niveau */
+  var lv=[1,2,3,4,5].map(function(l){var ls=lessonsOf(l),ids={};ls.forEach(function(x){ids[x.id]=1});var rr=R.filter(function(r){return ids[r.id]}),em={};rr.forEach(function(r){em[r.em]=1});var s1=0,n1=0;rr.forEach(function(r){if(r.n>0){s1+=r.s;n1+=r.n}});
+    return [l+' · '+esc(lvName(l)),ls.length,Object.keys(em).length,rr.length,pgPct(rr.length,act.length*ls.length)+pgBar(act.length&&ls.length?100*rr.length/(act.length*ls.length):0),pgPct(s1,n1)]});
+  h+=aCard('Bilan par niveau',tbl(['Niveau','Leçons','Élèves concernés','Leçons terminées','Complétion','Note moyenne'],lv));
+  /* leçons */
+  var le=D.lessons.map(function(x){var rr=byL[x.id]||[],s1=0,n1=0;rr.forEach(function(r){if(r.n>0){s1+=r.s;n1+=r.n}});return {t:x.titre,lv:lvOf(x.m),n:rr.length,sc:pgPct(s1,n1),p:act.length?rr.length/act.length:0}});
+  var low=le.filter(function(x){return act.length&&x.n===0}).length;
+  h+=aCard('Leçon par leçon',(act.length?'<p class="ad-mu">'+low+' leçon'+(low>1?'s':'')+' sur '+tot+' n’'+(low>1?'ont':'a')+' encore été terminée'+(low>1?'s':'')+' par personne.</p>':'<p class="ad-mu">Aucun élève actif pour l’instant.</p>')+tbl(['Niveau','Leçon','Élèves ayant terminé','Note moyenne'],le.map(function(x){return [x.lv,esc(x.t),x.n+(act.length?' / '+act.length:'')+pgBar(100*x.p),x.sc]})));
+  /* élèves */
+  var can=svCan('supprimer');
+  var st=C.map(function(c){var rr=by[c.email.toLowerCase()]||[],last=rr.map(function(r){return r.d}).slice(-1)[0]||'—',cells=[1,2,3,4,5].map(function(l){var ids={};lessonsOf(l).forEach(function(x){ids[x.id]=1});var k=rr.filter(function(r){return ids[r.id]}).length;return '<span class="ad-st '+(k?'ok':'wt')+'" title="Niveau '+l+'">N'+l+' '+k+'/'+lessonsOf(l).length+'</span>'}).join(' ');
+    return [esc(c.nom)+'<br><small class="ad-mu">'+esc(c.email)+'</small>',rr.length+' / '+tot,cells,esc(last),'<button class="ad-b" data-pg="sel" data-e="'+esc(c.email)+'">'+(PG.sel===c.email.toLowerCase()?'Fermer':'Détail')+'</button>']});
+  h+=aCard('Élève par élève',tbl(['Élève','Leçons','Par niveau','Dernière leçon',''],st,'Aucun élève.'));
+  if(PG.sel){var rr=(by[PG.sel]||[]).slice(),cc=C.filter(function(x){return x.email.toLowerCase()===PG.sel})[0];
+    h+=aCard('Détail · '+esc(cc?cc.nom:PG.sel),(rr.length?tbl(['Leçon','Niveau','Date','Note',can?'':''],rr.map(function(r){var L=byId(D.lessons,r.id);return [esc(L?L.titre:r.id),r.lv||'—',esc(r.d),r.n?r.s+' / '+r.n:'—',can?'<button class="ad-b ko" data-pg="del" data-e="'+esc(PG.sel)+'" data-l="'+esc(r.id)+'">Effacer</button>':'']}))+(can?'<div class="ad-ac"><button class="ad-b ko" data-pg="delall" data-e="'+esc(PG.sel)+'">Effacer toute la progression de cet élève</button></div>':''):'<p class="ad-mu">Aucune leçon terminée pour cet élève.</p>')+(can?'':'<p class="ad-mu">Effacer demande le droit « Supprimer ».</p>'))}
+  return h};
+es.addEventListener('click',function(ev){var b=ev.target.closest('[data-pg]');if(!b)return;var op=b.dataset.pg,em=(b.dataset.e||'').toLowerCase();
+  if(op==='reload'){PG.err='';PG.loading=false;pgLoad();toast('Actualisation…');return}
+  if(op==='sel'){PG.sel=PG.sel===em?'':em;render();return}
+  if((op==='del'||op==='delall')&&b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent='Confirmer : effacer';return}
+  b.disabled=true;svCall({action:'progresEffacer',cle:svKey(),email:em,lecon:op==='del'?b.dataset.l:''}).then(function(r){toast(r&&r.ok?'Effacé.':((r&&r.erreur)||'Refusé.'));PG.loading=false;pgLoad()}).catch(function(){toast('Connexion impossible.');b.disabled=false})});
+setInterval(function(){if(role==='fo'&&AV==='pgr'&&document.visibilityState==='visible'&&svKey())pgLoad()},30000);
 
 /* ---- téléphone : liaison du compte et avancement synchronisé (serveur Google Sheet) ---- */
 var LK={code:'',exp:0,mobile:false,data:null,loading:false,t:0,err:'',busy:false,tm:null};
@@ -2768,6 +2805,13 @@ function phoneHtml(){
   var b=d.bilan||{total:0,jours:0,mots:0},sc=function(x){return x==null||x===''?'–':x};
   return '<div class="a-c"><div class="a-eb">Synchronisé depuis ton téléphone</div><h3>Mes séances sur téléphone</h3><div class="a-sts"><div><b>'+b.total+'</b><span>séance'+(b.total>1?'s':'')+'</span></div><div><b>'+b.jours+'</b><span>jour'+(b.jours>1?'s':'')+' actif'+(b.jours>1?'s':'')+'</span></div><div><b>'+b.mots+'</b><span>mots dits</span></div></div>'+
   (d.seances.length?d.seances.map(function(s){return '<details style="border-top:1px solid rgba(27,32,51,.12);padding:10px 0"><summary style="cursor:pointer"><b>'+esc(s.sujet||'Séance')+'</b><br><span class="a-mu">'+esc(lkLong(s.date))+' · '+esc(s.type||'')+(s.dur?' · '+(s.dur<60?s.dur+' s':Math.round(s.dur/60)+' min'):'')+(s.mots?' · '+s.mots+' mots':'')+(s.wpm?' · '+s.wpm+' mots/min':'')+' · Logos / Ethos / Pathos '+sc(s.logos)+' / '+sc(s.ethos)+' / '+sc(s.pathos)+'</span></summary>'+(s.transcript?'<p style="white-space:pre-wrap;line-height:1.65;margin:10px 0 0;overflow-wrap:anywhere">'+esc(s.transcript)+'</p>':'<p class="a-mu">Pas de transcription pour cette séance.</p>')+'</details>'}).join(''):'<p class="a-mu">Aucune séance reçue pour l’instant.</p>')+'</div>'}
+/* ---- progression réelle : chaque leçon terminée part au serveur (jamais les leçons « démo ») ---- */
+var PR={busy:false};
+function prList(){var o=[];Object.keys(P.done).forEach(function(id){var x=P.done[id],L=byId(D.lessons,id);if(!x||x.demo||!L)return;o.push({id:id,lv:lvOf(L.m)||0,s:x.s||0,n:x.n||0,d:x.d||''})});return o}
+function prSync(){var a=lkAuth();if(!a||PR.busy)return;var l=prList(),h=JSON.stringify(l);if(!l.length||P.prH===a.email+h)return;PR.busy=true;a.action='progres';a.canal='p';a.lecons=l;
+  A.srv(a).then(function(r){PR.busy=false;if(r&&r.ok&&r.etat==='validé'){P.prH=a.email+h;save()}}).catch(function(){PR.busy=false})}
+var finishLesson0=finishLesson;finishLesson=function(){finishLesson0();setTimeout(prSync,300)};
+setInterval(prSync,20000);setTimeout(prSync,4000);
 
 
 if(AG_MODE==="admin"){role="fo";AV="srv";svGate()}
