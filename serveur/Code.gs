@@ -14,6 +14,7 @@ var C = { date: 0, nom: 1, pre: 2, mail: 3, tel: 4, age: 5, role: 6, pays: 7, si
 var NCOL = 19;
 var Q = { rec: 0, mail: 1, id: 2, date: 3, sujet: 4, type: 5, dur: 6, mots: 7, wpm: 8, tics: 9, lo: 10, et: 11, pa: 12, src: 13, txt: 14, det: 15 };
 var NSEA = 16;
+var EMAIL_ADMIN = 'stephenandersonsoahita@gmail.com'; // l'adresse qui reçoit la clé admin
 var DUREE_CODE = 600; // le code de liaison du téléphone vaut 10 minutes
 
 function feuille_(nom) {
@@ -29,7 +30,23 @@ function feuille_(nom) {
 function installer() { // à lancer une fois (et après chaque mise à jour du code)
   ['Comptes', 'Journal', 'Séances'].forEach(feuille_);
   var s = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Feuille 1'); if (s && s.getLastRow() === 0) s.setName('Notes');
-  if (!PropertiesService.getScriptProperties().getProperty('CLE_ADMIN')) PropertiesService.getScriptProperties().setProperty('CLE_ADMIN', Utilities.getUuid());
+  var nouvelle = !PropertiesService.getScriptProperties().getProperty('CLE_ADMIN');
+  if (nouvelle) PropertiesService.getScriptProperties().setProperty('CLE_ADMIN', Utilities.getUuid());
+  if (nouvelle) envoyerCle(); // la clé arrive directement dans ta boîte mail
+}
+function envoyerCle() { // t'envoie ta clé admin par e-mail
+  var cle = PropertiesService.getScriptProperties().getProperty('CLE_ADMIN');
+  if (!cle) { installer(); return; }
+  MailApp.sendEmail({ to: EMAIL_ADMIN, subject: 'Ta clé administrateur Agora',
+    body: 'Bonjour Stephen,\n\nVoici ta clé administrateur Agora :\n\n      ' + cle + '\n\n1. Ouvre la console : https://andersonsoahita-hash.github.io/Agora-Plateforme/admin/\n2. Colle cette clé quand elle te la demande. Elle reste ensuite dans ce navigateur.\n\nNe la partage avec personne : elle permet de valider, bloquer et effacer des comptes.\nPour la changer : dans le Sheet, menu Agora > Choisir ma clé admin.' });
+  try { SpreadsheetApp.getActive().toast('Clé envoyée à ' + EMAIL_ADMIN); } catch (e) {}
+}
+function choisirCle() { // tu choisis ta propre clé (8 caractères minimum)
+  var ui = SpreadsheetApp.getUi(), r = ui.prompt('Choisis ta clé admin', 'Au moins 8 caractères. Elle sera aussi envoyée à ' + EMAIL_ADMIN + '.', ui.ButtonSet.OK_CANCEL);
+  if (r.getSelectedButton() !== ui.Button.OK) return;
+  var cle = String(r.getResponseText() || '').trim();
+  if (cle.length < 8) { ui.alert('Il faut au moins 8 caractères.'); return; }
+  PropertiesService.getScriptProperties().setProperty('CLE_ADMIN', cle); envoyerCle();
 }
 function journal_(a) { feuille_('Journal').appendRow([new Date(), a]); }
 function alea_(n, alphabet) { var s = ''; for (var i = 0; i < n; i++) s += alphabet.charAt(Math.floor(Math.random() * alphabet.length)); return s; }
@@ -47,7 +64,7 @@ function onOpen() {
     .addItem('Bloquer la ligne sélectionnée', 'bloquer')
     .addItem('Débloquer la ligne sélectionnée', 'debloquer')
     .addItem('Supprimer le compte de la ligne sélectionnée', 'supprimer')
-    .addSeparator().addItem('Afficher ma clé admin', 'montrerCle').addToUi();
+    .addSeparator().addItem('M’envoyer ma clé admin par e-mail', 'envoyerCle').addItem('Choisir ma clé admin', 'choisirCle').addItem('Afficher ma clé admin', 'montrerCle').addToUi();
 }
 function emailLigne_() {
   var sh = SpreadsheetApp.getActiveSheet();
