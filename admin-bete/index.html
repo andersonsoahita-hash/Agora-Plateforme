@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Agora bêta · Suivi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--ink:#1b2033;--mut:#5b6380;--line:#dfe3ee;--red:#7a2218;--red2:#c2391f;--ok:#1f7a4d;--okb:#e3f4ea;--wt:#8a5a00;--wtb:#fff1d6;--ko:#a3271b;--kob:#fde7e4;--gold:linear-gradient(90deg,#f2b84b,#ff8f5e)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#12151f;--card:#1b2030;--ink:#eef0f7;--mut:#a3abc4;--line:#2c3350;--okb:#14382a;--wtb:#3a2d0c;--kob:#41191a;--ok:#6fd6a0;--wt:#f1c46b;--ko:#ff8f84;--red:#ff9a86}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 'DM Sans',system-ui,sans-serif;padding-block:0 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.w{max-width:960px;margin:0 auto}
+header{display:flex;align-items:center;gap:12px;padding:18px 0 8px;flex-wrap:wrap}
+.lg{width:40px;height:40px;border-radius:12px;background:var(--gold);display:grid;place-items:center;font:800 22px Fraunces,Georgia,serif;color:#1a1204}
+h1{font:800 26px Fraunces,Georgia,serif;margin:0;line-height:1.1}
+header small{display:block;color:var(--mut);font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.mock{background:var(--wtb);color:var(--wt);border-radius:12px;padding:10px 14px;font-size:14px;margin:8px 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px;min-width:0}
+h2{font:700 19px Fraunces,Georgia,serif;margin:0 0 10px}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.k{border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.k span{display:block;font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--mut);font-weight:600}
+.k b{display:block;font:800 24px Fraunces,Georgia,serif;margin-top:2px}
+.st{display:inline-block;border-radius:99px;padding:3px 11px;font-size:13px;font-weight:700}
+.st.ok{background:var(--okb);color:var(--ok)}.st.wt{background:var(--wtb);color:var(--wt)}.st.ko{background:var(--kob);color:var(--ko)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+button{font:600 15px 'DM Sans',sans-serif;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:11px 18px;min-height:44px;cursor:pointer}
+button.ok{background:var(--gold);border:0;color:#1a1204}
+button.ko{color:var(--ko);border-color:var(--ko)}
+button.sure{background:var(--ko);color:#fff;border-color:var(--ko)}
+label{display:grid;gap:4px;font-size:14px;color:var(--mut);font-weight:600;margin-top:10px}
+input,select,textarea{font:16px 'DM Sans',sans-serif;border:1px solid var(--line);border-radius:12px;padding:11px 12px;background:var(--card);color:var(--ink);width:100%}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{text-align:left;font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--red);padding:8px 6px;border-bottom:2px solid var(--line)}
+td{padding:10px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.sc{overflow-x:auto}
+.mu{color:var(--mut);font-size:14px}
+ul{margin:0;padding-left:18px}
+footer{margin:22px 0;color:var(--mut);font-size:13px;text-align:center}
+</style>
+</head>
+<body>
+<div class="w">
+<header><div class="lg">A</div><div><h1>Agora bêta · Suivi</h1><small>Réservé à Stephen · by Stephen</small></div></header>
+<div class="mock"><b>Maquette.</b> Les données ci-dessous restent dans ce navigateur. Quand le serveur sera relié, cette page lira et modifiera la vraie fiche du testeur dans ton Google Sheet.</div>
+<div id="app"></div>
+<footer>Agora bêta · Suivi · by Stephen</footer>
+</div>
+<script>
+(function(){
+var K='agora_bete_suivi',S;
+function def(){return{name:'Ton associé',email:'associe@exemple.com',status:'attente',created:today(),validated:'',last:'',devices:0,sessions:0,exp:'',fb:[],log:[]}}
+function today(){return new Date().toISOString().slice(0,10)}
+try{S=JSON.parse(localStorage.getItem(K)||'null')}catch(e){}
+S=S||def();
+function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function log(a){S.log.unshift({d:new Date().toLocaleString('fr-FR'),a:a});S.log=S.log.slice(0,100);save()}
+function fd(d){if(!d)return '—';var p=d.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:d}
+var SURE=null;
+var BADGE={attente:['wt','En attente de validation'],actif:['ok','Actif'],bloque:['ko','Bloqué'],supprime:['ko','Supprimé'],expire:['wt','Accès expiré']};
+function exp(){return S.status==='actif'&&S.exp&&S.exp<today()}
+function view(){
+  var st=exp()?'expire':S.status,b=BADGE[st];
+  var h='<div class="card"><div class="row"><h2 style="margin:0">'+esc(S.name)+'</h2><span class="st '+b[0]+'">'+b[1]+'</span></div><p class="mu" style="margin:4px 0 0">'+esc(S.email)+' · demande du '+fd(S.created)+'</p>';
+  h+='<div class="kp" style="margin-top:14px"><div class="k"><span>Validé le</span><b>'+fd(S.validated)+'</b></div><div class="k"><span>Dernière connexion</span><b>'+(S.last?fd(S.last):'—')+'</b></div><div class="k"><span>Appareils</span><b>'+S.devices+'</b></div><div class="k"><span>Séances faites</span><b>'+S.sessions+'</b></div><div class="k"><span>Accès jusqu’au</span><b>'+(S.exp?fd(S.exp):'sans limite')+'</b></div></div>';
+  h+='<div class="btns">';
+  if(S.status==='attente')h+='<button class="ok" data-a="val">Valider et envoyer l’accès</button><button class="ko" data-a="ref">Refuser</button>';
+  if(S.status==='actif')h+='<button class="ko" data-a="blk">Bloquer</button>';
+  if(S.status==='bloque')h+='<button class="ok" data-a="unb">Débloquer</button>';
+  if(S.status==='supprime')h+='<button data-a="rst">Rouvrir une demande</button>';
+  else h+=(SURE==='del'?'<button class="sure" data-a="del">Confirmer la suppression</button>':'<button class="ko" data-a="del">Supprimer le compte</button>');
+  h+='</div>';
+  if(S.status==='bloque'||S.status==='supprime')h+='<p class="mu" style="margin-top:10px">Avec le serveur : le contenu n’est plus envoyé et, à sa prochaine connexion, l’appli efface ses données locales. Hors ligne, ce qu’il a déjà téléchargé reste sur son appareil jusqu’à cette connexion.</p>';
+  h+='</div>';
+  h+='<div class="card"><h2>Durée de l’accès</h2><p class="mu" style="margin-top:0">Un accès qui expire tout seul pousse à tout tester dans le délai. Laisse vide pour ne pas limiter.</p><label>Accès jusqu’au<input type="date" id="exp" value="'+esc(S.exp)+'"></label><div class="btns"><button data-a="setexp">Enregistrer la date</button></div></div>';
+  h+='<div class="card"><h2>Ses avis ('+S.fb.length+')</h2>'+(S.fb.length?'<div class="sc"><table><tr><th>Date</th><th>Écran</th><th>Avis</th></tr>'+S.fb.map(function(f){return '<tr><td>'+fd(f.d)+'</td><td>'+esc(f.s)+'</td><td>'+esc(f.t)+'</td></tr>'}).join('')+'</table></div>':'<p class="mu" style="margin:0">Aucun avis pour l’instant. Les avis écrits dans l’appli bêta arriveront ici.</p>')+'</div>';
+  h+='<div class="card"><h2>Essayer la maquette</h2><p class="mu" style="margin-top:0">Pour voir la page vivre avant le serveur : simule une connexion ou un avis.</p><div class="btns"><button data-a="sim">Simuler une connexion et une séance</button><button data-a="simfb">Simuler un avis</button></div></div>';
+  h+='<div class="card"><h2>Journal</h2>'+(S.log.length?'<ul>'+S.log.map(function(l){return '<li>'+esc(l.d)+' — '+esc(l.a)+'</li>'}).join('')+'</ul>':'<p class="mu" style="margin:0">Rien pour l’instant.</p>')+'</div>';
+  document.getElementById('app').innerHTML=h;
+}
+document.addEventListener('click',function(e){var b=e.target.closest('[data-a]');if(!b)return;var a=b.dataset.a;
+  if(a!=='del')SURE=null;
+  if(a==='val'){S.status='actif';S.validated=today();log('Accès validé, e-mail envoyé (simulation)')}
+  else if(a==='ref'){S.status='supprime';log('Demande refusée')}
+  else if(a==='blk'){S.status='bloque';log('Compte bloqué')}
+  else if(a==='unb'){S.status='actif';log('Compte débloqué')}
+  else if(a==='del'){if(SURE!=='del'){SURE='del';view();return}SURE=null;S.status='supprime';S.devices=0;log('Compte supprimé')}
+  else if(a==='rst'){S=def();S.log=[];log('Nouvelle demande')}
+  else if(a==='setexp'){S.exp=document.getElementById('exp').value;log(S.exp?'Accès limité au '+fd(S.exp):'Limite d’accès retirée')}
+  else if(a==='sim'){if(S.status!=='actif'){return}S.last=today();S.devices=Math.max(S.devices,1);S.sessions++;log('Connexion et séance (simulation)')}
+  else if(a==='simfb'){S.fb.unshift({d:today(),s:'Studio',t:'Le minuteur est difficile à voir sur petit écran (exemple).'});log('Avis reçu (simulation)')}
+  save();view()});
+view();
+})();
+</script>
+</body>
+</html>
