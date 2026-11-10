@@ -11,5 +11,5 @@ L'application Agora personnelle reste dans son propre dépôt, séparé. Stockag
 
 ## Comptes et accès (serveur Google Sheet)
 - `serveur/Code.gs` : serveur des comptes (Apps Script), à coller dans le Sheet de la plateforme.
-- `admin/acces/` : page de gestion des accès (valider, bloquer, supprimer, libérer les appareils).
+- `admin/` : console de gestion unique, protégée par la clé admin. L'onglet « Comptes & accès » gère les vrais comptes (valider, bloquer, supprimer, libérer les appareils) ; les autres onglets sont encore en démonstration.
 - Les élèves, paiements et séances de l'espace restent des données de démonstration pour l'instant.

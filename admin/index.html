@@ -1139,7 +1139,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .a-w.acc>.a-c{break-inside:avoid;margin:0 0 20px;display:grid;gap:10px}
 .a-w.acc>.a-top{column-span:all;margin-bottom:16px}
 .pay{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:6px 0 12px;display:grid;gap:6px}.pay p{font-size:14px;color:var(--mut);margin:0}.ck{display:flex;gap:10px;align-items:flex-start;font-size:14px;margin:10px 0}.ck input{width:20px;height:20px;margin-top:2px;flex:none}.lnk{margin:12px 0 0;font-size:15px}.lnk a{color:var(--red);text-decoration:underline}#form[hidden],#login[hidden]{display:none}.mail{border:1px dashed var(--line);border-radius:12px;padding:12px 14px;margin-top:10px;font-size:14px}.mail b{display:block}
-#esx,#agear{display:none!important}body>*:not(#es):not(#lv):not(#lp):not(.toast):not(script):not(style){display:none!important}</style>
+#esx,#agear{display:none!important}body>*:not(#es):not(#svgate):not(#lv):not(#lp):not(.toast):not(script):not(style){display:none!important}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=DM+Sans:wght@400;500;600;700&family=Dancing+Script:wght@600;700&display=swap">
 
 <div class="wrap">
@@ -2446,7 +2446,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&lpEl.classL
 
 /* ================= ADMINISTRATION AGORA (inspirée de SMC Gestion) ================= */
 var AK='agora_adm',AV='dash',AQ='',AFL='all',ASEL=null,ATSEL=1,ACH=null;
-var AN=[['dash','Tableau de bord','▦'],['dem','Demandes','✉'],['el','Élèves','👥'],['pay','Paiements & factures','🧾'],['rel','Relances','📣'],['tre','Trésorerie','💰'],['for','Formateurs & séances','🎙'],['con','Contenus','📚'],['not','Notes & tests','📝'],['cer','Certificats','🎓'],['dev','Labo développeur','🧪'],['fbk','Retours sur les cours','🗒'],['his','Historique','🕘'],['cha','Messagerie','💬'],['avi','Avis & anciens messages','🗨'],['pro','Promotions & présences','📅'],['reg','Réglages & tarifs','⚙'],['adm','Administrateurs & accès','🔑'],['jou','Journal','🛡']];
+var AN=[['srv','Comptes & accès','🔐'],['dash','Tableau de bord','▦'],['dem','Demandes','✉'],['el','Élèves','👥'],['pay','Paiements & factures','🧾'],['rel','Relances','📣'],['tre','Trésorerie','💰'],['for','Formateurs & séances','🎙'],['con','Contenus','📚'],['not','Notes & tests','📝'],['cer','Certificats','🎓'],['dev','Labo développeur','🧪'],['fbk','Retours sur les cours','🗒'],['his','Historique','🕘'],['cha','Messagerie','💬'],['avi','Avis & anciens messages','🗨'],['pro','Promotions & présences','📅'],['reg','Réglages & tarifs','⚙'],['adm','Administrateurs & accès','🔑'],['jou','Journal','🛡']];
 var ANT=['dash','el','for','not','fbk','cha','pro'];
 var AM=['Mvola','Orange Money','Airtel Money','Virement','Espèces','Carte'];
 function dAgo(n){var d=new Date();d.setDate(d.getDate()-n);return d.toISOString().slice(0,10)}
@@ -2595,9 +2595,9 @@ AR.jou=function(){return aCard('Journal des actions sensibles',tbl(['Date','Par'
 /* ---- coque ---- */
 function vAdmin(){var me=aMe(),nav=AN.filter(function(n){return role==='tr'?ANT.indexOf(n[0])>=0:true});if(role==='tr'&&ANT.indexOf(AV)<0)AV='dash';
   var cur=AN.filter(function(n){return n[0]===AV})[0]||AN[0],nreq=AD.users.filter(function(u){return u.status==='attente'}).length,nrel=AD.inv.filter(function(i){return !i.paid}).length;
-  var sub={dash:'Vue d’ensemble en direct',dem:'Valide ou refuse : l’accès part par e-mail',el:'Suivi, blocage et suppression des comptes',pay:'Encaissements et factures numérotées',rel:'Messages prêts à envoyer',tre:'Encaissements, dépenses et solde',for:'Habilitations, élèves, séances',con:'Tout le programme, niveau par niveau',not:'Règles des tests et résultats',cer:'Certificats délivrés',dev:'Tester toute l’expérience',fbk:'Ce que les formateurs disent des cours',his:'Ce qui s’est passé dans Agora',cha:'Discussions avec les élèves et les formateurs',avi:'Ce que les élèves t’écrivent',pro:'Promotions et appel',reg:'Tarifs, accès, sécurité',adm:'Propriétaire, administrateurs et droits',jou:'Actions sensibles'}[cur[0]];
+  var sub={srv:'Les vrais comptes : validation, code d’activation, blocage, appareils',dash:'Vue d’ensemble en direct',dem:'Valide ou refuse : l’accès part par e-mail',el:'Suivi, blocage et suppression des comptes',pay:'Encaissements et factures numérotées',rel:'Messages prêts à envoyer',tre:'Encaissements, dépenses et solde',for:'Habilitations, élèves, séances',con:'Tout le programme, niveau par niveau',not:'Règles des tests et résultats',cer:'Certificats délivrés',dev:'Tester toute l’expérience',fbk:'Ce que les formateurs disent des cours',his:'Ce qui s’est passé dans Agora',cha:'Discussions avec les élèves et les formateurs',avi:'Ce que les élèves t’écrivent',pro:'Promotions et appel',reg:'Tarifs, accès, sécurité',adm:'Propriétaire, administrateurs et droits',jou:'Actions sensibles'}[cur[0]];
   var side='<aside class="ad-side"><div class="ad-br"><div class="ad-lg">A</div><div><b>Agora Gestion</b><small>BY STEPHEN</small></div></div><div class="ad-who">'+(role==='tr'?'Formateur · Hery Andria':esc(me.name)+' · '+'Administrateur')+'</div><nav>'+nav.map(function(n){var c=n[0]==='dem'&&nreq?nreq:n[0]==='rel'&&nrel?nrel:0;return '<button data-ad="go" data-v="'+n[0]+'" class="'+(AV===n[0]?'on':'')+'"><span>'+n[2]+'</span>'+n[1]+(c?'<em>'+c+'</em>':'')+'</button>'}).join('')+'</nav><button class="ad-out" data-ad="quit">Quitter</button></aside>';
-  return '<div class="ad-app">'+side+'<main class="ad-main"><div class="ad-top"><div><h1>'+cur[1]+'</h1><small>'+sub+'</small></div></div>'+(AD.cfg.locked&&role!=='tr'?'<div class="ad-warn">Coupe-circuit actif : les élèves ne peuvent plus se connecter.</div>':'')+(AR[AV]?AR[AV]():'')+'</main></div>'}
+  return '<div class="ad-app">'+side+'<main class="ad-main"><div class="ad-top"><div><h1>'+cur[1]+'</h1><small>'+sub+'</small></div></div>'+(AD.cfg.locked&&role!=='tr'?'<div class="ad-warn">Coupe-circuit actif : les élèves ne peuvent plus se connecter.</div>':'')+(AV!=='srv'&&role!=='tr'?'<div class="ad-warn" style="background:#e6ebfb;border-color:#9aa8e8;color:#2a3a8c">Données de démonstration : cette section n’est pas encore reliée au serveur. Les vrais comptes sont dans « Comptes &amp; accès ».</div>':'')+(AR[AV]?AR[AV]():'')+'</main></div>'}
 /* ---- actions ---- */
 function aGo(v){AV=v;AQ='';AFL='all';ASEL=null;render();var m=document.querySelector('.ad-main');if(m)m.scrollTop=0;$('#es').scrollTop=0}
 es.addEventListener('input',function(e){if(e.target.id==='ad-q'){AQ=e.target.value;var p=e.target.selectionStart;render();var n=document.getElementById('ad-q');if(n){n.focus();try{n.setSelectionRange(p,p)}catch(x){}}}});
@@ -2664,6 +2664,55 @@ function vForm(){var h='<div class="a-w wide ad-f-wrap">';
 document.addEventListener('click',function(e){var t=e.target.closest('[data-ftab]');if(t){FV=t.dataset.ftab;AV=FV==='home'?'dash':FV;render();var es=document.getElementById('es');if(es)es.scrollTop=0;return}var g=e.target.closest('[data-a="goF"]');if(g){FV=g.dataset.v;AV=FV;render()}});
 
 
-if(AG_MODE==="admin"){role="fo";openES()}
+/* ---- comptes & accès réels (serveur Google Sheet) ---- */
+var SVU="https://script.google.com/macros/s/AKfycbwFkSJld9L17j4QCa8dH3wxFkfUDSXY6k9r3I5e0ZqARdDjRZP0LT0dRLIACaofe5qT/exec",SVK='agora_plateforme_cle',SV={data:null,loading:false,err:'',t:0};
+function svKey(){try{return localStorage.getItem(SVK)||''}catch(x){return ''}}
+function svCall(o){return fetch(SVU,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(o)}).then(function(r){return r.json()})}
+function svLoad(silent){if(SV.loading)return;SV.loading=true;svCall({action:'liste',cle:svKey()}).then(function(r){SV.loading=false;if(!r||!r.ok){SV.err=(r&&r.erreur)||'Refusé.';if(r&&r.erreur==='Clé invalide'){try{localStorage.removeItem(SVK)}catch(x){}}if(!silent&&role==='fo'&&AV==='srv')render();return}var same=JSON.stringify(SV.data)===JSON.stringify(r);SV.data=r;SV.err='';SV.t=Date.now();if(!same&&role==='fo'&&AV==='srv'){var ae=document.activeElement;if(!(ae&&ae.tagName==='INPUT'))render()}else if(!silent&&role==='fo'&&AV==='srv')render()}).catch(function(){SV.loading=false;SV.err='Connexion impossible.';if(!silent&&role==='fo'&&AV==='srv')render()})}
+function svFd(d){if(!d)return '—';var t=new Date(d);return isNaN(t)?esc(d):t.toLocaleDateString('fr-FR')+' '+t.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}
+var SVB={'en attente':['wt','En attente'],'validé':['ok','Actif'],'bloqué':['ko','Bloqué'],'supprimé':['ko','Supprimé'],'expiré':['wt','Expiré']};
+function svActs(x){var e=esc(x.email),st=x.statut,h='';
+  function B(op,l,c){return '<button class="ad-b '+(c||'')+'" data-sv="'+op+'" data-e="'+e+'">'+l+'</button>'}
+  if(st==='en attente')h+=B('valider','Valider et envoyer le code','ok');
+  if(st==='validé'||st==='expiré')h+=B('valider','Renvoyer un code')+B('appareil','Libérer l’ordinateur')+B('mobile','Libérer le téléphone')+B('bloquer','Bloquer','ko')+'<input type="date" class="svd" data-e="'+e+'" value="'+esc(String(x.expire||'').slice(0,10))+'" style="padding:8px;border-radius:10px;border:1.5px solid rgba(27,32,51,.22);font:14px \'DM Sans\',sans-serif">'+B('expire','Fixer la fin');
+  if(st==='bloqué')h+=B('debloquer','Débloquer','ok');
+  if(st==='supprimé')h+=B('valider','Revalider','ok');
+  if(st!=='supprimé')h+=B('supprimer','Supprimer','ko');
+  h+=B('effacer','Effacer définitivement','ko');
+  return '<div style="display:flex;flex-wrap:wrap;gap:8px">'+h+'</div>'}
+function svEtat(x){if(x.statut!=='validé')return '—';return x.active?'Compte activé'+(x.pc?' · ordinateur lié':'')+(x.mob?' · téléphone lié':''):(x.code?'Code envoyé, pas encore activé':'Validé')}
+AR.srv=function(){
+  if(!SV.data&&!SV.loading&&!SV.err)svLoad();
+  if(SV.err&&!SV.data)return aCard('Comptes & accès','<p>'+esc(SV.err)+'</p><button class="ad-b ok" data-sv="reload">Réessayer</button>');
+  if(!SV.data)return aCard('Comptes & accès','<p>Chargement…</p>');
+  var c=SV.data.comptes||[],j=SV.data.journal||[],n=function(s){return c.filter(function(x){return x.statut===s}).length};
+  var h='<div class="ad-kp">'+kpi('En attente',n('en attente'),'à valider',n('en attente')?'r':'g')+kpi('Actifs',n('validé'),'comptes ouverts','g')+kpi('Bloqués',n('bloqué'),'accès coupés','g')+kpi('Comptes',c.length,'au total','g')+'</div>';
+  h+=aCard('Lien de la plateforme à envoyer','<p style="margin:0">La personne ouvre ce lien, fait sa demande, puis tu la valides ici.</p><div style="display:flex;flex-wrap:wrap;gap:8px"><input type="text" id="svl" readonly value="https://andersonsoahita-hash.github.io/Agora-Plateforme/plateforme/" style="flex:1;min-width:220px;padding:10px;border-radius:10px;border:1.5px solid rgba(27,32,51,.22);font:14px \'DM Sans\',sans-serif"><button class="ad-b ok" data-sv="copy">Copier le lien</button></div>');
+  h+=aCard('Comptes ('+c.length+')',c.length?c.map(function(x){var b=SVB[x.statut]||['wt',esc(x.statut)];return '<div style="border:1px solid rgba(27,32,51,.1);border-radius:16px;padding:14px;display:grid;gap:8px;background:#fff"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><b>'+esc(x.nom)+'</b> · '+esc(x.role||'élève')+'<br><small>'+esc(x.email)+(x.tel?' · '+esc(x.tel):'')+(x.age?' · '+esc(x.age)+' ans':'')+(x.pays?' · '+esc(x.pays):'')+'</small></div><span class="ad-st '+b[0]+'">'+b[1]+'</span></div><small>Demande du '+svFd(x.demande).split(' ')[0]+' · '+svEtat(x)+' · dernière connexion : '+svFd(x.derniere)+' · fin d’accès : '+(x.expire?svFd(x.expire).split(' ')[0]:'sans limite')+'</small>'+(x.situation?'<small><b>Situation :</b> '+esc(x.situation)+(x.projet?' — '+esc(x.projet):'')+'</small>':'')+svActs(x)+'</div>'}).join(''):'<p>Aucune demande pour l’instant.</p>');
+  h+=aCard('Journal',j.length?'<ul style="margin:0;padding-left:18px">'+j.slice().reverse().map(function(l){return '<li>'+svFd(l[0])+' — '+esc(l[1])+'</li>'}).join('')+'</ul>':'<p>Rien pour l’instant.</p>');
+  h+='<div><button class="ad-b" data-sv="reload">Actualiser</button> <small>Mise à jour automatique toutes les 20 secondes.</small></div>';
+  return h};
+es.addEventListener('click',function(ev){var b=ev.target.closest('[data-sv]');if(!b)return;var op=b.dataset.sv,em=b.dataset.e;
+  if(op==='reload'){SV.err='';svLoad();return}
+  if(op==='copy'){var i=document.getElementById('svl');try{navigator.clipboard.writeText(i.value).then(function(){toast('Lien copié')},function(){i.select();toast('Sélectionné : fais Cmd+C')})}catch(x){i.select();toast('Sélectionné : fais Cmd+C')}return}
+  if((op==='supprimer'||op==='effacer')&&b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent=op==='effacer'?'Confirmer : effacer pour toujours':'Confirmer la suppression';return}
+  var date='';if(op==='expire'){var d=document.querySelector('.svd[data-e="'+em+'"]');date=d?d.value:''}
+  b.disabled=true;svCall({action:'admin',cle:svKey(),op:op,email:em,date:date}).then(function(r){toast(r&&r.ok?'Fait.':((r&&r.erreur)||'Refusé.'));svLoad()}).catch(function(){toast('Connexion impossible.');b.disabled=false})});
+setInterval(function(){if(role==='fo'&&AV==='srv'&&document.visibilityState==='visible'&&svKey())svLoad(true)},20000);
+/* porte d'entrée de la console : la clé admin est demandée avant d'ouvrir quoi que ce soit */
+function svGate(){
+  var g=document.createElement('div');g.id='svgate';g.setAttribute('role','dialog');g.setAttribute('aria-label','Accès administrateur');
+  g.style.cssText='position:fixed;inset:0;z-index:99999;display:grid;place-items:center;padding:20px;background:#f7f8fc;color:#1b2033;font:16px "DM Sans",system-ui,sans-serif';
+  g.innerHTML='<form style="width:100%;max-width:420px;background:#fff;border:1px solid rgba(27,32,51,.12);border-radius:20px;padding:26px;display:grid;gap:12px;box-shadow:0 24px 60px -30px rgba(27,32,51,.5)"><div style="font:700 26px Fraunces,Georgia,serif">Agora Gestion</div><small style="letter-spacing:.14em;color:#8a6212;font-weight:700">BY STEPHEN</small><p style="margin:4px 0">Colle ta clé administrateur. Tu la trouves dans le Google Sheet : menu <b>Agora &gt; Afficher ma clé admin</b>. Elle reste dans ce navigateur.</p><input id="svk" type="password" autocomplete="off" autocapitalize="off" placeholder="Clé administrateur" style="padding:12px;border-radius:12px;border:1.5px solid rgba(27,32,51,.22);font:16px \'DM Sans\',sans-serif"><label style="display:flex;gap:8px;align-items:center;font-size:15px"><input type="checkbox" id="svs"> Afficher la clé</label><button type="submit" id="svgo" style="padding:12px;border-radius:99px;border:0;background:linear-gradient(90deg,#f2b84b,#ff8f5e);color:#1a1204;font:700 16px \'DM Sans\',sans-serif;cursor:pointer;min-height:44px">Entrer</button><div id="sve" role="alert" style="color:#a3202f;min-height:20px"></div></form>';
+  document.body.appendChild(g);
+  var k=document.getElementById('svk');document.getElementById('svs').onchange=function(){k.type=this.checked?'text':'password'};
+  function enter(){g.parentNode&&g.parentNode.removeChild(g);openES();render()}
+  g.querySelector('form').onsubmit=function(e){e.preventDefault();var v=k.value.trim(),er=document.getElementById('sve'),b=document.getElementById('svgo');if(!v)return;b.disabled=true;er.textContent='';
+    svCall({action:'liste',cle:v}).then(function(r){b.disabled=false;if(!r||!r.ok){er.textContent=(r&&r.erreur)||'Refusé.';return}try{localStorage.setItem(SVK,v)}catch(x){}SV.data=r;SV.err='';enter()}).catch(function(){b.disabled=false;er.textContent='Connexion impossible.'})};
+  if(svKey())svCall({action:'liste',cle:svKey()}).then(function(r){if(r&&r.ok){SV.data=r;enter()}}).catch(function(){});
+}
+
+
+if(AG_MODE==="admin"){role="fo";AV="srv";svGate()}
 })();
 </script>
