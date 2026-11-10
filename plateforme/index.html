@@ -1135,6 +1135,9 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .ad-f-wrap .ad-b{border:0;border-radius:99px;padding:11px 18px;font:600 14px 'DM Sans',sans-serif;background:#fff;box-shadow:inset 0 0 0 1.5px rgba(27,32,51,.18);cursor:pointer;color:#1b2033}
 .ad-f-wrap .ad-b.ok{background:linear-gradient(90deg,#f2b84b,#ff8f5e);color:#1a1204;box-shadow:none}
 .ad-f-wrap .ad-k{min-width:0}
+.a-w.acc{display:block;max-width:1100px;columns:2 360px;column-gap:20px}
+.a-w.acc>.a-c{break-inside:avoid;margin:0 0 20px;display:grid;gap:10px}
+.a-w.acc>.a-top{column-span:all;margin-bottom:16px}
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=DM+Sans:wght@400;500;600;700&family=Dancing+Script:wght@600;700&display=swap">
 
@@ -2000,7 +2003,7 @@ function vProofs(){
 }
 /* ---- Compte ---- */
 function vAccount(){
-  return '<div class="a-w"><div class="a-top"><h1>Compte</h1><button class="a-chip" data-a="back">Retour</button></div><div class="a-c"><div class="a-f"><label for="an">Ton prénom et nom</label><input id="an" data-a-in="name" value="'+esc(P.name)+'" autocomplete="name"></div></div>'+
+  return '<div class="a-w acc"><div class="a-top"><h1>Compte</h1><button class="a-chip" data-a="back">Retour</button></div><div class="a-c"><div class="a-f"><label for="an">Ton prénom et nom</label><input id="an" data-a-in="name" value="'+esc(P.name)+'" autocomplete="name"></div></div>'+
   '<div class="a-c"><h3>Accès</h3><ul class="a-ls"><li class="a-sub" style="margin:4px 0"><b>Lien personnel</b> lié à ton compte</li><li class="a-sub" style="margin:4px 0"><b>Appareils</b> 1 sur 2</li><li class="a-sub" style="margin:4px 0"><b>Hors ligne</b> 14 jours de contenu, puis synchronisation obligatoire</li></ul><p class="a-mu">Réseau : '+(A.S.online?'en ligne, tout est à jour':'hors ligne, '+A.S.queue+' envoi(s) en attente')+'. Le bouton réseau en haut de la page simule la coupure.</p></div>'+
   '<div class="a-c"><h3>Mes certificats</h3>'+(function(){var o='';[1,2,3,4,5].forEach(function(l){var T=l===1?P.t1:P.tl[l];if(T.st==='approved')o+='<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:6px 0"><button class="btn" data-a="cert" data-v="'+l+'">Voir mon certificat du niveau '+l+'</button>'+((P.fmt&&P.fmt['n'+l]==='ok')?'<span class="a-st ok">Formateur du niveau '+l+'</span>':'')+'</div>'});return o||'<p class="a-mu">Aucun certificat pour l’instant.</p>'})()+'</div>'+
   '<div class="a-c"><h3>Application mobile</h3><p class="a-mu">Agora Studio s’installe sur ton téléphone : Studio, objections, recherche express et ruses, sans refaire les leçons.</p><a class="btn" href="../mobile/" target="_blank" rel="noopener" style="justify-self:start">Ouvrir Agora Studio</a></div>'+
