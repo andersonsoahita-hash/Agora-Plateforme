@@ -39,23 +39,28 @@ function feuille_(nom) {
 function installer() { // à lancer une fois (et après chaque mise à jour du code)
   ['Comptes', 'Journal', 'Séances', 'Admins', 'Progrès', 'Compta'].forEach(feuille_);
   var s = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Feuille 1'); if (s && s.getLastRow() === 0) s.setName('Notes');
-  var nouvelle = !PropertiesService.getScriptProperties().getProperty('CLE_ADMIN');
-  if (nouvelle) PropertiesService.getScriptProperties().setProperty('CLE_ADMIN', Utilities.getUuid());
-  if (nouvelle) envoyerCle(); // la clé arrive directement dans ta boîte mail
+  var p = PropertiesService.getScriptProperties(), nouvelle = !p.getProperty('CLE_ADMIN') && !p.getProperty('CLE_INIT');
+  p.setProperty('CLE_INIT', '1');
+  if (nouvelle) envoyerCle(); // la clé (à usage unique) arrive directement dans ta boîte mail
 }
-function envoyerCle() { // t'envoie ta clé admin par e-mail
-  var cle = PropertiesService.getScriptProperties().getProperty('CLE_ADMIN');
-  if (!cle) { installer(); return; }
-  MailApp.sendEmail({ to: EMAIL_ADMIN, subject: 'Ta clé administrateur Agora',
-    body: 'Bonjour Stephen,\n\nVoici ta clé administrateur Agora :\n\n      ' + cle + '\n\n1. Ouvre la console : https://andersonsoahita-hash.github.io/Agora-Plateforme/admin/\n2. Colle cette clé quand elle te la demande. Elle reste ensuite dans ce navigateur.\n\nNe la partage avec personne : elle permet de valider, bloquer et effacer des comptes.\nPour la changer : dans le Sheet, menu Agora > Choisir ma clé admin.' });
+var MAX_APP = 2, CLE_VIE = 24 * 3600 * 1000; // 2 appareils par administrateur ; une clé vit 24 h et ne sert qu'une fois
+function nouvelleCle_(cle) { var p = PropertiesService.getScriptProperties(); p.setProperty('CLE_ADMIN', cle); p.setProperty('CLE_ADMIN_TS', String(Date.now())); }
+function mailCle_(cle) {
+  MailApp.sendEmail({ to: EMAIL_ADMIN, subject: 'Ta clé administrateur Agora (usage unique)',
+    body: 'Bonjour Stephen,\n\nVoici ta clé administrateur Agora :\n\n      ' + cle + '\n\n1. Ouvre la console : ' + CONSOLE_URL + '\n2. Colle cette clé quand elle te la demande.\n\nCette clé ne marche qu’UNE fois et pendant 24 h : elle active l’appareil sur lequel tu la colles (ensuite tu n’as plus rien à coller). Tu peux activer ' + MAX_APP + ' appareils au maximum. Pour en ajouter un autre, retire un appareil dans la console (« Mes appareils »), puis demande une nouvelle clé : dans le Sheet, menu Agora > Nouvelle clé admin.\n\nNe la partage avec personne.' });
   try { SpreadsheetApp.getActive().toast('Clé envoyée à ' + EMAIL_ADMIN); } catch (e) {}
 }
-function choisirCle() { // tu choisis ta propre clé (8 caractères minimum)
-  var ui = SpreadsheetApp.getUi(), r = ui.prompt('Choisis ta clé admin', 'Au moins 8 caractères. Elle sera aussi envoyée à ' + EMAIL_ADMIN + '.', ui.ButtonSet.OK_CANCEL);
+function envoyerCle() { var cle = cleAdmin_(); nouvelleCle_(cle); mailCle_(cle); } // une NOUVELLE clé à usage unique, par e-mail
+function choisirCle() { // tu choisis ta propre clé (8 caractères minimum), toujours à usage unique
+  var ui = SpreadsheetApp.getUi(), r = ui.prompt('Choisis ta clé admin', 'Au moins 8 caractères. Elle ne servira qu’une fois (24 h) et sera envoyée à ' + EMAIL_ADMIN + '.', ui.ButtonSet.OK_CANCEL);
   if (r.getSelectedButton() !== ui.Button.OK) return;
   var cle = String(r.getResponseText() || '').trim();
   if (cle.length < 8) { ui.alert('Il faut au moins 8 caractères.'); return; }
-  PropertiesService.getScriptProperties().setProperty('CLE_ADMIN', cle); envoyerCle();
+  nouvelleCle_(cle); mailCle_(cle);
+}
+function deconnecterAdmins() { // urgence (téléphone perdu…) : tous les appareils admin sont déconnectés
+  appEcrire_([]); journal_('Tous les appareils administrateur ont été déconnectés');
+  try { SpreadsheetApp.getUi().alert('Tous les appareils administrateur sont déconnectés. Demande une nouvelle clé (menu Agora > Nouvelle clé admin).'); } catch (e) {}
 }
 function journal_(a) { feuille_('Journal').appendRow([new Date(), a]); }
 function alea_(n, alphabet) { var s = ''; for (var i = 0; i < n; i++) s += alphabet.charAt(Math.floor(Math.random() * alphabet.length)); return s; }
@@ -73,7 +78,7 @@ function onOpen() {
     .addItem('Bloquer la ligne sélectionnée', 'bloquer')
     .addItem('Débloquer la ligne sélectionnée', 'debloquer')
     .addItem('Supprimer le compte de la ligne sélectionnée', 'supprimer')
-    .addSeparator().addItem('M’envoyer ma clé admin par e-mail', 'envoyerCle').addItem('Choisir ma clé admin', 'choisirCle').addItem('Afficher ma clé admin', 'montrerCle').addToUi();
+    .addSeparator().addItem('Nouvelle clé admin (usage unique, par e-mail)', 'envoyerCle').addItem('Choisir ma clé admin', 'choisirCle').addItem('Afficher la clé admin en cours', 'montrerCle').addItem('Déconnecter tous les appareils admin', 'deconnecterAdmins').addToUi();
 }
 function emailLigne_() {
   var sh = SpreadsheetApp.getActiveSheet();
@@ -85,7 +90,7 @@ function valider() { var r = agir_('valider', emailLigne_()); SpreadsheetApp.get
 function bloquer() { agir_('bloquer', emailLigne_()); }
 function debloquer() { agir_('debloquer', emailLigne_()); }
 function supprimer() { agir_('supprimer', emailLigne_()); }
-function montrerCle() { SpreadsheetApp.getUi().alert('Clé admin (pour la console de gestion) :\n' + PropertiesService.getScriptProperties().getProperty('CLE_ADMIN')); }
+function montrerCle() { var c = PropertiesService.getScriptProperties().getProperty('CLE_ADMIN'); SpreadsheetApp.getUi().alert(c ? 'Clé admin en cours (usage unique, 24 h) :\n' + c : 'Aucune clé en cours : elle a déjà servi. Menu Agora > Nouvelle clé admin.'); }
 
 /* ---------- outils ---------- */
 function rep_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
@@ -237,8 +242,7 @@ function agir_(op, email, date) {
   if (op === 'valider') { // (re)donne un code à usage unique et remet le compte à zéro
     var code = code_();
     set_(t, C.st, 'validé'); set_(t, C.code, code); set_(t, C.pc, ''); set_(t, C.mob, ''); set_(t, C.pw, ''); set_(t, C.tok, ''); set_(t, C.mtok, '');
-    MailApp.sendEmail({ to: v[C.mail], subject: 'Ton code d’accès Agora',
-      body: 'Bonjour ' + v[C.pre] + ',\n\nTa demande est validée.\n\n1. Ouvre la plateforme sur ton ordinateur (ajoute-la au Dock ou aux favoris avant de créer ton compte) :\n' + APP_URL + '\n2. Clique sur « Se connecter », puis « J’ai un code d’activation ». Entre ton e-mail et ce code :\n\n      ' + code + '\n\n3. Crée ton mot de passe. Il te servira à te reconnecter.\n\nUn seul ordinateur par compte, et un seul téléphone pour l’application (tu le relieras ensuite depuis ton espace, avec « Activer mon application »). Ce code ne marche qu’une seule fois : ne le partage pas.\n\nStephen' });
+    var mv = mailValidation_(v[C.pre], code); MailApp.sendEmail({ to: v[C.mail], subject: 'Ton code d’accès Agora', body: mv.texte, htmlBody: mv.html });
     journal_('Code d’activation envoyé à ' + v[C.mail]);
     if (estTest_(v)) { // compte test : rien à payer, mais une vraie facture (marquée test, effaçable) pour voir le rendu
       var dejaF = lireCompta_().some(function (l) { return l.em === String(v[C.mail]).toLowerCase() && l.test; });
@@ -256,25 +260,32 @@ function agir_(op, email, date) {
 }
 
 /* ---------- API ---------- */
-function admin_(b) { return b.cle === PropertiesService.getScriptProperties().getProperty('CLE_ADMIN'); }
+function cleProprio_(cle) { // la clé du propriétaire : une seule fois, 24 h
+  var p = PropertiesService.getScriptProperties(), k = p.getProperty('CLE_ADMIN'); if (!k || cle !== k) return false;
+  var ts = Number(p.getProperty('CLE_ADMIN_TS') || 0); return !ts || Date.now() - ts < CLE_VIE;
+}
+function appLire_() { try { var a = JSON.parse(PropertiesService.getScriptProperties().getProperty('APP_ADM') || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+function appEcrire_(a) { PropertiesService.getScriptProperties().setProperty('APP_ADM', JSON.stringify(a)); }
 function hashCle_(cle) {
   return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, 'cle-admin|' + cle + '|agora-plateforme')
     .map(function (x) { return ('0' + (x & 255).toString(16)).slice(-2); }).join('');
 }
 function cleAdmin_() { var a = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; return 'AG-' + alea_(4, a) + '-' + alea_(4, a) + '-' + alea_(4, a); }
-/* qui est derrière la clé ? le propriétaire (clé du Sheet) ou un administrateur de l'onglet Admins */
+/* qui est derrière ce jeton d'appareil ? le propriétaire ou un administrateur de l'onglet Admins.
+   La clé qu'on colle une fois (usage unique) n'ouvre rien d'autre que « activerAppareil » : tout le reste passe par le jeton de l'appareil. */
 function qui_(b) {
-  var cle = String(b.cle || '').trim(); if (!cle) return null;
-  if (admin_({ cle: cle })) return { owner: true, nom: 'Stephen', email: EMAIL_ADMIN, droits: Object.keys(DROITS) };
-  var sh = feuille_('Admins'), n = sh.getLastRow(); if (n < 2) return null;
-  var h = hashCle_(cle), d = sh.getRange(2, 1, n - 1, NADM).getValues();
-  for (var i = 0; i < d.length; i++) {
-    if (d[i][AD.cle] === h && d[i][AD.st] === 'actif') {
-      if (!d[i][AD.last] || new Date() - new Date(d[i][AD.last]) > 300000) sh.getRange(i + 2, AD.last + 1).setValue(new Date());
-      return { owner: false, nom: String(d[i][AD.nom]), email: String(d[i][AD.mail]), droits: String(d[i][AD.dr]).split(',').filter(function (x) { return DROITS[x]; }) };
-    }
+  var t = String(b.cle || '').trim(); if (t.length < 20) return null;
+  var h = hashCle_(t), L = appLire_(), ap = null;
+  for (var i = 0; i < L.length; i++) if (L[i].h === h) { ap = L[i]; break; }
+  if (!ap) return null;
+  var w, ta = null;
+  if (ap.qui === 'owner') w = { owner: true, nom: 'Stephen', email: EMAIL_ADMIN, droits: Object.keys(DROITS) };
+  else {
+    ta = trouverAdmin_(ap.qui); if (!ta || ta.v[AD.st] !== 'actif') return null;
+    w = { owner: false, nom: String(ta.v[AD.nom]), email: String(ta.v[AD.mail]), droits: String(ta.v[AD.dr]).split(',').filter(function (x) { return DROITS[x]; }) };
   }
-  return null;
+  if (!ap.last || Date.now() - ap.last > 300000) { ap.last = Date.now(); appEcrire_(L); if (ta) ta.sh.getRange(ta.r, AD.last + 1).setValue(new Date()); }
+  w.app = ap.id; return w;
 }
 function peut_(q, d) { return !!q && (q.owner || q.droits.indexOf(d) >= 0); }
 function droitsPropres_(l) { return (Array.isArray(l) ? l : String(l || '').split(',')).filter(function (x) { return DROITS[x]; }).filter(function (x, i, a) { return a.indexOf(x) === i; }); }
@@ -286,7 +297,7 @@ function trouverAdmin_(email) {
 }
 function mailAdmin_(nom, email, cle, droits, nouveau) {
   MailApp.sendEmail({ to: email, subject: nouveau ? 'Ton accès à la console Agora' : 'Ta nouvelle clé pour la console Agora',
-    body: 'Bonjour ' + nom + ',\n\n' + (nouveau ? 'Stephen t’a donné accès à la console de gestion Agora.' : 'Voici ta nouvelle clé pour la console de gestion Agora. L’ancienne ne marche plus.') + '\n\n1. Ouvre la console :\n' + CONSOLE_URL + '\n\n2. Colle ta clé personnelle quand elle te la demande :\n\n      ' + cle + '\n\nCe que tu peux faire :\n' + (droits.length ? droits.map(function (d) { return ' - ' + DROITS[d]; }).join('\n') : ' - rien pour l’instant (Stephen doit encore te donner des droits)') + '\n\nNe partage pas cette clé : elle est liée à toi, et tout ce que tu fais est noté dans le journal.\n\nStephen' });
+    body: 'Bonjour ' + nom + ',\n\n' + (nouveau ? 'Stephen t’a donné accès à la console de gestion Agora.' : 'Voici une nouvelle clé pour la console de gestion Agora.') + '\n\n1. Ouvre la console :\n' + CONSOLE_URL + '\n\n2. Colle ta clé personnelle quand elle te la demande :\n\n      ' + cle + '\n\nCe que tu peux faire :\n' + (droits.length ? droits.map(function (d) { return ' - ' + DROITS[d]; }).join('\n') : ' - rien pour l’instant (Stephen doit encore te donner des droits)') + '\n\nCette clé ne marche qu’UNE fois et pendant 24 h : elle active l’appareil sur lequel tu la colles (ensuite tu n’as plus rien à coller). Tu peux activer ' + MAX_APP + ' appareils au maximum ; pour en ajouter un autre, retire-en un dans « Mes appareils » puis demande une nouvelle clé à Stephen.\n\nNe partage pas cette clé : elle est liée à toi, et tout ce que tu fais est noté dans le journal.\n\nStephen' });
 }
 /* lieu : « Madagascar — Ariary (Ar) · Antananarivo · Analakely » (le début garde la devise ; ville et quartier servent à repérer les membres proches) */
 function lieu_(b) { var p = cut_(b.pays, 40), r = cut_(b.res, 30), v = cut_(b.ville, 60), q = cut_(b.quartier, 60); return p + (r && p.indexOf(r) !== 0 && p.indexOf('Madagascar') !== 0 ? ' · ' + r : '') + (v ? ' · ' + v : '') + (q ? ' · ' + q : ''); }
@@ -319,6 +330,37 @@ function carte_(moi, complet) {
     var kq2 = sansAccent_(moi.quartier); r.moi.nQuartier = moi.quartier && Qm[kq2] && Qm[kq2].n >= K ? Qm[kq2].n : null;
   }
   return r;
+}
+var MOBILE_URL = 'https://andersonsoahita-hash.github.io/Agora-Plateforme/mobile/'; // application Agora Studio (téléphone)
+function htmlEsc_(x) { return String(x == null ? '' : x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+/* e-mail de validation : les deux liens, le code, et le guide d'installation pour chaque appareil (à faire AVANT de créer le compte) */
+function mailValidation_(prenom, code) {
+  var G = [
+    ['Mac', 'Safari : dans la barre du haut, menu « Fichier » → « Ajouter au Dock… » (ou « Ajouter aux favoris »). Chrome : menu ⋮ → « Diffuser, enregistrer et partager » → « Installer Agora ».'],
+    ['Windows', 'Chrome ou Edge : clique sur l’icône « Installer » (écran avec une flèche) à droite de la barre d’adresse, ou menu ⋮ → « Enregistrer et partager » → « Installer ». Puis clic droit sur l’icône de la barre des tâches → « Épingler ». Autre navigateur : épingle l’onglet ou ajoute la page aux favoris.'],
+    ['iPhone / iPad', 'Ouvre le lien de l’application dans Safari (pas depuis Mail ni WhatsApp : copie-le dans Safari). Touche « Partager » (le carré avec une flèche) → « Sur l’écran d’accueil » → « Ajouter ».'],
+    ['Android', 'Ouvre le lien de l’application dans Chrome (copie-le depuis cet e-mail si besoin). Menu ⋮ → « Installer l’application » (ou « Ajouter à l’écran d’accueil »).']
+  ];
+  var texte = 'Bonjour ' + prenom + ',\n\nTa demande est validée. Voici tes deux liens :\n\n'
+    + '• La plateforme (sur ordinateur) : ' + APP_URL + '\n'
+    + '• L’application Agora Studio (sur téléphone) : ' + MOBILE_URL + '\n\n'
+    + 'Ton code d’activation (il ne marche qu’une fois) :\n\n      ' + code + '\n\n'
+    + 'ÉTAPE 1 · Installe d’abord (2 minutes)\n' + G.map(function (g) { return '— ' + g[0] + ' : ' + g[1]; }).join('\n') + '\n\n'
+    + 'ÉTAPE 2 · Crée ton compte depuis la version installée (ainsi ton appareil se souvient d’Agora)\nSur la plateforme : « Se connecter » → « J’ai un code d’activation ». Entre ton e-mail et le code ci-dessus, puis crée ton mot de passe.\n\n'
+    + 'ÉTAPE 3 · Relie ton téléphone\nDans ton espace sur ordinateur : « Activer mon application ». Un code s’affiche : saisis-le dans l’application.\n\n'
+    + 'Un seul ordinateur par compte et un seul téléphone. Ne partage pas ton code.\n\nStephen · Agora, l’art oratoire';
+  var bt = 'display:inline-block;padding:12px 18px;border-radius:999px;font-weight:700;text-decoration:none;margin:4px 6px 4px 0;';
+  var html = '<div style="font-family:Arial,Helvetica,sans-serif;color:#1b2033;max-width:560px;line-height:1.55">'
+    + '<p>Bonjour ' + htmlEsc_(prenom) + ',</p><p><b>Ta demande est validée.</b> Voici tes deux liens :</p>'
+    + '<p><a href="' + APP_URL + '" style="' + bt + 'background:#9E2B16;color:#ffffff">Ouvrir la plateforme (ordinateur)</a>'
+    + '<a href="' + MOBILE_URL + '" style="' + bt + 'background:#1b2033;color:#ffffff">Ouvrir l’application (téléphone)</a></p>'
+    + '<p>Ton code d’activation (il ne marche qu’une fois) :</p><p style="font-size:26px;letter-spacing:4px;font-weight:700;background:#f2f4fa;border-radius:12px;padding:12px 16px;display:inline-block">' + htmlEsc_(code) + '</p>'
+    + '<h3 style="margin:22px 0 6px">Étape 1 · Installe d’abord (2 minutes)</h3>'
+    + G.map(function (g) { return '<p style="margin:6px 0"><b>' + g[0] + '</b> : ' + htmlEsc_(g[1]) + '</p>'; }).join('')
+    + '<h3 style="margin:22px 0 6px">Étape 2 · Crée ton compte depuis la version installée</h3><p>Ainsi ton appareil se souvient d’Agora. Sur la plateforme : « Se connecter » → « J’ai un code d’activation ». Entre ton e-mail et le code ci-dessus, puis crée ton mot de passe.</p>'
+    + '<h3 style="margin:22px 0 6px">Étape 3 · Relie ton téléphone</h3><p>Dans ton espace sur ordinateur : « Activer mon application ». Un code s’affiche : saisis-le dans l’application.</p>'
+    + '<p style="color:#5b6173;font-size:13px">Un seul ordinateur par compte et un seul téléphone. Ne partage pas ton code.</p><p>Stephen · Agora, l’art oratoire</p></div>';
+  return { texte: texte, html: html };
 }
 function estTest_(v) { return /D[ée]veloppeur Anderson/i.test(String(v[C.proj] || '')); } // compte test : a choisi « Développeur Anderson » comme mode de paiement
 function profil_(v) { return { prenoms: v[C.pre], nom: v[C.nom], role: v[C.role], test: estTest_(v) }; }
@@ -421,6 +463,38 @@ function doPost(e) {
       return rep_(r5);
     }
 
+    if (a === 'activerAppareil') { // la clé à usage unique devient un jeton propre à CET appareil
+      var cch = CacheService.getScriptCache(), nf = Number(cch.get('adfail') || 0);
+      if (nf >= 8) return rep_({ ok: false, erreur: 'Trop d’essais. Réessaie dans 15 minutes.' });
+      var cl = String(b.cle || '').trim(), qk = null, tk2 = null;
+      if (cl && cleProprio_(cl)) qk = 'owner';
+      else if (cl) {
+        var sh2 = feuille_('Admins'), n2 = sh2.getLastRow(), h2 = hashCle_(cl), d2 = n2 > 1 ? sh2.getRange(2, 1, n2 - 1, NADM).getValues() : [];
+        for (var i2 = 0; i2 < d2.length; i2++) {
+          var pc = String(d2[i2][AD.cle]).split(':');
+          if (pc[0] === h2 && d2[i2][AD.st] === 'actif') { if (!pc[1] || Date.now() - Number(pc[1]) < CLE_VIE) { qk = String(d2[i2][AD.mail]).toLowerCase(); tk2 = { sh: sh2, r: i2 + 2 }; } break; }
+        }
+      }
+      if (!qk) { cch.put('adfail', String(nf + 1), 900); return rep_({ ok: false, erreur: 'Clé invalide, déjà utilisée ou expirée. Demande-en une nouvelle.' }); }
+      if (tk2) tk2.sh.getRange(tk2.r, AD.last + 1).setValue(new Date());
+      if (qk === 'owner') PropertiesService.getScriptProperties().setProperty('CLE_ADMIN', ''); else tk2.sh.getRange(tk2.r, AD.cle + 1).setValue(''); // la clé est grillée dans tous les cas
+      var L2 = appLire_(), mes = L2.filter(function (x) { return x.qui === qk; });
+      if (mes.length >= MAX_APP) { journal_('Activation refusée (appareils au maximum) : ' + (qk === 'owner' ? 'Stephen' : qk)); return rep_({ ok: false, erreur: 'Nombre maximal d’appareils atteint (' + MAX_APP + '). Retire un appareil (console > Mes appareils, ou menu Agora > Déconnecter tous les appareils admin), puis demande une nouvelle clé.' }); }
+      var jt = 'AGT-' + jeton_(), apn = { id: alea_(6, 'abcdefghjkmnpqrstuvwxyz23456789'), h: hashCle_(jt), qui: qk, nom: cut_(b.nom, 40) || 'Appareil', date: Date.now(), last: Date.now() };
+      L2.push(apn); appEcrire_(L2); journal_('Appareil admin activé : ' + (qk === 'owner' ? 'Stephen' : qk) + ' (' + apn.nom + ')');
+      var qn = qui_({ cle: jt });
+      return rep_({ ok: true, jeton: jt, nom: qn.nom, email: qn.email, owner: qn.owner, droits: qn.droits, tous: DROITS });
+    }
+    if (a === 'appareilsListe' || a === 'appareilRetirer') {
+      var qv = qui_(b); if (!qv) return rep_({ ok: false, erreur: 'Clé invalide' });
+      var Lv = appLire_(), mienne = function (x) { return qv.owner || x.qui === String(qv.email).toLowerCase(); };
+      if (a === 'appareilRetirer') {
+        var cible = Lv.filter(function (x) { return x.id === String(b.id) && mienne(x); })[0]; if (!cible) return rep_({ ok: false, erreur: 'Appareil introuvable.' });
+        appEcrire_(Lv.filter(function (x) { return x !== cible; })); journal_('Appareil admin retiré : ' + (cible.qui === 'owner' ? 'Stephen' : cible.qui) + ' (' + cible.nom + ')');
+        return rep_({ ok: true });
+      }
+      return rep_({ ok: true, max: MAX_APP, appareils: Lv.filter(mienne).map(function (x) { return { id: x.id, nom: x.nom, qui: x.qui === 'owner' ? 'Stephen' : x.qui, date: x.date, last: x.last, moi: x.id === qv.app }; }) });
+    }
     if (a === 'moi') { // la console demande qui je suis et ce que j'ai le droit de faire
       var qm = qui_(b); if (!qm) return rep_({ ok: false, erreur: 'Clé invalide' });
       return rep_({ ok: true, nom: qm.nom, email: qm.email, owner: qm.owner, droits: qm.droits, tous: DROITS });
@@ -434,7 +508,7 @@ function doPost(e) {
         if (ta && ta.v[AD.st] === 'actif') return rep_({ ok: false, erreur: 'Cet administrateur existe déjà.' });
         var ck = cleAdmin_(), nomA = cut_(b.nom, 80).trim();
         if (ta) { ta.sh.deleteRow(ta.r); }
-        feuille_('Admins').appendRow([new Date(), nomA, em, dr.join(','), hashCle_(ck), 'actif', '', qa.nom]);
+        feuille_('Admins').appendRow([new Date(), nomA, em, dr.join(','), hashCle_(ck) + ':' + Date.now(), 'actif', '', qa.nom]);
         mailAdmin_(nomA, em, ck, dr, true); journal_('Administrateur ajouté : ' + em + ' (droits : ' + (dr.join(', ') || 'aucun') + ')');
         return rep_({ ok: true });
       }
@@ -445,8 +519,8 @@ function doPost(e) {
       if (!ta) return rep_({ ok: false, erreur: 'Administrateur introuvable.' });
       if (a === 'adminDroits') { ta.sh.getRange(ta.r, AD.dr + 1).setValue(dr.join(',')); journal_('Droits modifiés : ' + em + ' (' + (dr.join(', ') || 'aucun') + ')'); return rep_({ ok: true }); }
       if (a === 'adminStatut') { var nv = b.statut === 'actif' ? 'actif' : 'révoqué'; ta.sh.getRange(ta.r, AD.st + 1).setValue(nv); journal_('Administrateur ' + (nv === 'actif' ? 'réactivé' : 'révoqué') + ' : ' + em); return rep_({ ok: true }); }
-      if (a === 'adminCle') { var nc2 = cleAdmin_(); ta.sh.getRange(ta.r, AD.cle + 1).setValue(hashCle_(nc2)); ta.sh.getRange(ta.r, AD.st + 1).setValue('actif'); mailAdmin_(String(ta.v[AD.nom]), em, nc2, String(ta.v[AD.dr]).split(',').filter(function (y) { return DROITS[y]; }), false); journal_('Nouvelle clé envoyée à l’administrateur : ' + em); return rep_({ ok: true }); }
-      if (a === 'adminSupprimer') { ta.sh.deleteRow(ta.r); journal_('Administrateur supprimé : ' + em); return rep_({ ok: true }); }
+      if (a === 'adminCle') { var nc2 = cleAdmin_(); ta.sh.getRange(ta.r, AD.cle + 1).setValue(hashCle_(nc2) + ':' + Date.now()); ta.sh.getRange(ta.r, AD.st + 1).setValue('actif'); mailAdmin_(String(ta.v[AD.nom]), em, nc2, String(ta.v[AD.dr]).split(',').filter(function (y) { return DROITS[y]; }), false); journal_('Nouvelle clé envoyée à l’administrateur : ' + em); return rep_({ ok: true }); }
+      if (a === 'adminSupprimer') { ta.sh.deleteRow(ta.r); appEcrire_(appLire_().filter(function (x) { return x.qui !== em; })); journal_('Administrateur supprimé : ' + em); return rep_({ ok: true }); }
       return rep_({ ok: false, erreur: 'Action inconnue' });
     }
 
