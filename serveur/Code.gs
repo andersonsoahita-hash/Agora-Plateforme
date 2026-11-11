@@ -288,6 +288,38 @@ function mailAdmin_(nom, email, cle, droits, nouveau) {
   MailApp.sendEmail({ to: email, subject: nouveau ? 'Ton accès à la console Agora' : 'Ta nouvelle clé pour la console Agora',
     body: 'Bonjour ' + nom + ',\n\n' + (nouveau ? 'Stephen t’a donné accès à la console de gestion Agora.' : 'Voici ta nouvelle clé pour la console de gestion Agora. L’ancienne ne marche plus.') + '\n\n1. Ouvre la console :\n' + CONSOLE_URL + '\n\n2. Colle ta clé personnelle quand elle te la demande :\n\n      ' + cle + '\n\nCe que tu peux faire :\n' + (droits.length ? droits.map(function (d) { return ' - ' + DROITS[d]; }).join('\n') : ' - rien pour l’instant (Stephen doit encore te donner des droits)') + '\n\nNe partage pas cette clé : elle est liée à toi, et tout ce que tu fais est noté dans le journal.\n\nStephen' });
 }
+/* lieu : « Madagascar — Ariary (Ar) · Antananarivo · Analakely » (le début garde la devise ; ville et quartier servent à repérer les membres proches) */
+function lieu_(b) { var p = cut_(b.pays, 40), r = cut_(b.res, 30), v = cut_(b.ville, 60), q = cut_(b.quartier, 60); return p + (r && p.indexOf(r) !== 0 && p.indexOf('Madagascar') !== 0 ? ' · ' + r : '') + (v ? ' · ' + v : '') + (q ? ' · ' + q : ''); }
+/* ---------- carte des membres : comptages seulement, jamais de position individuelle ---------- */
+function sansAccent_(x) { return String(x || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
+function nomVille_(x) { return String(x || '').replace(/\s*\(.*$/, '').replace(/\s+/g, ' ').trim(); }
+function lieuLire_(v) { // « Madagascar — Ariary (Ar) · Antananarivo · Analakely » ou « Europe et autres — Euro (€) · France · Paris · 11e arrondissement »
+  var p = String(v[C.pays] || '').split(' · ').map(function (x) { return x.trim(); }), mg = /^Madagascar/i.test(p[0] || '');
+  if (mg) return { pays: 'Madagascar', ville: nomVille_(p[1]), quartier: p[2] || '' };
+  if (p.length >= 3) return { pays: p[1], ville: nomVille_(p[2]), quartier: p[3] || '' };
+  return { pays: '', ville: '', quartier: '' };
+}
+function carte_(moi, complet) {
+  var sh = feuille_('Comptes'), n = sh.getLastRow(), d = n > 1 ? sh.getRange(2, 1, n - 1, NCOL).getValues() : [];
+  var P = {}, V = {}, Qm = {}, total = 0, K = 3;
+  var mv = moi ? sansAccent_(moi.ville) : '', mp = moi ? moi.pays : '';
+  d.forEach(function (v) {
+    if (etat_(v) !== 'validé' || estTest_(v)) return;
+    var l = lieuLire_(v); total++;
+    var pays = l.pays || 'Pays non précisé'; P[pays] = (P[pays] || 0) + 1;
+    if (!l.ville) return;
+    var kv = pays + '|' + sansAccent_(l.ville); V[kv] = V[kv] || { pays: pays, ville: l.ville, n: 0 }; V[kv].n++;
+    if (moi && pays === mp && sansAccent_(l.ville) === mv && l.quartier) { var kq = sansAccent_(l.quartier); Qm[kq] = Qm[kq] || { quartier: l.quartier, n: 0 }; Qm[kq].n++; }
+  });
+  var villes = Object.keys(V).map(function (k) { return V[k]; }).filter(function (x) { return complet || x.n >= K; }).sort(function (a, b) { return b.n - a.n; });
+  var r = { total: total, pays: Object.keys(P).map(function (k) { return { pays: k, n: P[k] }; }).sort(function (a, b) { return b.n - a.n; }), villes: villes, seuil: K };
+  if (moi) {
+    var nv = V[mp + '|' + mv] ? V[mp + '|' + mv].n : 0;
+    r.moi = { pays: mp, ville: moi.ville, quartier: moi.quartier, nVille: nv, quartiers: Object.keys(Qm).map(function (k) { return Qm[k]; }).filter(function (x) { return x.n >= K; }).sort(function (a, b) { return b.n - a.n; }) };
+    var kq2 = sansAccent_(moi.quartier); r.moi.nQuartier = moi.quartier && Qm[kq2] && Qm[kq2].n >= K ? Qm[kq2].n : null;
+  }
+  return r;
+}
 function estTest_(v) { return /D[ée]veloppeur Anderson/i.test(String(v[C.proj] || '')); } // compte test : a choisi « Développeur Anderson » comme mode de paiement
 function profil_(v) { return { prenoms: v[C.pre], nom: v[C.nom], role: v[C.role], test: estTest_(v) }; }
 function doPost(e) {
@@ -302,7 +334,7 @@ function doPost(e) {
       if (ex && etat_(ex.v) !== 'supprimé') return rep_({ ok: true, etat: etat_(ex.v) });
       if (ex) { effacerSeances_(em); effacerProgres_(em, ''); ex.sh.deleteRow(ex.r); }
       var role = String(b.role || '').toLowerCase().indexOf('form') === 0 ? 'formateur' : 'élève';
-      feuille_('Comptes').appendRow([new Date(), b.nom, b.prenoms, em, b.tel || '', b.age || '', role, b.pays || '', b.situation || '', String(b.projet || '').slice(0, 500), 'en attente', '', '', '', '', '', '', '', '']);
+      feuille_('Comptes').appendRow([new Date(), b.nom, b.prenoms, em, b.tel || '', b.age || '', role, lieu_(b), b.situation || '', String(b.projet || '').slice(0, 500), 'en attente', '', '', '', '', '', '', '', '']);
       journal_('Nouvelle demande (' + role + ')' + (/D[ée]veloppeur Anderson/i.test(String(b.projet || '')) ? ' [compte test]' : '') + ' : ' + em + (b.cgu ? ' · conditions acceptées (version ' + cut_(b.cgu, 10) + ')' : ''));
       return rep_({ ok: true, etat: 'en attente' });
     }
@@ -328,6 +360,19 @@ function doPost(e) {
       var r2 = profil_(c.v); r2.ok = true; r2.etat = 'validé'; r2.jeton = j2; return rep_(r2);
     }
 
+    if (a === 'carte') { // comptages agrégés : membres validés seulement (ou administrateur : détail complet)
+      var qc2 = b.cle ? qui_(b) : null;
+      if (qc2) return rep_({ ok: true, etat: 'validé', carte: carte_(null, true), complet: true });
+      var ac = auth_(b, b.canal === 'm' ? 'm' : 'p'); if (!ac.u) return rep_({ ok: true, etat: ac.etat });
+      return rep_({ ok: true, etat: 'validé', carte: carte_(lieuLire_(ac.u.v), false) });
+    }
+    if (a === 'lieuSet') { // le membre précise ou corrige sa ville et son quartier (ajout libre possible)
+      var al = auth_(b, b.canal === 'm' ? 'm' : 'p'); if (!al.u) return rep_({ ok: true, etat: al.etat });
+      var vv = cut_(b.ville, 60).trim(), qq = cut_(b.quartier, 60).trim(); if (vv.length < 2) return rep_({ ok: false, erreur: 'Indique ta ville.' });
+      var lo = lieuLire_(al.u.v), p0 = String(al.u.v[C.pays] || '').split(' · ')[0] || '', mg2 = /^Madagascar/i.test(p0), paysN = mg2 ? 'Madagascar' : (b.res ? cut_(b.res, 30) : lo.pays);
+      set_(al.u, C.pays, lieu_({ pays: p0, res: paysN, ville: vv, quartier: qq }));
+      return rep_({ ok: true, etat: 'validé', carte: carte_(lieuLire_(trouver_(C.mail, al.em).v), false) });
+    }
     if (a === 'etat') { // vérification régulière : plateforme (canal p, par défaut) ou téléphone (canal m)
       var mob = b.canal === 'm', u = trouver_(C.mail, em);
       if (!u) return rep_({ ok: true, etat: 'inconnu' });
