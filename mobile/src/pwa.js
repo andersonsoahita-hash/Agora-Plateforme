@@ -293,22 +293,34 @@ function needBackup() {
 function isStandalone() { return (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true; }
 function isIOS() { return /iPhone|iPad|iPod/.test(navigator.userAgent); }
 
-/* ---------- Atelier guidé (en direct dans l’application) ---------- */
+/* ---------- Atelier du cours (débloqué par la plateforme, synchronisé toutes les 15 s) ---------- */
 var ATL_STEPS = ['Échauffement', 'Consigne', 'À voix haute', 'Auto-évaluation', 'Bilan'];
 var ATL_CR = [['Clarté du message', 'Je peux dire mon idée en une phrase.'], ['Structure', 'On entend un début, un milieu et une fin.'], ['Preuve ou image', 'J’ai donné un fait, un exemple ou une image.'], ['Présence', 'Voix, regard et rythme servaient le message.']];
 function atlS() { var a = S.atl; if (!a || typeof a !== 'object') a = S.atl = {}; if (!a.r) a.r = []; if (!a.step) a.step = 1; return a; }
+function atlData() { return (window.AO_DATA && AO_DATA.ateliers) || {}; }
+function atlDispo() { /* ateliers des cours terminés, pas encore faits : le plus récent d'abord */
+  var d = atlData(), fait = S.atlDone || {}, vu = {}, o = [];
+  (S.atlL || []).slice().reverse().forEach(function (x) { if (d[x.id] && !fait[x.id] && !vu[x.id]) { vu[x.id] = 1; o.push(x.id); } });
+  return o;
+}
 function atlCard() {
-  var a = atlS(), fait = a.done === today();
-  if (a.on) return '<button class="card tap banner" data-act="atl-open"><div class="eyebrow">Atelier guidé en cours · étape ' + a.step + ' sur 5</div><h3>Reprendre : ' + ATL_STEPS[a.step - 1] + '</h3><p class="muted small" style="margin:4px 0 0">Ton avancement est gardé.</p></button>';
-  return '<button class="card tap banner" data-act="atl-new"><div class="eyebrow">Atelier guidé · 20 minutes · 5 étapes</div><h3>' + (fait ? 'Atelier du jour terminé ✓' : 'Fais ton atelier guidé') + '</h3><p class="muted small" style="margin:4px 0 0">' + (fait ? 'Tu peux en refaire un avec un autre sujet.' : 'Échauffement, consigne, voix haute avec chrono, auto-évaluation, bilan.') + '</p></button>';
+  var a = atlS(), d = atlData(), dis = atlDispo();
+  if (a.on && a.id && d[a.id]) return '<button class="card tap banner" data-act="atl-open"><div class="eyebrow">Atelier guidé · étape ' + a.step + ' sur 5</div><h3>Reprendre l’atelier du cours « ' + esc(d[a.id].t) + ' »</h3><p class="muted small" style="margin:4px 0 0">Ton avancement est gardé.</p></button>';
+  if (dis.length) { var x = d[dis[0]]; return '<button class="card tap banner" data-act="atl-new" data-v="' + dis[0] + '"><div class="eyebrow">Atelier guidé · disponible</div><h3>L’atelier du cours « ' + esc(x.t) + ' » est disponible</h3><p class="muted small" style="margin:4px 0 0">Leçon ' + esc(x.n) + ' terminée sur la plateforme.' + (dis.length > 1 ? ' ' + (dis.length - 1) + ' autre' + (dis.length > 2 ? 's' : '') + ' en attente.' : '') + '</p></button>'; }
+  return '';
+}
+function atlStudioCase() {
+  var c = atlCard(); if (c) return c;
+  return '<div class="card"><div class="eyebrow">Atelier guidé</div><h3>Aucun atelier disponible pour l’instant</h3><p class="muted small" style="margin:4px 0 0">' + (syLinked() ? 'Termine les diapos d’un cours sur la plateforme : son atelier apparaît ici en quelques secondes.' : 'Relie ton compte Agora : l’atelier de chaque cours terminé apparaîtra ici.') + '</p></div>';
 }
 function atlView() {
-  var a = atlS(), n = a.step, h = '<div class="top"><button class="back" data-act="atl-quit" aria-label="Retour">←</button><h1>Atelier guidé</h1></div><div class="stack">';
-  h += '<div class="card"><div class="row" style="justify-content:space-between"><span class="eyebrow">Étape ' + n + ' sur 5 · ' + ATL_STEPS[n - 1] + '</span><span class="muted small">≈ 20 min</span></div><div class="bar" style="margin-top:8px"><i style="width:' + (n * 20) + '%"></i></div></div>';
-  if (n === 1) h += '<div class="card stack"><h2>Échauffement · 2 minutes</h2><p>Debout. Inspire 4 secondes, souffle 6 secondes, trois fois. Puis dis à voix haute, avec conviction : « Je prends la parole, et je la garde. »</p><p class="muted small">Ne cherche pas à bien dire : cherche à dire fort et lentement.</p></div>';
-  if (n === 2) h += '<div class="card stack"><h2>Ta consigne · 5 minutes</h2><div class="callout"><b>' + esc(st.sujet) + '</b></div><div class="row"><button class="btn small ghost" data-act="atl-sujet">Autre sujet</button></div><label class="eyebrow" for="atlx">Mes idées (restent sur ton téléphone)</label><textarea id="atlx" data-atx="t" rows="5" placeholder="Point, raison, exemple, point…">' + esc(a.t || '') + '</textarea><p class="muted small">Garde des phrases courtes : tu devras les dire, pas les lire.</p></div>';
+  var a = atlS(), n = a.step, X = atlData()[a.id]; if (!X) { view = { tab: 'studio', sub: null }; return vStudio(); }
+  var h = '<div class="top"><button class="back" data-act="atl-quit" aria-label="Retour">←</button><h1>Atelier du cours</h1></div><div class="stack">';
+  h += '<div class="card"><div class="row" style="justify-content:space-between"><span class="eyebrow">Leçon ' + esc(X.n) + ' · étape ' + n + ' sur 5 · ' + ATL_STEPS[n - 1] + '</span><span class="muted small">≈ 20 min</span></div><h3 style="margin:6px 0 0">' + esc(X.t) + '</h3><div class="bar" style="margin-top:8px"><i style="width:' + (n * 20) + '%"></i></div></div>';
+  if (n === 1) h += '<div class="card stack"><h2>Échauffement · 2 minutes</h2><p>Debout. Relis à voix haute les idées à retenir, avec conviction. Ne cherche pas à les apprendre par cœur.</p><ol>' + X.r.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ol></div>';
+  if (n === 2) h += '<div class="card stack"><h2>Ta consigne · 7 minutes</h2><div class="callout">' + esc(X.e) + '</div><label class="eyebrow" for="atlx">Ma production (reste sur ton téléphone)</label><textarea id="atlx" data-atx="t" rows="6" placeholder="Écris ici, sans te corriger…">' + esc(a.t || '') + '</textarea><p class="muted small">Garde des phrases courtes : tu devras les dire, pas les lire.</p></div>';
   if (n === 3) {
-    h += '<div class="card"><div class="eyebrow">Sujet</div><h3>' + esc(st.sujet) + '</h3><p class="muted small" style="margin:4px 0 0">Lève-toi, regarde un point fixe, ne t’excuse pas au début, marque un silence avant ta phrase la plus forte.</p></div>';
+    h += '<div class="card"><div class="eyebrow">Consigne</div><p style="margin:4px 0 0">' + esc(X.e) + '</p><p class="muted small" style="margin:6px 0 0">Lève-toi, regarde un point fixe, ne t’excuse pas au début, marque un silence avant ta phrase la plus forte.</p></div>';
     h += '<div class="card stack" id="recCard">' + recHtml() + '</div><div class="card stack" id="recLib"></div>';
     h += '<div class="card stack"><div class="eyebrow">Transcription (facultative)</div><textarea id="trIn" placeholder="Elle se remplit si la transcription en ligne est activée. Tu peux écrire ou coller ici."></textarea></div>';
     h += '<button class="btn" id="goAnalyse" data-act="analyse"' + ((st.blob || (st.transcript || '').trim()) ? '' : ' disabled') + '>Analyser ma prise de parole</button><button class="btn ghost" data-act="atl-next">Passer à l’auto-évaluation</button>';
@@ -321,16 +333,15 @@ function atlView() {
 }
 function atlAct(act, v) {
   if (act.indexOf('atl-') !== 0) return false;
-  var a = atlS();
+  var a = atlS(), X;
   switch (act) {
-    case 'atl-new': S.atl = { on: 1, step: 1, r: [], t: '', x: '' }; st.type = 'argumenter'; st.dur = 120; st.ended = false; st.recSec = 0; newSubject(); persist(); view = { tab: 'studio', sub: { atl: 1 } }; render(); window.scrollTo(0, 0); break;
-    case 'atl-open': a.on = 1; view = { tab: 'studio', sub: { atl: 1 } }; render(); window.scrollTo(0, 0); break;
+    case 'atl-new': X = atlData()[v]; if (!X) break; S.atl = { on: 1, id: v, step: 1, r: [], t: '', x: '' }; st.type = 'argumenter'; st.dur = 120; st.ended = false; st.recSec = 0; st.sujet = X.e; persist(); view = { tab: 'studio', sub: { atl: 1 } }; render(); window.scrollTo(0, 0); break;
+    case 'atl-open': a.on = 1; if (atlData()[a.id]) st.sujet = atlData()[a.id].e; view = { tab: 'studio', sub: { atl: 1 } }; render(); window.scrollTo(0, 0); break;
     case 'atl-quit': view = { tab: 'home', sub: null }; render(); break;
     case 'atl-next': if (st.rec || st.timerOn) break; a.step = Math.min(5, a.step + 1); persist(); render(); window.scrollTo(0, 0); break;
     case 'atl-prev': if (st.rec || st.timerOn) break; a.step = Math.max(1, a.step - 1); persist(); render(); window.scrollTo(0, 0); break;
-    case 'atl-sujet': newSubject(); render(); break;
     case 'atl-r': var q = v.split(':'); a.r[+q[0]] = +q[1]; persist(); render(); break;
-    case 'atl-fin': a.on = 0; a.done = today(); a.nb = (a.nb || 0) + 1; S.xp = (S.xp || 0) + 10; persist(); toast('Atelier terminé : +10 points'); view = { tab: 'home', sub: null }; render(); window.scrollTo(0, 0); break;
+    case 'atl-fin': a.on = 0; (S.atlDone = S.atlDone || {})[a.id] = today(); S.xp = (S.xp || 0) + 10; persist(); toast('Atelier terminé : +10 points'); view = { tab: 'home', sub: null }; render(); window.scrollTo(0, 0); break;
   }
   return true;
 }

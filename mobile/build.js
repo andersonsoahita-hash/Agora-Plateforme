@@ -10,7 +10,7 @@ const RL = f => fs.readFileSync(path.join(__dirname, f), 'utf8');
 const W = (f, s) => fs.writeFileSync(path.join(__dirname, f), s);
 const must = (s, a, b) => { if (!s.includes(a)) throw new Error('retouche introuvable : ' + a.slice(0, 60)); return s.split(a).join(b); };
 
-const parts = ['analysis.js', 'data-orators.js', 'data-eristic.js', 'data-exercises.js', 'data-quiz.js', 'data-themes.js', 'data-objections.js', 'app.js'];
+const parts = ['analysis.js', 'data-orators.js', 'data-eristic.js', 'data-exercises.js', 'data-quiz.js', 'data-themes.js', 'data-objections.js', 'data-ateliers.js', 'app.js'];
 const shim = "window.AO_DATA = window.AO_DATA || {}; window.AO_DATA.lessons = []; window.AO_DATA.modules = [];";
 let js = [R(parts[0]), shim].concat(parts.slice(1).map(R)).join('\n;\n');
 js = js.replace('/*@@LEVELS@@*/', () => R('levels.js')).replace('/*@@PREP@@*/', () => R('prep.js')).replace('/*@@ERIST@@*/', () => R('erist.js'))

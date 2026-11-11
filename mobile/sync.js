@@ -73,6 +73,16 @@ function syCheck() {
     else syState(r.etat);
   }).catch(function () {});
 }
+/* leçons terminées sur la plateforme : débloquent l'atelier guidé du cours */
+function syLecons() {
+  if (!syLinked() || document.visibilityState === 'hidden' || navigator.onLine === false) return;
+  syCall(syAuth({ action: 'lecons' })).then(function (r) {
+    if (!r || !r.ok || r.etat !== 'validé' || !r.lecons) return;
+    var h = JSON.stringify(r.lecons); if (h === JSON.stringify(S.atlL)) return;
+    S.atlL = r.lecons; persist();
+    if ((view.tab === 'home' || (view.tab === 'studio' && !view.sub)) && !st.rec && !st.timerOn) render();
+  }).catch(function () {});
+}
 function syState(etat) {
   if (etat === 'validé') { if (sy.gate) { sy.gate = null; syGateDraw(); toast('Accès rétabli'); render(); } return; }
   var g = (etat === 'bloqué' || etat === 'expiré' || etat === 'en attente') ? 'wait' : 'relink';
@@ -194,11 +204,11 @@ function syAct(act, v, el) {
 
 /* démarrage : vérifie l'accès régulièrement, renvoie ce qui attend */
 function syBoot() {
-  function loop() { if (syLinked() || sy.gate === 'wait') syCheck(); setTimeout(loop, sy.gate === 'wait' ? 8000 : 15000); }
+  function loop() { if (syLinked() || sy.gate === 'wait') syCheck(); syLecons(); setTimeout(loop, sy.gate === 'wait' ? 8000 : 15000); }
   setTimeout(loop, 1200);
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { syCheck(); syFlush(); } });
   window.addEventListener('online', function () { sy.offline = false; syCheck(); syFlush(); syAvanc(true); syPaint(); });
   window.addEventListener('offline', function () { sy.offline = true; syPaint(); });
   setInterval(syPaint, 30000);
-  if (syLinked()) { syFlush(); syAvanc(true); }
+  if (syLinked()) { syFlush(); syAvanc(true); setTimeout(syLecons, 800); }
 }

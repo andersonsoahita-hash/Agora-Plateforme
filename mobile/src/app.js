@@ -19,7 +19,7 @@ function byId(arr, id) { for (var i = 0; i < arr.length; i++) if (arr[i].id === 
 function today() { return new Date().toISOString().slice(0, 10); }
 
 /* ---------- état + stockage ---------- */
-var S = { goals: [], sessions: [], done: {}, quiz: {}, type: null, proofs: [], prep: [], erist: { best: 0 }, xp: 0, days: [], badges: [], why: null, angles: '', set: { sr: false }, since: 0, lastExport: 0, atl: {} };
+var S = { goals: [], sessions: [], done: {}, quiz: {}, type: null, proofs: [], prep: [], erist: { best: 0 }, xp: 0, days: [], badges: [], why: null, angles: '', set: { sr: false }, since: 0, lastExport: 0, atl: {}, atlDone: {}, atlL: [] };
 var cap = { db: null, sample: null, downloads: null, uid: null }; /* PWA : aucune IA, aucun service distant */
 Object.freeze(cap); /* verrouillé : aucun appel IA possible depuis l’appli */
 var saveTimer = null;
@@ -160,6 +160,7 @@ function vStudio() {
   if (!st.sujet) newSubject();
   var t = byId(D.exerciseTypes, st.type);
   var h = '<div class="top"><h1>Studio</h1></div><div class="stack">';
+  h += atlStudioCase();
   h += exHero();
   h += '<div class="card stack"><div class="eyebrow">Exercice</div><div class="hscroll">' + exOrdered().map(function (x) { return '<button class="chip' + (x.id === st.type ? ' on' : '') + (x.id === 'express' ? ' hot' : '') + '" data-act="st-type" data-v="' + x.id + '">' + esc(x.nom) + '</button>'; }).join('') + '</div>';
   if (st.type !== 'express') h += '<div class="row">' + D.durations.map(function (d) { return '<button class="chip' + (d === st.dur ? ' on' : '') + '" data-act="st-dur" data-v="' + d + '">' + durLabel(d) + '</button>'; }).join('') + '</div>';

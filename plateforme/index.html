@@ -61,7 +61,7 @@
 </script>
 <title>Agora, l'art oratoire</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="agora-build" content="1794417725">
+<meta name="agora-build" content="1794419128">
 <style>
 /* Mise en page : arrivée directe sur l'art oratoire (une diapo de leçon, un exercice, un certificat), puis 5 niveaux en cartes qui se recouvrent, le cycle d'une leçon, les variantes, l'accès. Sombre par choix. */
 :root{
@@ -2090,7 +2090,7 @@ function kindOf(c,first,prev,idx){
   if(k==='cards'&&c.length<2)k='quote';if(k==='steps'&&c.length<3)k=c.length===2?'cards':'quote';
   return k;
 }
-function genSlides(L){
+function genSlides(L,mode){
   var x=XC[L.m]||'ethos',S=[],secs=L.sections,ns=secs.length,qn=L.quiz.length;
   var fixed=2+1+(L.erreur?1:0)+(L.exercice?1:0)+qn+1+1;
   var budget=Math.max(ns*2,20-fixed),per=Math.max(2,Math.round(budget/ns));
@@ -2114,10 +2114,16 @@ function genSlides(L){
   blocks.forEach(function(b){b.B.forEach(function(s){S.push(s)});b.E.forEach(function(s){S.push(s)});if(need>0&&!b.far&&b.B.length){S.push(b.pause);need--}});
   S.push({k:'list',x:x,il:'bulb'});
   if(L.erreur)S.push({k:'err',x:'pathos',il:null});
+  /* le cours s'arrête quand l'enseignement est fini : ni question, ni champ à remplir. L'exercice, le quiz et la mise en pratique ont leur propre section (cartes de la leçon). */
   if(L.exercice)S.push({k:'exo',x:x,il:'pen'});
   L.quiz.forEach(function(q,qi){S.push({k:'q',x:'kairos',qi:qi})});
   S.push({k:'apply',x:x});
   S.push({k:'recap',x:x,il:'medal'});
+  if(mode==='quiz')return S.filter(function(s){return s.k==='q'||s.k==='recap'});
+  if(mode==='appli')return S.filter(function(s){return s.k==='exo'||s.k==='apply'||s.k==='recap'});
+  S=S.filter(function(s){return s.k!=='pause'&&s.k!=='exo'&&s.k!=='q'&&s.k!=='apply'&&s.k!=='recap'});
+  S.forEach(function(s){if(s.k==='ask')s.k='focus'});
+  S.push({k:'fin',x:x,il:'medal'});
   return S;
 }
 function cap(t){t=(t||'').trim();return t.charAt(0).toUpperCase()+t.slice(1)}
@@ -2168,6 +2174,7 @@ function RL(i){
   case 'exo':h='<span class="tg">Exercice</span><h2>À toi de jouer</h2><p class="bd">'+esc(L.exercice)+'</p><div class="fld"><label for="lx">Ta réponse (elle reste sur ton appareil)</label><textarea id="lx" rows="4" data-lx="1">'+esc(P.exos[L.id]||'')+'</textarea></div><p class="nt">Dis-la ensuite à voix haute : une idée écrite n’est pas encore une idée dite.</p>';break;
   case 'q':var q=L.quiz[s.qi],a=LS.a[s.qi];h='<span class="tg">Question '+(s.qi+1)+' sur '+L.quiz.length+'</span><h2>'+esc(q.q)+'</h2><div class="opts">'+q.o.map(function(o,oi){var c='op';if(a!==undefined)c+=(oi===q.a?' ok':(oi===a?' ko':''));return '<button type="button" class="'+c+'" data-lq="'+s.qi+'" data-lo="'+oi+'"'+(a!==undefined?' disabled':'')+'>'+esc(o)+'</button>'}).join('')+'</div>'+(a!==undefined?'<p class="nt" style="margin-top:8px"><b>'+(a===q.a?'Exact. ':'Pas tout à fait. ')+'</b>'+esc(q.e||'')+'</p>':'');break;
   case 'apply':h='<span class="tg">À appliquer cette semaine</span><h2>Fais-le devant une vraie personne</h2><div class="brief"><p><b>Avant de te lancer</b></p><ol><li>Choisis une seule personne, pas un groupe.</li><li>Dis à voix haute ce que tu as écrit, debout, sans lire.</li><li>Regarde ses yeux sur ta phrase la plus forte.</li><li>Ne t’excuse pas. Demande : « Qu’est-ce que tu as retenu ? »</li></ol></div><div class="two"><div class="fld"><label for="lw">Devant qui ?</label><select id="lw" data-lap="w">'+['','Un ami','Ma famille','Ma classe','Un collègue','Un public'].map(function(o){return '<option'+(LS.ap.w===o?' selected':'')+'>'+o+'</option>'}).join('')+'</select></div><div class="fld"><label for="lo">Est-ce que ça a marché ?</label><select id="lo" data-lap="ok">'+['','Oui','En partie','Pas encore'].map(function(o){return '<option'+(LS.ap.ok===o?' selected':'')+'>'+o+'</option>'}).join('')+'</select></div></div><div class="fld"><label for="lc">Les conditions (lieu, durée, ton niveau de stress)</label><textarea id="lc" rows="2" data-lap="c">'+esc(LS.ap.c)+'</textarea></div><div><button type="button" class="btn" id="lapb">Enregistrer mon retour</button></div>'+(LS.apDone?'<div class="res2"><b>Le regard du coach.</b> '+esc(CO[LS.ap.ok]||'')+'<br><small style="opacity:.75">Ton retour est dans ton suivi et celui de ton formateur.</small></div>':'');break;
+  case 'fin':h='<span class="tg">Fin du cours</span><h2>Le cours est terminé</h2><p class="bd">Tu as vu tout l’enseignement de cette leçon. Ton <b>atelier guidé</b> t’attend : dans la leçon, et dans l’application Agora Studio où il s’affiche dès que tu termines ici.</p>'+(L.retenir?'<ul class="pts">'+li(L.retenir)+'</ul>':'')+'<div><button type="button" class="btn" id="lfin">'+(P.done[L.id]?'Fermer':'Terminer le cours')+'</button></div>';break;
   case 'recap':var sc=0,n=0;L.quiz.forEach(function(q,k){if(LS.a[k]!==undefined){n++;if(LS.a[k]===q.a)sc++}});h='<span class="tg">Bilan</span><h2>Ta leçon est terminée</h2><div class="flow" style="grid-template-columns:repeat(2,1fr)"><div><small>Quiz</small><b>'+sc+' sur '+L.quiz.length+'</b><span>'+(n<L.quiz.length?'Réponds à toutes les questions':'Réponses enregistrées')+'</span></div><div><small>Exercice</small><b>'+(P.exos[L.id]?'Écrit':'À faire')+'</b><span>Sur ton appareil</span></div></div>'+(L.retenir?'<ul class="pts">'+li(L.retenir)+'</ul>':'')+'<div><button type="button" class="btn" id="lfin">'+(P.done[L.id]?'Fermer':'Terminer la leçon')+'</button></div>';break;
   }
   var il=s.il&&A.IL&&A.IL[s.il]?A.IL[s.il]():'';
@@ -2181,13 +2188,14 @@ function lgo(i,d){
   var v=$('#lvnet');v.textContent=A.S.online?'En ligne':'Hors ligne';v.classList.toggle('off',!A.S.online);
 }
 var lastF=null;
-function openLesson(id){
-  var L=byId(D.lessons,id);if(!L)return;CUR=L;SLD=genSlides(L);LS={a:{},rv:{},ap:{w:'',ok:'',c:''},apDone:false};
+var LM='';
+function openLesson(id,mode){
+  var L=byId(D.lessons,id);if(!L)return;CUR=L;LM=mode||'';SLD=genSlides(L,LM);LS={a:{},rv:{},ap:{w:'',ok:'',c:''},apDone:false};
   $('#lvt').textContent=L.titre;lastF=document.activeElement;lvEl.classList.add('on');document.body.style.overflow='hidden';lgo(0,1);$('#lvn').focus();
 }
 function closeLesson(){lvEl.classList.remove('on');if(!$('#es').classList.contains('on'))document.body.style.overflow='';render()}
 function finishLesson(){
-  var L=CUR;if(!P.done[L.id]){var sc=0;L.quiz.forEach(function(q,k){if(LS.a[k]===q.a)sc++});P.done[L.id]={s:sc,n:L.quiz.length,d:today()};
+  var L=CUR;if(!P.done[L.id]){var sc=0;L.quiz.forEach(function(q,k){if(LS.a[k]===q.a)sc++});P.done[L.id]={s:0,n:0,d:today()};
     var mod=D.lessons.filter(function(l){return l.m===L.m}),all=mod.every(function(l){return P.done[l.id]});save();addPts(15);if(all){P.pts+=30;toast('Module validé : '+modTitle(L.m)+' · +30 pts')}}
   save();closeLesson();
 }
@@ -2706,8 +2714,8 @@ lpEl.addEventListener('click',function(e){
     if(k==='close'){closeHub();return}
     if(k==='back'){HUB.tab='home';paintHub();lpEl.scrollTop=0;return}
     if(k==='cours'){openLesson(HUB.id);return}
-    if(k==='quiz'){var Lq=byId(D.lessons,HUB.id),S=genSlides(Lq),qi=0;S.forEach(function(s,i){if(s.k==='q'&&!qi)qi=i});openLesson(HUB.id);lgo(qi,1);return}
-    if(k==='appli'){var La=byId(D.lessons,HUB.id),S2=genSlides(La),ai=S2.length-2;openLesson(HUB.id);lgo(ai,1);return}
+    if(k==='quiz'){openLesson(HUB.id,'quiz');return}
+    if(k==='appli'){openLesson(HUB.id,'appli');return}
     if(k==='atelier'||k==='fiche'){HUB.tab=k;paintHub();lpEl.scrollTop=0;return}
     if(k==='form'){if(role!=='fo'){toast('La fiche formateur est dans l’espace formateur');return}HUB.tab='form';paintHub();lpEl.scrollTop=0;return}
     if(k==='atgo'){var t=lpEl.querySelector('#at'+b.dataset.i);if(t)t.scrollIntoView({behavior:'smooth',block:'start'});e.preventDefault();return}
@@ -3316,6 +3324,9 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
   var a=lkAuth(),lv=+b.dataset.v;a.action='formateurDemande';a.niveau=lv;b.disabled=true;
   A.srv(a).then(function(r){b.disabled=false;if(!r||!r.ok){toast((r&&r.erreur)||'Demande impossible.');return}(P.fmt=P.fmt||{})['n'+lv]=r.statut==='ok'?'ok':'ask';save();toast(r.statut==='ok'?'Tu es déjà formateur de ce niveau.':'Demande envoyée : Stephen te contacte pour fixer le test de formateur.');render()}).catch(function(){b.disabled=false;toast('Pas de réseau : réessaie.')})},true);
 (function(){var l0=ladder;ladder=function(lv){var h=l0(lv);return lkAuth()?h.replace(/<button class="a-chip" data-a="(fok|fv)"[^>]*>[^<]*<\/button>/g,''):h}})();
+
+/* fin du cours : la progression part tout de suite au serveur (le téléphone débloque l'atelier) */
+var finishLesson1=finishLesson;finishLesson=function(){var L0=CUR,m0=LM;if(L0&&m0==='quiz'){var sc0=0,n0=0;L0.quiz.forEach(function(q,k){if(LS.a[k]!==undefined){n0++;if(LS.a[k]===q.a)sc0++}});if(n0&&P.done[L0.id]&&!P.done[L0.id].demo){P.done[L0.id].s=sc0;P.done[L0.id].n=L0.quiz.length;save()}}finishLesson1();setTimeout(function(){try{PR.busy=false;prSync()}catch(x){}},150)};
 
 
 if(AG_MODE==="admin"){role="fo";AV="srv";svGate()}
