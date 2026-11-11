@@ -10,9 +10,14 @@ var FEUILLES = {
   admins: ['Date', 'Nom', 'Email', 'Droits', 'Clé (empreinte)', 'Statut', 'Dernière activité', 'Créé par'],
   compta: ['Mis à jour', 'Id', 'Type', 'Date', 'Libellé', 'Email', 'Niveau', 'Montant (Ar)', 'Payé le', 'Mode', 'Catégorie', 'Par', 'Test'],
   progres: ['Mis à jour', 'Email', 'Leçon', 'Niveau', 'Date', 'Score', 'Sur', 'Appareil'],
+  tests: ['Date', 'Email', 'Niveau', 'Score', 'Moyenne (s)', 'Onglets quittés', 'Temps écoulés', 'Statut', 'Certificat'],
+  certificats: ['Numéro', 'Délivré le', 'Email', 'Nom', 'Niveau', 'Type', 'Score', 'Statut', 'Par'],
+  formateurs: ['Mis à jour', 'Email', 'Niveau', 'Statut', 'Demandé le', 'Décidé par'],
+  activites: ['Id', 'Créé le', 'Type', 'Auteur', 'Nom', 'Titre ou sujet', 'Mode', 'Format', 'Camp A', 'Camp B', 'Date', 'Heure', 'Lieu ou lien', 'Places', 'Statut'],
+  inscrits: ['Id activité', 'Email', 'Nom', 'Date'],
   seances: ['Reçu le', 'Email', 'Id', 'Date', 'Sujet', 'Type', 'Durée (s)', 'Mots', 'Mots/min', 'Tics', 'Logos', 'Ethos', 'Pathos', 'Source', 'Transcription', 'Détail (JSON)']
 };
-var CLEF = { 'Comptes': 'comptes', 'Journal': 'journal', 'Séances': 'seances', 'Admins': 'admins', 'Progrès': 'progres', 'Compta': 'compta' };
+var CLEF = { 'Comptes': 'comptes', 'Journal': 'journal', 'Séances': 'seances', 'Admins': 'admins', 'Progrès': 'progres', 'Compta': 'compta', 'Tests': 'tests', 'Certificats': 'certificats', 'Formateurs': 'formateurs', 'Activités': 'activites', 'Inscrits': 'inscrits' };
 var NPRO = 8, MAXPRO = 60, NCPT = 13;
 var C = { date: 0, nom: 1, pre: 2, mail: 3, tel: 4, age: 5, role: 6, pays: 7, sit: 8, proj: 9, st: 10, code: 11, exp: 12, last: 13, pc: 14, mob: 15, pw: 16, tok: 17, mtok: 18 };
 var NCOL = 19;
@@ -29,7 +34,7 @@ var DUREE_CODE = 600; // le code de liaison du téléphone vaut 10 minutes
 function feuille_(nom) {
   var ss = SpreadsheetApp.getActiveSpreadsheet(), sh = ss.getSheetByName(nom), cle = CLEF[nom];
   if (!sh) { sh = ss.insertSheet(nom); sh.appendRow(FEUILLES[cle]); sh.setFrozenRows(1); if (nom === 'Séances') sh.getRange(1, 4, sh.getMaxRows(), 1).setNumberFormat('@'); }
-  var nc = nom === 'Comptes' ? NCOL : (nom === 'Séances' ? NSEA : (nom === 'Admins' ? NADM : (nom === 'Progrès' ? NPRO : (nom === 'Compta' ? NCPT : 0))));
+  var nc = nom === 'Comptes' ? NCOL : (nom === 'Séances' ? NSEA : (nom === 'Admins' ? NADM : (nom === 'Progrès' ? NPRO : (nom === 'Compta' ? NCPT : (FEUILLES[cle] && /^(Tests|Certificats|Formateurs|Activités|Inscrits)$/.test(nom) ? FEUILLES[cle].length : 0)))));
   if (nc) {
     if (sh.getMaxColumns() < nc) sh.insertColumnsAfter(sh.getMaxColumns(), nc - sh.getMaxColumns());
     sh.getRange(1, 1, 1, nc).setValues([FEUILLES[cle]]);
@@ -193,6 +198,27 @@ function lireCompta_() {
   return sh.getRange(2, 1, n - 1, NCPT).getValues().map(function (r) {
     return { id: String(r[1]), type: String(r[2]), date: String(r[3]), lib: String(r[4]), em: String(r[5]).toLowerCase(), lv: Number(r[6]) || 0, mt: Number(r[7]) || 0, paye: String(r[8]), mode: String(r[9]), cat: String(r[10]), par: String(r[11]), test: String(r[12]) === 'oui' };
   });
+}
+/* ---- tests, certificats, parcours formateur : tout est tenu par le serveur ---- */
+var SEUIL = 90; // note minimale (en %) pour réussir un test ; modifiable dans les propriétés du script (SEUIL)
+function seuil_() { var s = Number(PropertiesService.getScriptProperties().getProperty('SEUIL')); return s > 0 && s <= 100 ? s : SEUIL; }
+function lignes_(nom, nc) { var sh = feuille_(nom), n = sh.getLastRow(); return n < 2 ? [] : sh.getRange(2, 1, n - 1, nc).getValues(); }
+function certs_(email) { // certificats valides d'un élève (ou de tous si email vide)
+  return lignes_('Certificats', 9).map(function (r, i) { return { l: i + 2, no: String(r[0]), date: String(r[1]), em: String(r[2]).toLowerCase(), nom: String(r[3]), niveau: Number(r[4]), type: String(r[5]), score: Number(r[6]) || 0, st: String(r[7]), par: String(r[8]) }; })
+    .filter(function (c) { return !email || c.em === email; });
+}
+function aCert_(email, niveau, type) { return certs_(email).some(function (c) { return c.niveau === niveau && c.type === type && c.st === 'valide'; }); }
+function emettre_(email, nom, niveau, type, score, par) {
+  var tous = certs_(''), no, pris = {}; tous.forEach(function (c) { pris[c.no] = 1; });
+  do { no = 'AG-' + iso_('').slice(0, 7).replace('-', '') + '-' + alea_(5, 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'); } while (pris[no]);
+  feuille_('Certificats').appendRow([no, iso_(''), email, nom, niveau, type, score, 'valide', par || 'automatique']);
+  journal_('Certificat ' + no + ' : ' + email + ' · niveau ' + niveau + (type === 'formateur' ? ' (formateur)' : '') + ' ↳ ' + (par || 'automatique'));
+  return no;
+}
+function nomDe_(u) { return String(u.v[C.pre] || '') + ' ' + String(u.v[C.nom] || ''); }
+function formateurs_(email) {
+  return lignes_('Formateurs', 6).map(function (r, i) { return { l: i + 2, em: String(r[1]).toLowerCase(), niveau: Number(r[2]), st: String(r[3]), dem: String(r[4]), par: String(r[5]) }; })
+    .filter(function (x) { return !email || x.em === email; });
 }
 function iso_(x) { return /^\d{4}-\d{2}-\d{2}$/.test(String(x || '')) ? String(x) : Utilities.formatDate(new Date(), 'Europe/Paris', 'yyyy-MM-dd'); }
 function ecrireCompta_(b, par) {
@@ -531,6 +557,117 @@ function doPost(e) {
       var sj = feuille_('Journal'), nj = sj.getLastRow(), dj = nj > 1 ? sj.getRange(Math.max(2, nj - 39), 1, Math.min(40, nj - 1), 2).getValues() : [];
       return rep_({ ok: true, journal: dj,
         comptes: d.map(function (x) { var g = ag[String(x[C.mail]).toLowerCase()] || { n: 0, der: '' }; return { nom: x[C.nom] + ' ' + x[C.pre], email: x[C.mail], tel: x[C.tel], age: x[C.age], role: x[C.role], pays: x[C.pays], situation: x[C.sit], projet: x[C.proj], test: estTest_(x), demande: x[C.date], statut: etat_(x), derniere: x[C.last], expire: x[C.exp], pc: !!x[C.pc], mob: !!x[C.mob], active: !!x[C.pw], code: !!x[C.code], seances: g.n, derniereSeance: g.der }; }) });
+    }
+    /* ---- défis et rencontres : partagés entre tous les comptes ---- */
+    if (a === 'actCreer' || a === 'actListe' || a === 'actRejoindre' || a === 'actRetirer') {
+      var ac = auth_(b, 'p'); if (!ac.u) return rep_({ ok: true, etat: ac.etat });
+      var aNom = function (n) { var t = String(n || '').trim().split(/\s+/); return t[0] + (t[1] ? ' ' + t[1].charAt(0) + '.' : ''); };
+      var aTout = function () { return lignes_('Activités', 15).map(function (r, i) { return { l: i + 2, id: String(r[0]), cree: String(r[1]), type: String(r[2]), auteur: String(r[3]).toLowerCase(), nom: String(r[4]), titre: String(r[5]), mode: String(r[6]), fmt: String(r[7]), a: String(r[8]), b: String(r[9]), date: String(r[10]), heure: String(r[11]), lieu: String(r[12]), max: Number(r[13]) || 0, st: String(r[14]) }; }).filter(function (x) { return x.st === 'ouvert'; }); };
+      var aIns = function () { return lignes_('Inscrits', 4).map(function (r, i) { return { l: i + 2, id: String(r[0]), em: String(r[1]).toLowerCase(), nom: String(r[2]) }; }); };
+      if (a === 'actCreer') {
+        var ty = b.type === 'rencontre' ? 'rencontre' : 'defi', tt = String(b.titre || '').trim().slice(0, 160);
+        if (!tt) return rep_({ ok: false, erreur: 'Indique un titre.' });
+        var mx = Math.max(0, Math.min(500, Math.round(num_(b.max) || 0))), idn;
+        var pris = {}; aTout().forEach(function (x) { pris[x.id] = 1; });
+        do { idn = (ty === 'defi' ? 'D' : 'R') + alea_(6, 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'); } while (pris[idn]);
+        var cl = function (k, n) { return String(b[k] || '').trim().slice(0, n || 80); };
+        var md = /^(duo|ville|pays|meme|groupe)$/.test(b.mode) ? b.mode : 'duo';
+        feuille_('Activités').appendRow([idn, iso_(''), ty, ac.em, nomDe_(ac.u).trim(), tt, ty === 'defi' ? md : '', b.fmt === 'reel' ? 'reel' : 'visio', cl('a'), cl('b'), cl('date', 10), cl('heure', 5), cl('lieu', 160), mx, 'ouvert']);
+        feuille_('Inscrits').appendRow([idn, ac.em, nomDe_(ac.u).trim(), iso_('')]);
+        journal_((ty === 'defi' ? 'Défi ' : 'Rencontre ') + idn + ' : ' + ac.em + ' · ' + tt);
+        return rep_({ ok: true, id: idn });
+      }
+      if (a === 'actRejoindre' || a === 'actRetirer') {
+        var cible = aTout().filter(function (x) { return x.id === String(b.id); })[0]; if (!cible) return rep_({ ok: false, erreur: 'Introuvable.' });
+        if (a === 'actRetirer') { if (cible.auteur !== ac.em) return rep_({ ok: false, erreur: 'Seul l’auteur peut retirer.' }); feuille_('Activités').getRange(cible.l, 15).setValue('retiré'); journal_('Retiré ' + cible.id + ' : ' + ac.em); return rep_({ ok: true }); }
+        var ins = aIns().filter(function (x) { return x.id === cible.id; }), moi = ins.filter(function (x) { return x.em === ac.em; })[0];
+        if (moi) { if (cible.auteur === ac.em) return rep_({ ok: false, erreur: 'Tu es l’auteur : retire plutôt l’annonce.' }); feuille_('Inscrits').deleteRow(moi.l); }
+        else { if (cible.max && ins.length >= cible.max) return rep_({ ok: false, erreur: 'C’est complet.' }); feuille_('Inscrits').appendRow([cible.id, ac.em, nomDe_(ac.u).trim(), iso_('')]); }
+        return rep_({ ok: true, inscrit: !moi });
+      }
+      var tIns = aIns(), cpt = {}, mien = {}, noms = {}; tIns.forEach(function (x) { cpt[x.id] = (cpt[x.id] || 0) + 1; if (x.em === ac.em) mien[x.id] = 1; (noms[x.id] = noms[x.id] || []).push(aNom(x.nom)); });
+      return rep_({ ok: true, moi: ac.em, activites: aTout().reverse().slice(0, 100).map(function (x) { return { id: x.id, type: x.type, titre: x.titre, mode: x.mode, fmt: x.fmt, a: x.a, b: x.b, date: x.date, heure: x.heure, lieu: x.lieu, max: x.max, par: aNom(x.nom), mien: x.auteur === ac.em, n: cpt[x.id] || 0, inscrit: !!mien[x.id], noms: (noms[x.id] || []).slice(0, 12) }; }) });
+    }
+    if (a === 'actTout' || a === 'actSupprimer') { // console
+      var qa = qui_(b); if (!qa) return rep_({ ok: false, erreur: 'Clé invalide' });
+      if (!peut_(qa, a === 'actTout' ? 'voir' : 'valider')) return rep_({ ok: false, erreur: 'Droit insuffisant.' });
+      var shA = feuille_('Activités'), dA = lignes_('Activités', 15), cI = {}; lignes_('Inscrits', 4).forEach(function (r) { cI[String(r[0])] = (cI[String(r[0])] || 0) + 1; });
+      if (a === 'actSupprimer') { for (var ia = 0; ia < dA.length; ia++) if (String(dA[ia][0]) === String(b.id)) { shA.getRange(ia + 2, 15).setValue('retiré'); journal_('Retiré par l’équipe ' + b.id); return rep_({ ok: true }); } return rep_({ ok: false, erreur: 'Introuvable.' }); }
+      return rep_({ ok: true, activites: dA.map(function (r) { return { id: String(r[0]), cree: String(r[1]), type: String(r[2]), auteur: String(r[3]), nom: String(r[4]), titre: String(r[5]), mode: String(r[6]), date: String(r[10]), lieu: String(r[12]), max: Number(r[13]) || 0, st: String(r[14]), n: cI[String(r[0])] || 0 }; }).reverse() });
+    }
+    if (a === 'testEnvoi') { // l'élève envoie son test : le serveur décide et, si c'est réussi, émet le certificat
+      var at = auth_(b, 'p'); if (!at.u) return rep_({ ok: true, etat: at.etat });
+      var nv = Math.round(num_(b.niveau) || 0); if (!(nv >= 1 && nv <= 5)) return rep_({ ok: false, erreur: 'Niveau inconnu.' });
+      if (nv > 1 && !aCert_(at.em, nv - 1, 'eleve')) return rep_({ ok: false, erreur: 'Il faut d’abord le certificat du niveau ' + (nv - 1) + '.' });
+      var dj0 = certs_(at.em).filter(function (c) { return c.niveau === nv && c.type === 'eleve' && c.st === 'valide'; })[0];
+      if (dj0) return rep_({ ok: true, etat: 'validé', statut: 'réussi', deja: true, no: dj0.no, date: dj0.date, score: dj0.score });
+      var sc = Math.max(0, Math.min(100, Math.round(num_(b.score) || 0))), ong = Math.max(0, Math.round(num_(b.tabs) || 0)), dl = Math.max(0, Math.round(num_(b.to) || 0)), moy = Math.round((num_(b.avg) || 0) * 10) / 10;
+      var stt = sc < seuil_() ? 'échec' : (ong >= 3 ? 'à vérifier' : 'réussi'), no0 = '';
+      if (stt === 'réussi') no0 = emettre_(at.em, nomDe_(at.u).trim(), nv, 'eleve', sc, 'automatique');
+      feuille_('Tests').appendRow([new Date(), at.em, nv, sc, moy, ong, dl, stt, no0]);
+      journal_('Test niveau ' + nv + ' : ' + at.em + ' · ' + sc + ' % · ' + stt);
+      return rep_({ ok: true, etat: 'validé', statut: stt, score: sc, seuil: seuil_(), no: no0, date: iso_('') });
+    }
+    if (a === 'parcours') { // ce que le serveur sait de moi : certificats, derniers tests, parcours formateur
+      var ap2 = auth_(b, 'p'); if (!ap2.u) return rep_({ ok: true, etat: ap2.etat });
+      var dern = {}; lignes_('Tests', 9).forEach(function (r) { if (String(r[1]).toLowerCase() === ap2.em) dern[Number(r[2])] = { niveau: Number(r[2]), score: Number(r[3]), date: jour_(r[0]), statut: String(r[7]), no: String(r[8]) }; });
+      var fm = {}; formateurs_(ap2.em).forEach(function (x) { fm[x.niveau] = x.st; });
+      return rep_({ ok: true, etat: 'validé', seuil: seuil_(), tests: Object.keys(dern).map(function (k) { return dern[k]; }), certificats: certs_(ap2.em).filter(function (c) { return c.st === 'valide'; }).map(function (c) { return { no: c.no, date: c.date, niveau: c.niveau, type: c.type, score: c.score }; }), formateur: fm });
+    }
+    if (a === 'formateurDemande') { // test de formateur du niveau N : il faut les certificats élève N et N+1
+      var af = auth_(b, 'p'); if (!af.u) return rep_({ ok: true, etat: af.etat });
+      var nf = Math.round(num_(b.niveau) || 0); if (!(nf >= 1 && nf <= 4)) return rep_({ ok: false, erreur: 'Le test de formateur existe pour les niveaux 1 à 4.' });
+      if (!aCert_(af.em, nf, 'eleve')) return rep_({ ok: false, erreur: 'Il te faut le certificat du niveau ' + nf + '.' });
+      if (!aCert_(af.em, nf + 1, 'eleve')) return rep_({ ok: false, erreur: 'Il te faut aussi le certificat du niveau ' + (nf + 1) + ' pour passer le test de formateur du niveau ' + nf + '.' });
+      var ex = formateurs_(af.em).filter(function (x) { return x.niveau === nf; })[0], shf = feuille_('Formateurs');
+      if (ex && ex.st === 'ok') return rep_({ ok: true, etat: 'validé', statut: 'ok' });
+      if (ex && ex.st === 'demandé') return rep_({ ok: true, etat: 'validé', statut: 'demandé' });
+      if (ex) shf.getRange(ex.l, 1, 1, 6).setValues([[new Date(), af.em, nf, 'demandé', iso_(''), '']]); else shf.appendRow([new Date(), af.em, nf, 'demandé', iso_(''), '']);
+      journal_('Test de formateur demandé : ' + af.em + ' · niveau ' + nf);
+      return rep_({ ok: true, etat: 'validé', statut: 'demandé' });
+    }
+    if (a === 'certVerif') { // public : vérifier un numéro de certificat (prénom et initiale seulement)
+      var cv = certs_('').filter(function (c) { return c.no === String(b.no || '').trim().toUpperCase(); })[0];
+      if (!cv) return rep_({ ok: true, valide: false });
+      var pn = cv.nom.split(' '); return rep_({ ok: true, valide: cv.st === 'valide', niveau: cv.niveau, type: cv.type, date: cv.date, nom: pn[0] + (pn[1] ? ' ' + pn[1].charAt(0) + '.' : '') });
+    }
+    if (a === 'testsListe' || a === 'certListe' || a === 'formateurListe' || a === 'eleves') { // console : lectures
+      var qc = qui_(b); if (!qc) return rep_({ ok: false, erreur: 'Clé invalide' });
+      if (!peut_(qc, 'voir')) return rep_({ ok: false, erreur: 'Tu n’as pas le droit de voir les comptes.' });
+      if (a === 'testsListe') return rep_({ ok: true, seuil: seuil_(), tests: lignes_('Tests', 9).map(function (r) { return { date: jour_(r[0]), em: String(r[1]).toLowerCase(), niveau: Number(r[2]), score: Number(r[3]), moy: Number(r[4]), onglets: Number(r[5]), delais: Number(r[6]), st: String(r[7]), no: String(r[8]) }; }).reverse() });
+      if (a === 'certListe') return rep_({ ok: true, certificats: certs_('').map(function (c) { return { no: c.no, date: c.date, em: c.em, nom: c.nom, niveau: c.niveau, type: c.type, score: c.score, st: c.st, par: c.par }; }).reverse() });
+      if (a === 'formateurListe') return rep_({ ok: true, demandes: formateurs_('').map(function (x) { return { em: x.em, niveau: x.niveau, st: x.st, dem: x.dem, par: x.par }; }).reverse() });
+      var shE = feuille_('Comptes'), nE = shE.getLastRow(), dE = nE > 1 ? shE.getRange(2, 1, nE - 1, NCOL).getValues() : [], agE = agregat_(), prE = {}, ceE = {}, foE = {};
+      lireProgres_('').forEach(function (p) { prE[p.em] = (prE[p.em] || 0) + 1; });
+      certs_('').forEach(function (c) { if (c.st === 'valide') (ceE[c.em] = ceE[c.em] || []).push(c.type === 'formateur' ? 'F' + c.niveau : String(c.niveau)); });
+      return rep_({ ok: true, eleves: dE.filter(function (v) { return String(v[C.role] || '').toLowerCase().indexOf('formateur') < 0 || true; }).map(function (v) {
+        var e = String(v[C.mail]).toLowerCase(), l = lieuLire_(v), g = agE[e] || { n: 0, der: '' };
+        return { nom: String(v[C.pre]) + ' ' + String(v[C.nom]), email: e, role: String(v[C.role] || ''), etat: etat_(v), pays: l.pays, ville: l.ville, quartier: l.quartier, test: estTest_(v), lecons: prE[e] || 0, seances: g.n, der: g.der, certs: ceE[e] || [] }; }) });
+    }
+    if (a === 'certRevoquer' || a === 'certEmettre' || a === 'formateurDecide') { // console : décisions (droit « valider »)
+      var qd = qui_(b); if (!qd) return rep_({ ok: false, erreur: 'Clé invalide' });
+      if (!peut_(qd, 'valider')) return rep_({ ok: false, erreur: 'Tu n’as pas le droit de valider.' });
+      var ed = String(b.email || '').trim().toLowerCase(), ud = ed ? trouver_(C.mail, ed) : null;
+      if (a === 'certRevoquer') {
+        var cr = certs_('').filter(function (c) { return c.no === String(b.no || ''); })[0]; if (!cr) return rep_({ ok: false, erreur: 'Certificat introuvable.' });
+        feuille_('Certificats').getRange(cr.l, 8).setValue('révoqué'); journal_('Certificat révoqué : ' + cr.no + ' ↳ fait par ' + qd.nom); return rep_({ ok: true });
+      }
+      if (!ud) return rep_({ ok: false, erreur: 'Compte introuvable.' });
+      var nd = Math.round(num_(b.niveau) || 0); if (!(nd >= 1 && nd <= 5)) return rep_({ ok: false, erreur: 'Niveau inconnu.' });
+      if (a === 'certEmettre') { // pour un test « à vérifier » ou un cas à régler à la main
+        if (aCert_(ed, nd, 'eleve')) return rep_({ ok: false, erreur: 'Cet élève a déjà ce certificat.' });
+        if (nd > 1 && !aCert_(ed, nd - 1, 'eleve')) return rep_({ ok: false, erreur: 'Il lui faut d’abord le certificat du niveau ' + (nd - 1) + '.' });
+        var nn = emettre_(ed, nomDe_(ud).trim(), nd, 'eleve', Math.round(num_(b.score) || 0), qd.nom);
+        var shT = feuille_('Tests'), dT = lignes_('Tests', 9); for (var k = dT.length - 1; k >= 0; k--) if (String(dT[k][1]).toLowerCase() === ed && Number(dT[k][2]) === nd && String(dT[k][7]) === 'à vérifier') { shT.getRange(k + 2, 8, 1, 2).setValues([['validé', nn]]); break; }
+        return rep_({ ok: true, no: nn });
+      }
+      var dm = formateurs_(ed).filter(function (x) { return x.niveau === nd; })[0]; if (!dm || dm.st !== 'demandé') return rep_({ ok: false, erreur: 'Aucune demande en attente.' });
+      var dec = b.decision === 'ok' ? 'ok' : 'refus';
+      if (dec === 'ok' && !(aCert_(ed, nd, 'eleve') && aCert_(ed, nd + 1, 'eleve'))) return rep_({ ok: false, erreur: 'Les certificats des niveaux ' + nd + ' et ' + (nd + 1) + ' ne sont plus tous valides.' });
+      feuille_('Formateurs').getRange(dm.l, 1, 1, 6).setValues([[new Date(), ed, nd, dec, dm.dem, qd.nom]]);
+      var nof = dec === 'ok' ? emettre_(ed, nomDe_(ud).trim(), nd, 'formateur', 0, qd.nom) : '';
+      journal_('Test de formateur ' + dec + ' : ' + ed + ' · niveau ' + nd + ' ↳ fait par ' + qd.nom);
+      return rep_({ ok: true, no: nof });
     }
     if (a === 'progres') { // plateforme (p) ou téléphone (m) : leçons terminées
       var cp = b.canal === 'm' ? 'm' : 'p', ap = auth_(b, cp); if (!ap.u) return rep_({ ok: true, etat: ap.etat });
