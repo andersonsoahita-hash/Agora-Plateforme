@@ -1233,6 +1233,8 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 #es.adm .apa-i{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;border:1px solid rgba(27,32,51,.14);border-radius:14px;padding:12px 14px;background:#fff}
 #es.adm .apa-i small{display:block;color:#5b6178;font-size:12.5px;margin-top:2px}
 #es.adm .ad-tg{display:inline-block;font:700 11px 'DM Sans',sans-serif;letter-spacing:.04em;background:#e8f6ee;color:#16683a;border-radius:999px;padding:2px 9px;margin-left:6px}
+
+.ad-app{align-content:start}
 .pay{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:6px 0 12px;display:grid;gap:6px}.pay p{font-size:14px;color:var(--mut);margin:0}.ck{display:flex;gap:10px;align-items:flex-start;font-size:14px;margin:10px 0}.ck input{width:20px;height:20px;margin-top:2px;flex:none}.lnk{margin:12px 0 0;font-size:15px}.lnk a{color:var(--red);text-decoration:underline}#form[hidden],#login[hidden]{display:none}.mail{border:1px dashed var(--line);border-radius:12px;padding:12px 14px;margin-top:10px;font-size:14px}.mail b{display:block}
 .a-hd .seg{display:none!important}.bar #navAcc{display:inline-flex!important}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=DM+Sans:wght@400;500;600;700&family=Dancing+Script:wght@600;700&display=swap">
@@ -2897,7 +2899,7 @@ var SVU="https://script.google.com/macros/s/AKfycbwFkSJld9L17j4QCa8dH3wxFkfUDSXY
 function svLabel(){var u=navigator.userAgent||'',os=/iPhone|iPad/.test(u)?'iPhone':/Android/.test(u)?'Android':/Mac/.test(u)?'Mac':/Windows/.test(u)?'Windows':'Appareil',br=/Edg\//.test(u)?'Edge':/Chrome|CriOS/.test(u)?'Chrome':/Firefox|FxiOS/.test(u)?'Firefox':/Safari/.test(u)?'Safari':'navigateur',app=false;try{app=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(x){}return os+' · '+(app?'application':br)}
 function svKey(){try{return localStorage.getItem(SVK)||''}catch(x){return ''}}
 function svCall(o){return fetch(SVU,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(o)}).then(function(r){return r.json()})}
-function svLoad(silent){if(SV.loading)return;SV.loading=true;svCall({action:'liste',cle:svKey()}).then(function(r){SV.loading=false;if(!r||!r.ok){SV.err=(r&&r.erreur)||'Refusé.';if(r&&r.erreur==='Clé invalide'){try{localStorage.removeItem(SVK)}catch(x){}}if(!silent&&role==='fo'&&AV==='srv')render();return}var same=JSON.stringify(SV.data)===JSON.stringify(r);SV.data=r;SV.err='';SV.t=Date.now();if(!same&&role==='fo'&&AV==='srv'){var ae=document.activeElement;if(!(ae&&ae.tagName==='INPUT'))render()}else if(!silent&&role==='fo'&&AV==='srv')render()}).catch(function(){SV.loading=false;SV.err='Connexion impossible.';if(!silent&&role==='fo'&&AV==='srv')render()})}
+function svLoad(silent){if(SV.loading)return;SV.loading=true;svCall({action:'liste',cle:svKey()}).then(function(r){SV.loading=false;if(!r||!r.ok){SV.err=(r&&r.erreur)||'Refusé.';if(r&&r.erreur==='Clé invalide'){try{localStorage.removeItem(SVK)}catch(x){}}if(!silent&&role==='fo'&&AV==='srv')render();return}var same=JSON.stringify(SV.data)===JSON.stringify(r);SV.data=r;SV.off=0;try{localStorage.setItem('agora_adm_liste',JSON.stringify({t:Date.now(),r:r}))}catch(x){}SV.err='';SV.t=Date.now();if(!same&&role==='fo'&&AV==='srv'){var ae=document.activeElement;if(!(ae&&ae.tagName==='INPUT'))render()}else if(!silent&&role==='fo'&&AV==='srv')render()}).catch(function(){SV.loading=false;if(!SV.data){try{var c=JSON.parse(localStorage.getItem('agora_adm_liste')||'null');if(c&&c.r){SV.data=c.r;SV.off=c.t}}catch(x){}}if(SV.data){SV.off=SV.off||Date.now();SV.err=''}else SV.err='Connexion impossible.';if(role==='fo'&&AV==='srv')render()})}
 function svFd(d){if(!d)return '—';var t=new Date(d);return isNaN(t)?esc(d):t.toLocaleDateString('fr-FR')+' '+t.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}
 var SVB={'en attente':['wt','En attente'],'validé':['ok','Actif'],'bloqué':['ko','Bloqué'],'supprimé':['ko','Supprimé'],'expiré':['wt','Expiré']};
 var SVOP={valider:'valider',debloquer:'valider',expire:'valider',bloquer:'bloquer',appareil:'appareils',mobile:'appareils',supprimer:'supprimer',effacer:'supprimer'};
@@ -2947,8 +2949,11 @@ function svGate(){
   var k=document.getElementById('svk');document.getElementById('svs').onchange=function(){k.type=this.checked?'text':'password'};
   function enter(){g.parentNode&&g.parentNode.removeChild(g);openES();render()}
   g.querySelector('form').onsubmit=function(e){e.preventDefault();var v=k.value.trim(),er=document.getElementById('sve'),b=document.getElementById('svgo');if(!v)return;b.disabled=true;er.textContent='';
-    svCall({action:'activerAppareil',cle:v,nom:svLabel()}).then(function(r){b.disabled=false;if(!r||!r.ok){er.textContent=svOld((r&&r.erreur)||'Refusé.');return}try{localStorage.setItem(SVK,r.jeton)}catch(x){}k.value='';SV.me=r;SV.err='';enter()}).catch(function(){b.disabled=false;er.textContent='Connexion impossible.'})};
-  if(svKey())svCall({action:'moi',cle:svKey()}).then(function(r){if(r&&r.ok){SV.me=r;enter()}}).catch(function(){});
+    svCall({action:'activerAppareil',cle:v,nom:svLabel()}).then(function(r){b.disabled=false;if(!r||!r.ok){er.textContent=svOld((r&&r.erreur)||'Refusé.');return}try{localStorage.setItem(SVK,r.jeton)}catch(x){}k.value='';try{localStorage.setItem('agora_adm_me',JSON.stringify(r))}catch(x){}SV.me=r;SV.err='';enter()}).catch(function(){b.disabled=false;er.textContent='Connexion impossible.'})};
+  if(svKey()){var cm=null;try{cm=JSON.parse(localStorage.getItem('agora_adm_me')||'null')}catch(x){}
+    if(cm&&cm.ok){g.style.display='none';SV.me=cm;enter()}else g.style.visibility='hidden'; // déjà connecté : pas de formulaire en attendant le serveur
+    svCall({action:'moi',cle:svKey()}).then(function(r){if(r&&r.ok){try{localStorage.setItem('agora_adm_me',JSON.stringify(r))}catch(x){}if(!(cm&&cm.ok)){SV.me=r;enter()}else{var ch=JSON.stringify(SV.me&&SV.me.droits)!==JSON.stringify(r.droits);SV.me=r;if(ch)render()}return}
+      try{localStorage.removeItem(SVK);localStorage.removeItem('agora_adm_me');localStorage.removeItem('agora_adm_liste')}catch(x){}if(cm&&cm.ok){location.reload();return}g.style.visibility='';g.style.display='';document.getElementById('sve').textContent='Cet appareil n’est plus activé. Demande une nouvelle clé.'}).catch(function(){if(!(cm&&cm.ok)){g.style.visibility='';document.getElementById('sve').textContent='Pas de connexion : reconnecte-toi une première fois en ligne.'}})}
 }
 
 /* ---- administrateurs : le propriétaire en ajoute, choisit leurs droits, leur envoie leur clé par e-mail ---- */
@@ -3213,6 +3218,9 @@ AR.appa=function(){
 document.addEventListener('click',function(ev){var t=ev.target.closest&&ev.target.closest('[data-apa]');if(!t)return;var op=t.dataset.apa;
   if(op==='reload'){APA.list=null;APA.err='';render();apaLoad();return}
   if(op==='del'){var id=t.dataset.id;if(APA.busy!==id){APA.busy=id;render();return}t.disabled=true;svCall({action:'appareilRetirer',cle:svKey(),id:id}).then(function(r){APA.busy='';if(r&&r.ok){var me=APA.list&&APA.list.filter(function(x){return x.id===id})[0];if(me&&me.moi){try{localStorage.removeItem(SVK)}catch(x){}location.reload();return}toast('Appareil retiré.')}else toast((r&&r.erreur)||'Refusé.');APA.list=null;render();apaLoad()}).catch(function(){APA.busy='';toast('Connexion impossible.');render()})}});
+
+/* mode hors ligne : bandeau sur la liste des comptes */
+(function(){var o=AR.srv;AR.srv=function(){var h=o();if(!SV.off)return h;var d='';try{d=new Date(SV.off).toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}catch(x){}return '<div class="ad-warn">Hors ligne : dernières données enregistrées'+(d?' le '+d:'')+'. Les actions reviendront dès que tu auras du réseau.</div>'+h}})();
 
 
 if(AG_MODE==="admin"){role="fo";AV="srv";svGate()}
