@@ -1,5 +1,6 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#17203a"><meta name="color-scheme" content="light"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/svg+xml" href="icons/mark.svg"><link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Agora Gestion"><meta name="apple-mobile-web-app-status-bar-style" content="default"><style>@media (pointer:coarse){input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea{font-size:16px!important}}</style><title>Agora Gestion · Agora, l'art oratoire</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<meta name="agora-build" content="1794408712">
 <style>
 /* Mise en page : arrivée directe sur l'art oratoire (une diapo de leçon, un exercice, un certificat), puis 5 niveaux en cartes qui se recouvrent, le cycle d'une leçon, les variantes, l'accès. Sombre par choix. */
 :root{
@@ -1180,6 +1181,22 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 #es.adm .ad-main{min-width:0}
 #es.adm .ad-pv.m{width:min(390px,100%);box-sizing:border-box}
 @media(max-width:820px){#es.adm .ad-ac{flex-wrap:wrap}#es.adm .ad-c{min-width:0}html,body{overflow-x:hidden}}
+/* menu latéral élève / formateur */
+#es #mnb{position:fixed;top:max(10px,calc(env(safe-area-inset-top,0px) + 6px));left:max(10px,env(safe-area-inset-left,0px));z-index:160;width:42px;height:42px;border-radius:14px;border:1.5px solid rgba(27,32,51,.18);background:rgba(255,255,255,.96);display:grid;place-content:center;gap:4px;cursor:pointer;box-shadow:0 8px 20px -12px rgba(27,32,51,.5)}
+#es #mnb i{display:block;width:18px;height:2px;border-radius:2px;background:#1b2033}
+#es #mnbd{position:fixed;inset:0;z-index:170;background:rgba(11,8,24,.45);opacity:0;transition:opacity .25s}
+#es #mnd{position:fixed;top:0;bottom:0;left:0;width:min(300px,84vw);z-index:180;background:#fff;color:#1b2033;padding:calc(env(safe-area-inset-top,0px) + 14px) 12px 18px;display:flex;flex-direction:column;gap:4px;overflow:auto;transform:translateX(-102%);transition:transform .26s cubic-bezier(.2,.8,.2,1);box-shadow:20px 0 50px -20px rgba(11,8,24,.5)}
+#es.mn-open #mnbd{opacity:1}#es.mn-open #mnd{transform:none}
+#es #mnd .mnh{display:flex;flex-direction:column;padding:8px 10px 14px;border-bottom:1px solid rgba(27,32,51,.1);margin-bottom:6px}
+#es #mnd .mnh b{font:700 20px Fraunces,Georgia,serif}#es #mnd .mnh span{font:700 11px 'DM Sans',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#8a6212}
+#es #mnd [data-mn]{display:flex;align-items:center;gap:14px;border:0;background:none;text-align:left;font:600 16px 'DM Sans',sans-serif;color:#1b2033;padding:13px 12px;border-radius:12px;cursor:pointer}
+#es #mnd [data-mn] svg{width:22px;height:22px;flex:none}
+#es #mnd [data-mn].on{background:#fbeceb;color:#8f2a17}
+@media(prefers-reduced-motion:reduce){#es #mnd,#es #mnbd{transition:none}}
+#es.mnv>.a-hd{padding-left:max(64px,calc(env(safe-area-inset-left,0px) + 60px))}
+#es #mnd .mns{font:700 11px 'DM Sans',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#6b7188;padding:10px 12px 4px}
+#es #mnd [data-mx]{display:flex;align-items:center;gap:14px;border:0;background:none;text-align:left;text-decoration:none;font:600 16px 'DM Sans',sans-serif;color:#1b2033;padding:13px 12px;border-radius:12px;cursor:pointer}
+#es #mnd [data-mx] svg{width:22px;height:22px;flex:none}#es #mnd [data-mx].q{color:#8f2a17}
 .pay{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:6px 0 12px;display:grid;gap:6px}.pay p{font-size:14px;color:var(--mut);margin:0}.ck{display:flex;gap:10px;align-items:flex-start;font-size:14px;margin:10px 0}.ck input{width:20px;height:20px;margin-top:2px;flex:none}.lnk{margin:12px 0 0;font-size:15px}.lnk a{color:var(--red);text-decoration:underline}#form[hidden],#login[hidden]{display:none}.mail{border:1px dashed var(--line);border-radius:12px;padding:12px 14px;margin-top:10px;font-size:14px}.mail b{display:block}
 #esx,#agear{display:none!important}body>*:not(#es):not(#svgate):not(#lv):not(#lp):not(.toast):not(script):not(style){display:none!important}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=DM+Sans:wght@400;500;600;700&family=Dancing+Script:wght@600;700&display=swap">
@@ -3182,6 +3199,31 @@ document.addEventListener('click',function(ev){var t=ev.target.closest&&ev.targe
 
 /* mode hors ligne : bandeau sur la liste des comptes */
 (function(){var o=AR.srv;AR.srv=function(){var h=o();if(!SV.off)return h;var d='';try{d=new Date(SV.off).toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}catch(x){}return '<div class="ad-warn">Hors ligne : dernières données enregistrées'+(d?' le '+d:'')+'. Les actions reviendront dès que tu auras du réseau.</div>'+h}})();
+
+/* menu latéral pour les élèves et les formateurs : un petit bouton ☰ en haut ouvre la liste de toutes les rubriques, puis se referme */
+(function(){
+  var es=document.getElementById('es');if(!es)return;
+  var btn=document.createElement('button');btn.type='button';btn.id='mnb';btn.setAttribute('aria-label','Ouvrir le menu');btn.setAttribute('aria-expanded','false');btn.innerHTML='<i></i><i></i><i></i>';
+  var bd=document.createElement('div');bd.id='mnbd';bd.hidden=true;
+  var dr=document.createElement('nav');dr.id='mnd';dr.setAttribute('aria-label','Toutes les rubriques');dr.hidden=true;
+  es.appendChild(btn);es.appendChild(bd);es.appendChild(dr);
+  function items(){var h='<div class="mnh"><b>Agora</b><span>by Stephen</span></div>';[].slice.call(document.querySelectorAll('#estab button')).forEach(function(b,i){h+='<button type="button" data-mn="'+i+'" class="'+(b.classList.contains('on')?'on':'')+'">'+b.innerHTML+'</button>'});h+='<div class="mns">Mon espace</div><button type="button" data-mx="compte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Mon compte, certificats et application</button><a data-mx="cgu" href="../conditions/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h7"/></svg>Conditions générales</a><button type="button" data-mx="quit" class="q"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/></svg>Quitter l’espace</button>';return h}
+  function open(){dr.innerHTML=items();dr.hidden=false;bd.hidden=false;requestAnimationFrame(function(){es.classList.add('mn-open')});btn.setAttribute('aria-expanded','true')}
+  function close(){es.classList.remove('mn-open');btn.setAttribute('aria-expanded','false');setTimeout(function(){if(!es.classList.contains('mn-open')){dr.hidden=true;bd.hidden=true}},260)}
+  btn.addEventListener('click',function(){es.classList.contains('mn-open')?close():open()});
+  bd.addEventListener('click',close);
+  dr.addEventListener('click',function(e){var x=e.target.closest('[data-mx]');if(x){close();if(x.dataset.mx==='compte')setTimeout(function(){var g=document.getElementById('agear');g&&g.click()},120);if(x.dataset.mx==='quit')setTimeout(function(){var g=document.getElementById('esx');g&&g.click()},120);return}var b=e.target.closest('[data-mn]');if(!b)return;var src=document.querySelectorAll('#estab button')[+b.dataset.mn];close();if(src)setTimeout(function(){src.click()},120)});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&es.classList.contains('mn-open'))close()});
+  function sync(){var show=es.classList.contains('on')&&typeof role!=='undefined'&&role!=='fo';btn.style.display=show?'':'none';es.classList.toggle('mnv',!!show);if(!show&&es.classList.contains('mn-open'))close()}
+  var r0=window.render;if(typeof r0==='function'){window.render=function(){var x=r0.apply(this,arguments);sync();return x}}
+  new MutationObserver(sync).observe(es,{attributes:true,attributeFilter:['class']});sync();
+})();
+
+/* « Mise à jour disponible » : quand une nouvelle version est publiée, un bandeau propose d'actualiser */
+(function(){var m=document.querySelector('meta[name=agora-build]'),cur=m&&m.content;if(!cur||!/^\d+$/.test(cur))return;var shown=0;
+  function bar(){var d=document.createElement('div');d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:200000;display:flex;align-items:center;gap:12px;background:#1b2033;color:#fff;padding:10px 12px 10px 18px;border-radius:999px;box-shadow:0 16px 40px -14px rgba(0,0,0,.6);font:600 14px "DM Sans",system-ui,sans-serif;max-width:calc(100vw - 24px)';d.innerHTML='<span>Mise à jour disponible</span><button type="button" style="border:0;border-radius:999px;padding:9px 16px;font:700 14px inherit;font-family:inherit;color:#1a1204;background:linear-gradient(90deg,#f2b84b,#ff8f5e);cursor:pointer">Actualiser</button>';d.querySelector('button').onclick=function(){location.reload()};document.body.appendChild(d)}
+  function chk(){if(shown||navigator.onLine===false)return;fetch(location.pathname,{cache:'no-store'}).then(function(r){return r.text()}).then(function(t){var x=/name="agora-build" content="(\d+)"/.exec(t);if(x&&x[1]!==cur){shown=1;bar()}}).catch(function(){})}
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')chk()});setTimeout(chk,6000);setInterval(chk,600000)})();
 
 
 if(AG_MODE==="admin"){role="fo";AV="srv";svGate()}
