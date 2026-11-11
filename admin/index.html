@@ -1,6 +1,6 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#17203a"><meta name="color-scheme" content="light"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/svg+xml" href="icons/mark.svg"><link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Agora Gestion"><meta name="apple-mobile-web-app-status-bar-style" content="default"><style>@media (pointer:coarse){input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea{font-size:16px!important}}</style><title>Agora Gestion · Agora, l'art oratoire</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="agora-build" content="1794431096">
+<meta name="agora-build" content="1794432066">
 <style>
 /* Mise en page : arrivée directe sur l'art oratoire (une diapo de leçon, un exercice, un certificat), puis 5 niveaux en cartes qui se recouvrent, le cycle d'une leçon, les variantes, l'accès. Sombre par choix. */
 :root{
@@ -2491,7 +2491,7 @@ es.addEventListener('click',function(e){
   case 'ssave':if(!$('#sw').value||!$('#sk').value){toast('Indique devant qui et si ça a marché');return}
     P.sessions.unshift({date:today(),sujet:SD.sujet,type:SD.type,words:SD.res.an.words,an:SD.res.an});P.fb.unshift({l:'Studio · '+SD.sujet,w:$('#sw').value,ok:$('#sk').value,c:$('#sc').value,d:today()});
     if(!A.S.online){A.S.queue++;A.paintNet();toast('Hors ligne : séance gardée, envoi au retour du réseau')}SD.saved=true;addPts(10);break;
-  case 'dsave':if(!SD.disc||SD.disc.saved)break;var q=SD.disc,k=q.self.checks.filter(Boolean).length;P.sessions.unshift({date:today(),sujet:q.d.t,type:'lecture',words:0,an:{words:0,wpm:0,per100:0,fill:0,con:0,conp:0,logos:'',ethos:'',pathos:'',disc:{k:k,feel:q.self.feel}}});P.fb.unshift({l:'Discours à jouer · '+q.d.t,w:'Seul(e)',ok:k===q.d.ctl.length?'Oui':k>0?'En partie':'Pas encore',c:'Ressenti '+q.self.feel+'/5',d:today()});if(!A.S.online){A.S.queue++;A.paintNet();toast('Hors ligne : séance gardée, envoi au retour du réseau')}q.saved=true;addPts(10);break;
+  case 'dsave':if(!SD.disc||SD.disc.saved)break;var q=SD.disc,k=q.self.checks.filter(Boolean).length;P.sessions.unshift({date:today(),sujet:q.d.t,type:'lecture',words:q.an?q.an.words:0,an:q.an||{words:0,wpm:0,per100:0,fill:0,con:0,conp:0,logos:'',ethos:'',pathos:''}});P.fb.unshift({l:'Discours à jouer · '+q.d.t,w:'Seul(e)',ok:k===q.d.ctl.length?'Oui':k>0?'En partie':'Pas encore',c:'Ressenti '+q.self.feel+'/5',d:today()});if(!A.S.online){A.S.queue++;A.paintNet();toast('Hors ligne : séance gardée, envoi au retour du réseau')}q.saved=true;addPts(10);break;
   case 'dagain':SD.disc=null;break;
   case 'sagain':SD.el=0;SD.res=null;SD.text='';SD.saved=false;SD.sec=0;newSubj();break;
   case 'of':orF=b.dataset.v;break;
@@ -3285,10 +3285,11 @@ window.AGDISC_HOST={analyse:function(p,done){
     if(pcm.length<16000*3){toast('Enregistrement trop court pour être analysé');done(false);return}
     return window.AO_ANALYSIS.analyzeSignal(pcm,{}).then(function(sig){
       if(!sig||!sig.ok){toast('Aucune voix détectée dans l’enregistrement');done(false);return}
-      SD.type='lecture';SD.res=null;SD.disc={d:{id:p.d.id,t:p.d.t,but:p.d.but,ctl:p.d.controle},self:p.self,sig:sig,saved:false};done(true);nav('studio')})
+      SD.type='lecture';SD.res=null;var tr=(p.transcript||'').trim(),an=tr.split(/\s+/).length>=8?analyze(tr,Math.round(sig.spanSec||sig.durationSec||0)):null;SD.disc={d:{id:p.d.id,t:p.d.t,but:p.d.but,ctl:p.d.controle},self:p.self,sig:sig,an:an,saved:false};done(true);nav('studio')})
   }).catch(function(){toast('Ce son n’est pas lisible ici');done(false)})};
   r.readAsArrayBuffer(p.blob)}};
-function dcAdvice(a){var o=[];
+function dcAdvice(a,t){var o=[];
+  if(t){if(t.per100>3)o.push(['Tics',t.fill+' tics repérés dans ce que tu as dit ('+t.per100+' pour 100 mots). Remplace-les par un silence.']);if(t.wpm&&(t.wpm<110||t.wpm>160))o.push(['Débit',t.wpm+' mots par minute (repère : 110 à 160).']);if(t.words>=60&&t.conp<0.5)o.push(['Connecteurs','Peu de connecteurs repérés : relie tes idées (parce que, donc, mais, pourtant).'])}
   if(a.pauses.blank>0)o.push(['Blancs',a.pauses.blank+' silence(s) de 2 s ou plus. Prépare tes transitions.']);
   if(a.pitch&&a.pitch.sdSemitones<2)o.push(['Voix plate','Écart de hauteur '+a.pitch.sdSemitones+' demi-tons. Marque les mots clés par la hauteur ou le volume.']);
   if(a.pitch&&a.pitch.sdSemitones>4)o.push(['Voix très marquée','Écart '+a.pitch.sdSemitones+' demi-tons : garde aussi des passages calmes.']);
@@ -3300,8 +3301,9 @@ function dcView(){var D0=SD.disc,a=D0.sig,s=D0.self,FE=['','Très tendu','Tendu'
   var h='<div class="a-w"><div class="a-top"><h1>Résultat</h1></div>';
   h+='<div class="a-c"><div class="a-eb">Discours à jouer · 1 · Ton auto-évaluation</div><h3>'+esc(D0.d.t)+'</h3><p class="a-mu">'+esc(D0.d.but)+'</p>'+D0.d.ctl.map(function(c,i){return '<p>'+(s.checks[i]?'✓ ':'✗ ')+esc(c)+'</p>'}).join('')+'<div class="a-sts">'+m('critères réussis',n+' / '+D0.d.ctl.length)+m('ressenti',esc(FE[s.feel]||'—'))+'</div></div>';
   h+='<div class="a-c"><div class="a-eb">2 · L’évaluation de ta voix</div><div class="a-sts">'+m('durée de parole',tfmt(Math.round(a.spanSec||a.durationSec||0)))+(a.pitch?m('variation de hauteur (demi-tons)',a.pitch.sdSemitones):'')+m('variation de volume (dB)',a.volume.sdDb)+m('débit (syllabes/s)',a.rhythm.syllPerSec)+m('pauses',a.pauses.count+' (plus longue '+a.pauses.longest+' s)')+m('fins montantes',Math.round(a.endings.risingShare*100)+' %')+m('fins qui s’éteignent',Math.round(a.endings.fadingShare*100)+' %')+'</div>';
-  h+='<h4>À travailler en premier</h4>'+dcAdvice(a).map(function(x){return '<div class="a-sub"><b>'+esc(x[0])+'</b><p>'+esc(x[1])+'</p></div>'}).join('');
-  h+='<p class="a-mu">Le texte était fourni : l’analyse mesure ta façon de le dire (hauteur, volume, débit, pauses, fins de phrase), pas le choix des mots. Compare avec ce que tu as coché. Repères de l’appli, pas des normes scientifiques : variation de hauteur &lt; 2 plat, 2 à 4 vivant, &gt; 4 très marqué.</p>';
+  if(D0.an){var b=D0.an;h+='<div class="a-sts">'+m('mots dits',b.words)+m('mots par minute (cible 110 à 160)',b.wpm||'—')+m('tics pour 100 mots ('+b.fill+')',b.per100)+m('connecteurs pour 100 mots',b.conp)+'</div>'+pilHtml(b)}
+  h+='<h4>À travailler en premier</h4>'+dcAdvice(a,D0.an).map(function(x){return '<div class="a-sub"><b>'+esc(x[0])+'</b><p>'+esc(x[1])+'</p></div>'}).join('');
+  h+='<p class="a-mu">'+(D0.an?'Les mots sont comptés d’après la transcription automatique, qui peut se tromper sur certains mots. « Non observé » veut dire : pas assez de matière pour juger. ':'Pas de transcription cette fois (reconnaissance vocale indisponible ou refusée) : seule ta voix est analysée. ')+'Compare avec ce que tu as coché. Repères de l’appli, pas des normes scientifiques : variation de hauteur &lt; 2 plat, 2 à 4 vivant, &gt; 4 très marqué.</p>';
   h+='<div class="a-row">'+(D0.saved?'<div class="a-call">Séance enregistrée dans ton historique et ton suivi.</div>':'<button class="btn" data-a="dsave">Enregistrer la séance (+10 pts)</button>')+'<button class="btn ghost" data-a="dagain">Nouveau discours</button></div></div></div>';return h}
 
 /* ============================================================
@@ -3805,9 +3807,10 @@ var P=null;
 function close(){if(!P)return;stop();killRec();try{if(P.wl)P.wl.release()}catch(e){}document.removeEventListener('keydown',key);var e=document.getElementById('dcP');if(e)e.remove();P=null}
 function key(e){if(!P)return;if(e.key==='Escape')close();else if(e.key===' '&&P.mode==='run'){e.preventDefault();toggle()}else if(e.key==='ArrowLeft')back()}
 function el(sel){return document.querySelector('#dcP '+sel)}
+var SRC=window.SpeechRecognition||window.webkitSpeechRecognition;
 function open(id){
   var d=byId(id);if(!d)return;close();
-  P={d:d,i:-1,sp:1,mode:'intro',t:0,rec:null,blob:null,chunks:[]};
+  P={d:d,i:-1,sp:1,mode:'intro',t:0,rec:null,blob:null,chunks:[],tr:'',sr:null,useSR:true};
   var r=document.createElement('div');r.id='dcP';r.setAttribute('role','dialog');r.setAttribute('aria-modal','true');r.setAttribute('aria-label',d.t);
   r.innerHTML='<div class="dc-top"><button class="dc-x" type="button" aria-label="Fermer" data-dc="x">×</button><div class="dc-tt">'+esc(d.t)+'</div></div><div class="dc-bar"><i></i></div><div class="dc-win"><div class="dc-txt">'+d.l.map(function(l,i){return '<p class="dc-b'+(isDir(l)?' dir':'')+'" data-i="'+i+'">'+esc(l)+'</p>'}).join('')+'</div><div class="dc-pill"></div></div><div class="dc-ctl"><button class="dc-btn" type="button" data-dc="back" aria-label="Phrase précédente">⏮</button><button class="dc-btn pl" type="button" data-dc="play">Lecture</button><button class="dc-btn dc-sm" type="button" data-dc="spm" aria-label="Plus lent">−</button><button class="dc-btn dc-sp" type="button" data-dc="sp" aria-label="Vitesse">1×</button><button class="dc-btn dc-sm" type="button" data-dc="spp" aria-label="Plus rapide">+</button><button class="dc-btn rc" type="button" data-dc="rec">● Enregistrer</button></div>';
   document.body.appendChild(r);r.querySelector('.dc-txt').style.paddingTop=Math.round(r.querySelector('.dc-win').clientHeight*.34)+'px';r.addEventListener('click',onClick);document.addEventListener('keydown',key);
@@ -3816,7 +3819,7 @@ function open(id){
 }
 function ov(h){var o=el('.dc-ov');if(o)o.remove();var w=document.createElement('div');w.className='dc-ov';w.innerHTML=h;el('.dc-win').parentNode.appendChild(w);w.style.position='absolute';w.style.zIndex=2;w.style.top=el('.dc-top').offsetHeight+3+'px'}
 function intro(){var d=P.d;P.mode='intro';
-  ov('<span class="dc-eb">Niveau '+d.n+' · '+fmt(mins(d))+'</span><h2>'+esc(d.t)+'</h2><p><b>Objectif.</b> '+esc(d.but)+'</p><div><b>Ce que tu travailles dans Agora</b><ul>'+d.appris.map(function(a){return '<li>'+esc(a[0]+' · '+a[1])+'</li>'}).join('')+'</ul></div><p>Lis à voix haute. Les lignes en bleu sont des consignes de jeu : respire, marque le silence, regarde quelqu’un. Ne cherche pas à aller vite.</p>'+(window.AGDISC_HOST?'<p class="dc-nt"><b>Ta voix est enregistrée</b> pendant la lecture, sur ton appareil, pour l’analyse à la fin. Pour ne pas l’enregistrer, appuie sur « ■ Arrêter » en bas.</p>':'')+'<div class="dc-row"><button class="dc-btn pl" type="button" data-dc="go">Je suis prêt</button><button class="dc-btn" type="button" data-dc="x">Fermer</button></div>')}
+  ov('<span class="dc-eb">Niveau '+d.n+' · '+fmt(mins(d))+'</span><h2>'+esc(d.t)+'</h2><p><b>Objectif.</b> '+esc(d.but)+'</p><div><b>Ce que tu travailles dans Agora</b><ul>'+d.appris.map(function(a){return '<li>'+esc(a[0]+' · '+a[1])+'</li>'}).join('')+'</ul></div><p>Lis à voix haute. Les lignes en bleu sont des consignes de jeu : respire, marque le silence, regarde quelqu’un. Ne cherche pas à aller vite.</p>'+(window.AGDISC_HOST?'<p class="dc-nt"><b>Ta voix est enregistrée</b> pendant la lecture, sur ton appareil, pour l’analyse à la fin. Pour ne pas l’enregistrer, appuie sur « ■ Arrêter » en bas.</p>'+(SRC?'<label class="dc-nt"><input type="checkbox" id="dcSR" checked> <span>Transcrire aussi ce que je dis, pour analyser les mots (ethos, pathos, logos, tics). Le navigateur peut envoyer l’audio à son service de reconnaissance vocale.</span></label>':''):'')+'<div class="dc-row"><button class="dc-btn pl" type="button" data-dc="go">Je suis prêt</button><button class="dc-btn" type="button" data-dc="x">Fermer</button></div>')}
 function pill(t){var p=el('.dc-pill');if(!p)return;if(t){p.textContent=t;p.className='dc-pill on'}else p.className='dc-pill'}
 function stop(){if(P){clearTimeout(P.tm);clearInterval(P.iv);P.tm=0;P.iv=0}}
 function show(i){
@@ -3832,7 +3835,7 @@ function step(i){
   if(isDir(l)&&dirSec(l)>=2){var left=Math.round(dirSec(l)/P.sp);pill('Silence · '+left);clearInterval(P.iv);P.iv=setInterval(function(){left--;pill(left>0?'Silence · '+left:'')},1000)}else{pill('');clearInterval(P.iv)}
   clearTimeout(P.tm);P.tm=setTimeout(function(){step(i+1)},dur(i)*1000);
 }
-function go(){var o=el('.dc-ov');if(o)o.remove();P.mode='run';if(window.AGDISC_HOST&&!P.rec&&!P.blob)rec();var b=el('[data-dc="play"]');if(b)b.textContent='Pause';
+function go(){var ck=document.getElementById('dcSR');if(ck)P.useSR=!!ck.checked;var o=el('.dc-ov');if(o)o.remove();P.mode='run';if(window.AGDISC_HOST&&!P.rec&&!P.blob)rec();var b=el('[data-dc="play"]');if(b)b.textContent='Pause';
   var n=3;pill('Prêt · '+n);P.iv=setInterval(function(){n--;if(n>0)pill('Prêt · '+n);else{clearInterval(P.iv);pill('');step(0)}},900)}
 function toggle(){
   if(P.mode==='run'){P.mode='pause';stop();pill('');el('[data-dc="play"]').textContent='Reprendre'}
@@ -3842,12 +3845,12 @@ function toggle(){
 function back(){if(!P||P.mode==='intro'||P.mode==='end')return;var i=Math.max(0,P.i-(isDir(P.d.l[P.i])?2:1));stop();if(P.mode==='run')step(i);else{P.i=i;show(i)}}
 function spTxt(){var v=Math.round(P.sp*100)/100;return String(v).replace('.',',')+'×'}
 function speed(dir){P.sp=Math.min(4,Math.max(.25,Math.round((P.sp+dir*.25)*100)/100));el('[data-dc="sp"]').textContent=spTxt();if(P.mode==='run'){stop();step(Math.max(0,P.i))}}
-function killRec(){try{if(P&&P.rec&&P.rec.state!=='inactive')P.rec.stop()}catch(e){}try{if(P&&P.stream)P.stream.getTracks().forEach(function(t){t.stop()})}catch(e){}if(P){P.rec=null;P.stream=null}}
+function killRec(){try{if(P&&P.sr){P.sr.onend=null;P.sr.stop()}}catch(e){}try{if(P&&P.rec&&P.rec.state!=='inactive')P.rec.stop()}catch(e){}try{if(P&&P.stream)P.stream.getTracks().forEach(function(t){t.stop()})}catch(e){}if(P){P.rec=null;P.stream=null;P.sr=null}}
 function rec(){
   var b=el('[data-dc="rec"]');
   if(P.rec){killRec();b.className='dc-btn rc';b.textContent='● Enregistrer';return}
   if(!navigator.mediaDevices||!window.MediaRecorder){pill('Enregistrement indisponible ici');setTimeout(function(){pill('')},2200);return}
-  navigator.mediaDevices.getUserMedia({audio:true}).then(function(s){if(!P){s.getTracks().forEach(function(t){t.stop()});return}P.stream=s;P.chunks=[];var r=new MediaRecorder(s);P.rec=r;r.ondataavailable=function(e){if(e.data&&e.data.size)P.chunks.push(e.data)};r.onstop=function(){if(P&&P.chunks.length)P.blob=new Blob(P.chunks,{type:r.mimeType||'audio/webm'})};r.start();b.className='dc-btn rc on';b.textContent='■ Arrêter'}).catch(function(){pill('Micro refusé');setTimeout(function(){pill('')},2200)})
+  navigator.mediaDevices.getUserMedia({audio:true}).then(function(s){if(!P){s.getTracks().forEach(function(t){t.stop()});return}P.stream=s;P.chunks=[];var r=new MediaRecorder(s);P.rec=r;r.ondataavailable=function(e){if(e.data&&e.data.size)P.chunks.push(e.data)};r.onstop=function(){if(P&&P.chunks.length)P.blob=new Blob(P.chunks,{type:r.mimeType||'audio/webm'})};r.start();if(SRC&&P.useSR&&window.AGDISC_HOST){try{var rc=new SRC();rc.lang='fr-FR';rc.continuous=true;rc.interimResults=false;rc.onresult=function(ev){var t='';for(var i=ev.resultIndex;i<ev.results.length;i++)t+=ev.results[i][0].transcript+' ';if(P)P.tr=(P.tr+' '+t).trim()};rc.onend=function(){if(P&&P.rec&&P.sr===rc){try{rc.start()}catch(e){}}};P.sr=rc;rc.start()}catch(e){P.sr=null}}b.className='dc-btn rc on';b.textContent='■ Arrêter'}).catch(function(){pill('Micro refusé');setTimeout(function(){pill('')},2200)})
 }
 function end(){
   P.mode='end';stop();pill('');var d=P.d;var had=!!P.rec;if(P.rec)rec();
@@ -3861,8 +3864,8 @@ function showSelf(){var d=P.d,H=window.AGDISC_HOST;
 function readSelf(){var o=el('.dc-ov'),ck=[],f=0;if(o){o.querySelectorAll('[data-dcck]').forEach(function(c){ck.push(!!c.checked)});var on=o.querySelector('[data-dc="feel"].on');if(on)f=+on.getAttribute('data-v')}return{checks:ck,feel:f}}
 function analyse(){var H=window.AGDISC_HOST;if(!H||!P||!P.blob)return;var sf=readSelf();if(!sf.feel){pill('Choisis comment tu t’es senti');setTimeout(function(){pill('')},1800);return}
   var b=el('[data-dc="ana"]');if(b){b.disabled=true;b.textContent='Analyse en cours…'}
-  H.analyse({d:P.d,blob:P.blob,self:sf},function(ok){if(ok)close();else{if(b){b.disabled=false;b.textContent='Voir l’analyse de ma voix'}pill('Analyse impossible sur cet enregistrement');setTimeout(function(){pill('')},2400)}})}
-function replay(){var o=el('.dc-ov');if(o)o.remove();P.i=-1;P.blob=null;P.mode='run';if(window.AGDISC_HOST&&!P.rec)rec();el('[data-dc="play"]').textContent='Pause';var tx=el('.dc-txt');tx.style.transform='translateY(0px)';step(0)}
+  H.analyse({d:P.d,blob:P.blob,self:sf,transcript:P.tr||''},function(ok){if(ok)close();else{if(b){b.disabled=false;b.textContent='Voir l’analyse de ma voix'}pill('Analyse impossible sur cet enregistrement');setTimeout(function(){pill('')},2400)}})}
+function replay(){var o=el('.dc-ov');if(o)o.remove();P.i=-1;P.blob=null;P.tr='';P.mode='run';if(window.AGDISC_HOST&&!P.rec)rec();el('[data-dc="play"]').textContent='Pause';var tx=el('.dc-txt');tx.style.transform='translateY(0px)';step(0)}
 function onClick(e){var b=e.target.closest('[data-dc]');if(!b)return;var a=b.getAttribute('data-dc');
   if(a==='x')close();else if(a==='go')go();else if(a==='play')toggle();else if(a==='back')back();else if(a==='spm')speed(-1);else if(a==='spp')speed(1);else if(a==='sp'){P.sp=1;el('[data-dc="sp"]').textContent=spTxt();if(P.mode==='run'){stop();step(Math.max(0,P.i))}}else if(a==='rec')rec();else if(a==='again')replay();else if(a==='ana')analyse();else if(a==='feel'){b.parentNode.querySelectorAll('[data-dc="feel"]').forEach(function(x){x.classList.remove('on')});b.classList.add('on')}}
 document.addEventListener('click',function(e){var c=e.target.closest&&e.target.closest('[data-disc]');if(c){e.preventDefault();e.stopPropagation();open(c.getAttribute('data-disc'))}},true);
