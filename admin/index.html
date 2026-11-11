@@ -1572,12 +1572,12 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
   })();
   (function(){
     var fy=$('#fy'),fv=$('#fv'),fvw=$('#fvw'),fl=$('#fvl'),fq=$('#fq'),dv=$('#dl-v'),dq=$('#dl-q');if(!fy||!fl)return;
-    fv.innerHTML=GEO.ctry.map(function(c){return '<option>'+c+'</option>'}).join('');
+    var LST=GEO.ctry.filter(function(c){return c!=='Madagascar'}).concat(['Madagascar']).sort(function(a,b){return a.localeCompare(b,'fr')});fv.innerHTML=LST.map(function(c){return '<option>'+c+'</option>'}).join('');fv.value='Madagascar';fy.parentNode.style.display='none';fvw.hidden=false;fvw.style.display='';function sync(){fy.selectedIndex=fv.value==='Madagascar'?0:1}sync();
     function opts(a){return a.map(function(x){return '<option value="'+x.replace(/"/g,'&quot;')+'">'}).join('')}
-    function mode(){var mg=/^Madagascar/.test(fy.value),c=mg?'mg':(fv.value==='France'?'fr':'oth');return {mg:mg,c:c}}
-    function fillV(){var m=mode();fvw.hidden=m.mg;fvw.style.display=m.mg?'none':'';var l=m.c==='mg'?GEO.mg.c:m.c==='fr'?GEO.fr.c:(GEO.oth[fv.value]||[]);dv.innerHTML=opts(l);fl.placeholder=m.mg?'Commence à écrire : Antananarivo, Antsiranana…':m.c==='fr'?'Commence à écrire : Paris, Marseille, Lognes…':'Ta ville';fillQ()}
+    function mode(){var mg=fv.value==='Madagascar',c=mg?'mg':(fv.value==='France'?'fr':'oth');return {mg:mg,c:c}}
+    function fillV(){var m=mode();sync();var l=m.c==='mg'?GEO.mg.c:m.c==='fr'?GEO.fr.c:(GEO.oth[fv.value]||[]);dv.innerHTML=opts(l);fl.placeholder=m.mg?'Commence à écrire : Antananarivo, Antsiranana…':m.c==='fr'?'Commence à écrire : Paris, Marseille, Lognes…':'Ta ville';fillQ()}
     function fillQ(){var m=mode(),v=fl.value.trim(),src=GEO.qFor(m.mg?'Madagascar':fv.value),k=Object.keys(src).filter(function(x){return x.toLowerCase()===v.toLowerCase()||x.toLowerCase().indexOf(v.toLowerCase().replace(/\s*\(.*$/,''))===0&&v.length>2})[0];dq.innerHTML=k?opts(src[k]):'';fq.placeholder=k?'Choisis ou écris ton quartier':'Ex. : ton quartier ou arrondissement'}
-    fy.addEventListener('change',function(){fl.value='';fq.value='';fillV()});fv.addEventListener('change',function(){fl.value='';fq.value='';fillV()});fl.addEventListener('input',fillQ);fl.addEventListener('change',fillQ);fillV();
+    fv.addEventListener('change',function(){fl.value='';fq.value='';fillV()});fl.addEventListener('input',fillQ);fl.addEventListener('change',fillQ);fillV();
   })();
   window.AGGEO=GEO;
   /* ---- guide d'installation par appareil + lien de l'application (ordinateur : QR et lien à copier) ---- */
