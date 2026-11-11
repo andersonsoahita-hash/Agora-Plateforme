@@ -61,7 +61,7 @@
 </script>
 <title>Agora, l'art oratoire</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="agora-build" content="1794419128">
+<meta name="agora-build" content="1794419577">
 <style>
 /* Mise en page : arrivée directe sur l'art oratoire (une diapo de leçon, un exercice, un certificat), puis 5 niveaux en cartes qui se recouvrent, le cycle d'une leçon, les variantes, l'accès. Sombre par choix. */
 :root{
@@ -3327,6 +3327,12 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
 
 /* fin du cours : la progression part tout de suite au serveur (le téléphone débloque l'atelier) */
 var finishLesson1=finishLesson;finishLesson=function(){var L0=CUR,m0=LM;if(L0&&m0==='quiz'){var sc0=0,n0=0;L0.quiz.forEach(function(q,k){if(LS.a[k]!==undefined){n0++;if(LS.a[k]===q.a)sc0++}});if(n0&&P.done[L0.id]&&!P.done[L0.id].demo){P.done[L0.id].s=sc0;P.done[L0.id].n=L0.quiz.length;save()}}finishLesson1();setTimeout(function(){try{PR.busy=false;prSync()}catch(x){}},150)};
+
+/* première connexion : l'appli est gardée sur l'appareil et marche ensuite sans réseau */
+(function(){try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(x){}
+ if(!('serviceWorker' in navigator)||!window.caches)return;
+ function chk(){caches.match('index.html',{ignoreSearch:true}).then(function(r){if(!r)return;var k='agora_offl_ok';try{if(localStorage.getItem(k))return;localStorage.setItem(k,'1')}catch(x){return}toast('Agora est enregistrée sur cet appareil : toutes les leçons marchent sans connexion')}).catch(function(){})}
+ navigator.serviceWorker.ready.then(function(){setTimeout(chk,2500)}).catch(function(){})})();
 
 
 if(AG_MODE==="admin"){role="fo";AV="srv";svGate()}
