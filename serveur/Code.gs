@@ -240,6 +240,10 @@ function agir_(op, email, date) {
     MailApp.sendEmail({ to: v[C.mail], subject: 'Ton code d’accès Agora',
       body: 'Bonjour ' + v[C.pre] + ',\n\nTa demande est validée.\n\n1. Ouvre la plateforme sur ton ordinateur (ajoute-la au Dock ou aux favoris avant de créer ton compte) :\n' + APP_URL + '\n2. Clique sur « Se connecter », puis « J’ai un code d’activation ». Entre ton e-mail et ce code :\n\n      ' + code + '\n\n3. Crée ton mot de passe. Il te servira à te reconnecter.\n\nUn seul ordinateur par compte, et un seul téléphone pour l’application (tu le relieras ensuite depuis ton espace, avec « Activer mon application »). Ce code ne marche qu’une seule fois : ne le partage pas.\n\nStephen' });
     journal_('Code d’activation envoyé à ' + v[C.mail]);
+    if (estTest_(v)) { // compte test : rien à payer, mais une vraie facture (marquée test, effaçable) pour voir le rendu
+      var dejaF = lireCompta_().some(function (l) { return l.em === String(v[C.mail]).toLowerCase() && l.test; });
+      if (!dejaF) { var pt = tarifs_(), hoy = Utilities.formatDate(new Date(), 'Europe/Paris', 'yyyy-MM-dd'); ecrireCompta_({ type: 'facture', test: true, em: v[C.mail], lv: 1, mt: (pt.prix && pt.prix[1]) || 30000, lib: 'Niveau 1 · compte test (Développeur Anderson)', date: hoy, paye: hoy, mode: 'Développeur Anderson' }, 'système'); journal_('Facture test créée pour ' + v[C.mail]); }
+    }
   } else if (op === 'bloquer') { set_(t, C.st, 'bloqué'); journal_('Bloqué : ' + v[C.mail]); }
   else if (op === 'debloquer') { set_(t, C.st, 'validé'); journal_('Débloqué : ' + v[C.mail]); }
   else if (op === 'supprimer') { set_(t, C.st, 'supprimé'); [C.code, C.pc, C.mob, C.pw, C.tok, C.mtok].forEach(function (c) { set_(t, c, ''); }); journal_('Supprimé : ' + v[C.mail]); }
@@ -284,7 +288,8 @@ function mailAdmin_(nom, email, cle, droits, nouveau) {
   MailApp.sendEmail({ to: email, subject: nouveau ? 'Ton accès à la console Agora' : 'Ta nouvelle clé pour la console Agora',
     body: 'Bonjour ' + nom + ',\n\n' + (nouveau ? 'Stephen t’a donné accès à la console de gestion Agora.' : 'Voici ta nouvelle clé pour la console de gestion Agora. L’ancienne ne marche plus.') + '\n\n1. Ouvre la console :\n' + CONSOLE_URL + '\n\n2. Colle ta clé personnelle quand elle te la demande :\n\n      ' + cle + '\n\nCe que tu peux faire :\n' + (droits.length ? droits.map(function (d) { return ' - ' + DROITS[d]; }).join('\n') : ' - rien pour l’instant (Stephen doit encore te donner des droits)') + '\n\nNe partage pas cette clé : elle est liée à toi, et tout ce que tu fais est noté dans le journal.\n\nStephen' });
 }
-function profil_(v) { return { prenoms: v[C.pre], nom: v[C.nom], role: v[C.role] }; }
+function estTest_(v) { return /D[ée]veloppeur Anderson/i.test(String(v[C.proj] || '')); } // compte test : a choisi « Développeur Anderson » comme mode de paiement
+function profil_(v) { return { prenoms: v[C.pre], nom: v[C.nom], role: v[C.role], test: estTest_(v) }; }
 function doPost(e) {
   var lock = LockService.getScriptLock(); lock.waitLock(20000);
   try {
@@ -298,7 +303,7 @@ function doPost(e) {
       if (ex) { effacerSeances_(em); effacerProgres_(em, ''); ex.sh.deleteRow(ex.r); }
       var role = String(b.role || '').toLowerCase().indexOf('form') === 0 ? 'formateur' : 'élève';
       feuille_('Comptes').appendRow([new Date(), b.nom, b.prenoms, em, b.tel || '', b.age || '', role, b.pays || '', b.situation || '', String(b.projet || '').slice(0, 500), 'en attente', '', '', '', '', '', '', '', '']);
-      journal_('Nouvelle demande (' + role + ') : ' + em + (b.cgu ? ' · conditions acceptées (version ' + cut_(b.cgu, 10) + ')' : ''));
+      journal_('Nouvelle demande (' + role + ')' + (/D[ée]veloppeur Anderson/i.test(String(b.projet || '')) ? ' [compte test]' : '') + ' : ' + em + (b.cgu ? ' · conditions acceptées (version ' + cut_(b.cgu, 10) + ')' : ''));
       return rep_({ ok: true, etat: 'en attente' });
     }
 
@@ -406,7 +411,7 @@ function doPost(e) {
       var sh = feuille_('Comptes'), n = sh.getLastRow(), d = n > 1 ? sh.getRange(2, 1, n - 1, NCOL).getValues() : [], ag = agregat_();
       var sj = feuille_('Journal'), nj = sj.getLastRow(), dj = nj > 1 ? sj.getRange(Math.max(2, nj - 39), 1, Math.min(40, nj - 1), 2).getValues() : [];
       return rep_({ ok: true, journal: dj,
-        comptes: d.map(function (x) { var g = ag[String(x[C.mail]).toLowerCase()] || { n: 0, der: '' }; return { nom: x[C.nom] + ' ' + x[C.pre], email: x[C.mail], tel: x[C.tel], age: x[C.age], role: x[C.role], pays: x[C.pays], situation: x[C.sit], projet: x[C.proj], demande: x[C.date], statut: etat_(x), derniere: x[C.last], expire: x[C.exp], pc: !!x[C.pc], mob: !!x[C.mob], active: !!x[C.pw], code: !!x[C.code], seances: g.n, derniereSeance: g.der }; }) });
+        comptes: d.map(function (x) { var g = ag[String(x[C.mail]).toLowerCase()] || { n: 0, der: '' }; return { nom: x[C.nom] + ' ' + x[C.pre], email: x[C.mail], tel: x[C.tel], age: x[C.age], role: x[C.role], pays: x[C.pays], situation: x[C.sit], projet: x[C.proj], test: estTest_(x), demande: x[C.date], statut: etat_(x), derniere: x[C.last], expire: x[C.exp], pc: !!x[C.pc], mob: !!x[C.mob], active: !!x[C.pw], code: !!x[C.code], seances: g.n, derniereSeance: g.der }; }) });
     }
     if (a === 'progres') { // plateforme (p) ou téléphone (m) : leçons terminées
       var cp = b.canal === 'm' ? 'm' : 'p', ap = auth_(b, cp); if (!ap.u) return rep_({ ok: true, etat: ap.etat });
