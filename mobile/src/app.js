@@ -161,6 +161,7 @@ function vStudio() {
   var t = byId(D.exerciseTypes, st.type);
   var h = '<div class="top"><h1>Studio</h1></div><div class="stack">';
   h += atlStudioCase();
+  h += '<div class="card">' + AGDISC.cardsHTML() + '</div>';
   h += exHero();
   h += '<div class="card stack"><div class="eyebrow">Exercice</div><div class="hscroll">' + exOrdered().map(function (x) { return '<button class="chip' + (x.id === st.type ? ' on' : '') + (x.id === 'express' ? ' hot' : '') + '" data-act="st-type" data-v="' + x.id + '">' + esc(x.nom) + '</button>'; }).join('') + '</div>';
   if (st.type !== 'express') h += '<div class="row">' + D.durations.map(function (d) { return '<button class="chip' + (d === st.dur ? ' on' : '') + '" data-act="st-dur" data-v="' + d + '">' + durLabel(d) + '</button>'; }).join('') + '</div>';
