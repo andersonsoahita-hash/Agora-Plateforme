@@ -1,4 +1,4 @@
-window.AGORA_BUILD='5334fa8dbb';
+window.AGORA_BUILD='4a1d743da1';
 /* ============================================================
    Analyse de la voix (signal) et du texte (transcription)
    Tout se calcule dans la page. Aucun audio n'est envoyé nulle part.
@@ -1154,7 +1154,7 @@ function byId(arr, id) { for (var i = 0; i < arr.length; i++) if (arr[i].id === 
 function today() { return new Date().toISOString().slice(0, 10); }
 
 /* ---------- état + stockage ---------- */
-var S = { goals: [], sessions: [], done: {}, quiz: {}, type: null, proofs: [], prep: [], erist: { best: 0 }, xp: 0, days: [], badges: [], why: null, angles: '', set: { sr: false }, since: 0, lastExport: 0 };
+var S = { goals: [], sessions: [], done: {}, quiz: {}, type: null, proofs: [], prep: [], erist: { best: 0 }, xp: 0, days: [], badges: [], why: null, angles: '', set: { sr: false }, since: 0, lastExport: 0, atl: {} };
 var cap = { db: null, sample: null, downloads: null, uid: null }; /* PWA : aucune IA, aucun service distant */
 Object.freeze(cap); /* verrouillé : aucun appel IA possible depuis l’appli */
 var saveTimer = null;
@@ -1826,8 +1826,52 @@ function needBackup() {
 }
 function isStandalone() { return (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true; }
 function isIOS() { return /iPhone|iPad|iPod/.test(navigator.userAgent); }
+
+/* ---------- Atelier guidé (en direct dans l’application) ---------- */
+var ATL_STEPS = ['Échauffement', 'Consigne', 'À voix haute', 'Auto-évaluation', 'Bilan'];
+var ATL_CR = [['Clarté du message', 'Je peux dire mon idée en une phrase.'], ['Structure', 'On entend un début, un milieu et une fin.'], ['Preuve ou image', 'J’ai donné un fait, un exemple ou une image.'], ['Présence', 'Voix, regard et rythme servaient le message.']];
+function atlS() { var a = S.atl; if (!a || typeof a !== 'object') a = S.atl = {}; if (!a.r) a.r = []; if (!a.step) a.step = 1; return a; }
+function atlCard() {
+  var a = atlS(), fait = a.done === today();
+  if (a.on) return '<button class="card tap banner" data-act="atl-open"><div class="eyebrow">Atelier guidé en cours · étape ' + a.step + ' sur 5</div><h3>Reprendre : ' + ATL_STEPS[a.step - 1] + '</h3><p class="muted small" style="margin:4px 0 0">Ton avancement est gardé.</p></button>';
+  return '<button class="card tap banner" data-act="atl-new"><div class="eyebrow">Atelier guidé · 20 minutes · 5 étapes</div><h3>' + (fait ? 'Atelier du jour terminé ✓' : 'Fais ton atelier guidé') + '</h3><p class="muted small" style="margin:4px 0 0">' + (fait ? 'Tu peux en refaire un avec un autre sujet.' : 'Échauffement, consigne, voix haute avec chrono, auto-évaluation, bilan.') + '</p></button>';
+}
+function atlView() {
+  var a = atlS(), n = a.step, h = '<div class="top"><button class="back" data-act="atl-quit" aria-label="Retour">←</button><h1>Atelier guidé</h1></div><div class="stack">';
+  h += '<div class="card"><div class="row" style="justify-content:space-between"><span class="eyebrow">Étape ' + n + ' sur 5 · ' + ATL_STEPS[n - 1] + '</span><span class="muted small">≈ 20 min</span></div><div class="bar" style="margin-top:8px"><i style="width:' + (n * 20) + '%"></i></div></div>';
+  if (n === 1) h += '<div class="card stack"><h2>Échauffement · 2 minutes</h2><p>Debout. Inspire 4 secondes, souffle 6 secondes, trois fois. Puis dis à voix haute, avec conviction : « Je prends la parole, et je la garde. »</p><p class="muted small">Ne cherche pas à bien dire : cherche à dire fort et lentement.</p></div>';
+  if (n === 2) h += '<div class="card stack"><h2>Ta consigne · 5 minutes</h2><div class="callout"><b>' + esc(st.sujet) + '</b></div><div class="row"><button class="btn small ghost" data-act="atl-sujet">Autre sujet</button></div><label class="eyebrow" for="atlx">Mes idées (restent sur ton téléphone)</label><textarea id="atlx" data-atx="t" rows="5" placeholder="Point, raison, exemple, point…">' + esc(a.t || '') + '</textarea><p class="muted small">Garde des phrases courtes : tu devras les dire, pas les lire.</p></div>';
+  if (n === 3) {
+    h += '<div class="card"><div class="eyebrow">Sujet</div><h3>' + esc(st.sujet) + '</h3><p class="muted small" style="margin:4px 0 0">Lève-toi, regarde un point fixe, ne t’excuse pas au début, marque un silence avant ta phrase la plus forte.</p></div>';
+    h += '<div class="card stack" id="recCard">' + recHtml() + '</div><div class="card stack" id="recLib"></div>';
+    h += '<div class="card stack"><div class="eyebrow">Transcription (facultative)</div><textarea id="trIn" placeholder="Elle se remplit si la transcription en ligne est activée. Tu peux écrire ou coller ici."></textarea></div>';
+    h += '<button class="btn" id="goAnalyse" data-act="analyse"' + ((st.blob || (st.transcript || '').trim()) ? '' : ' disabled') + '>Analyser ma prise de parole</button><button class="btn ghost" data-act="atl-next">Passer à l’auto-évaluation</button>';
+  }
+  if (n === 4) h += '<div class="card stack"><h2>Auto-évaluation · 3 minutes</h2><p class="muted small">De 1 (à reprendre) à 4 (solide). Personne ne te juge.</p>' + ATL_CR.map(function (c, i) { return '<div><b>' + c[0] + '</b><div class="muted small">' + c[1] + '</div><div class="row">' + [1, 2, 3, 4].map(function (k) { return '<button class="chip' + (a.r[i] === k ? ' on' : '') + '" data-act="atl-r" data-v="' + i + ':' + k + '">' + k + '</button>'; }).join('') + '</div></div>'; }).join('') + '</div>';
+  if (n === 5) h += '<div class="card stack"><h2>Bilan · 5 minutes</h2><label class="eyebrow" for="atlb">Ce que je referai demain, concrètement</label><textarea id="atlb" data-atx="x" rows="4" placeholder="Ex. : commencer par ma phrase la plus forte.">' + esc(a.x || '') + '</textarea><button class="btn" data-act="atl-fin">Terminer l’atelier</button></div>';
+  if (n !== 3 && n !== 5) h += '<button class="btn" data-act="atl-next">Étape suivante</button>';
+  if (n > 1) h += '<button class="btn ghost" data-act="atl-prev">Étape précédente</button>';
+  return h + '</div>';
+}
+function atlAct(act, v) {
+  if (act.indexOf('atl-') !== 0) return false;
+  var a = atlS();
+  switch (act) {
+    case 'atl-new': S.atl = { on: 1, step: 1, r: [], t: '', x: '' }; st.type = 'argumenter'; st.dur = 120; st.ended = false; st.recSec = 0; newSubject(); persist(); view = { tab: 'studio', sub: { atl: 1 } }; render(); window.scrollTo(0, 0); break;
+    case 'atl-open': a.on = 1; view = { tab: 'studio', sub: { atl: 1 } }; render(); window.scrollTo(0, 0); break;
+    case 'atl-quit': view = { tab: 'home', sub: null }; render(); break;
+    case 'atl-next': if (st.rec || st.timerOn) break; a.step = Math.min(5, a.step + 1); persist(); render(); window.scrollTo(0, 0); break;
+    case 'atl-prev': if (st.rec || st.timerOn) break; a.step = Math.max(1, a.step - 1); persist(); render(); window.scrollTo(0, 0); break;
+    case 'atl-sujet': newSubject(); render(); break;
+    case 'atl-r': var q = v.split(':'); a.r[+q[0]] = +q[1]; persist(); render(); break;
+    case 'atl-fin': a.on = 0; a.done = today(); a.nb = (a.nb || 0) + 1; S.xp = (S.xp || 0) + 10; persist(); toast('Atelier terminé : +10 points'); view = { tab: 'home', sub: null }; render(); window.scrollTo(0, 0); break;
+  }
+  return true;
+}
+document.addEventListener('input', function (e) { var t = e.target; if (t && t.getAttribute && t.getAttribute('data-atx')) { atlS()[t.getAttribute('data-atx')] = t.value; persist(); } });
+
 function homeBanners() {
-  var h = syBanner();
+  var h = syBanner() + atlCard();
   if (ex.phase === 'search' || ex.phase === 'struct' || ex.phase === 'speak') {
     var xr = Math.max(0, Math.ceil((ex.endAt - Date.now()) / 1000));
     h += '<button class="card tap banner" data-act="ex-resume"><div class="eyebrow">Recherche express en cours</div><h3>' + esc(ex.theme) + '</h3><p class="muted small" style="margin:4px 0 0">' + (ex.phase === 'search' ? 'Phase 1 · recherche · reste ' + fmt(xr) : ex.phase === 'struct' ? 'Phase 2 · structurer · reste ' + fmt(xr) : 'Phase 3 · à toi d’expliquer') + '. Touche pour reprendre.</p></button>';
@@ -1991,6 +2035,7 @@ function pwaAfterRender() {
 /* ---------- actions ---------- */
 function pwaAct(act, v, el, ev) {
   if (syAct(act, v, el)) return true;
+  if (atlAct(act, v, el)) return true;
   switch (act) {
     case 'settings': pwa.msg = ''; go('settings'); return true;
     case 'theme-set': lsSet('am_theme', v); applyTheme(v); render(); return true;
@@ -2433,6 +2478,7 @@ function newSubject() {
 }
 function vStudio() {
   if (view.sub && view.sub.result) return vResult(view.sub.result);
+  if (view.sub && view.sub.atl) return atlView();
   if (!st.sujet) newSubject();
   var t = byId(D.exerciseTypes, st.type);
   var h = '<div class="top"><h1>Studio</h1></div><div class="stack">';
@@ -3098,7 +3144,7 @@ document.addEventListener('click', function (ev) {
     case 'st-new': newSubject(); render(); break;
     case 'rec-toggle': if (!st.rec) objPrime(); st.rec ? endTimer(false) : startRec(); break;
     case 'chrono-toggle': if (st.timerOn) endTimer(false); else { beep0(); startTimer(); refreshRec(); } break;
-    case 'analyse': doAnalyse(); break;
+    case 'analyse': if (S.atl && S.atl.on) { S.atl.step = 4; persist(); } doAnalyse(); break;
     case 'back': view = { tab: view.tab === 'studio' || view.tab === 'settings' ? 'home' : view.tab, sub: null }; render(); break;
     case 'again': view = { tab: 'studio', sub: null }; render(); break;
     case 'lesson': quizState = null; go('course', v); break;

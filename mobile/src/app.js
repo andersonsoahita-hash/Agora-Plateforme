@@ -19,7 +19,7 @@ function byId(arr, id) { for (var i = 0; i < arr.length; i++) if (arr[i].id === 
 function today() { return new Date().toISOString().slice(0, 10); }
 
 /* ---------- état + stockage ---------- */
-var S = { goals: [], sessions: [], done: {}, quiz: {}, type: null, proofs: [], prep: [], erist: { best: 0 }, xp: 0, days: [], badges: [], why: null, angles: '', set: { sr: false }, since: 0, lastExport: 0 };
+var S = { goals: [], sessions: [], done: {}, quiz: {}, type: null, proofs: [], prep: [], erist: { best: 0 }, xp: 0, days: [], badges: [], why: null, angles: '', set: { sr: false }, since: 0, lastExport: 0, atl: {} };
 var cap = { db: null, sample: null, downloads: null, uid: null }; /* PWA : aucune IA, aucun service distant */
 Object.freeze(cap); /* verrouillé : aucun appel IA possible depuis l’appli */
 var saveTimer = null;
@@ -156,6 +156,7 @@ function newSubject() {
 }
 function vStudio() {
   if (view.sub && view.sub.result) return vResult(view.sub.result);
+  if (view.sub && view.sub.atl) return atlView();
   if (!st.sujet) newSubject();
   var t = byId(D.exerciseTypes, st.type);
   var h = '<div class="top"><h1>Studio</h1></div><div class="stack">';
@@ -495,7 +496,7 @@ document.addEventListener('click', function (ev) {
     case 'st-new': newSubject(); render(); break;
     case 'rec-toggle': if (!st.rec) objPrime(); st.rec ? endTimer(false) : startRec(); break;
     case 'chrono-toggle': if (st.timerOn) endTimer(false); else { beep0(); startTimer(); refreshRec(); } break;
-    case 'analyse': doAnalyse(); break;
+    case 'analyse': if (S.atl && S.atl.on) { S.atl.step = 4; persist(); } doAnalyse(); break;
     case 'back': view = { tab: view.tab === 'studio' || view.tab === 'settings' ? 'home' : view.tab, sub: null }; render(); break;
     case 'again': view = { tab: 'studio', sub: null }; render(); break;
     case 'lesson': quizState = null; go('course', v); break;

@@ -36,7 +36,7 @@ js = must(js, "settings: vSettings }[view.tab]", "settings: vSettings, sync: vSy
 js = must(js, "S.sessions.unshift(rec); S.sessions = S.sessions.slice(0, 200);", "S.sessions.unshift(rec); S.sessions = S.sessions.slice(0, 200); syQueue(rec);");
 js = must(js, "<h1>Bonjour, Stephen</h1>", "<h1>Bonjour' + syHello() + '</h1>");
 js = must(js, "  h += exResultHtml(s);\n", "  h += exResultHtml(s);\n  h += syResultHtml(s);\n");
-js = must(js, "function homeBanners() {\n  var h = '';", "function homeBanners() {\n  var h = syBanner();");
+js = must(js, "function homeBanners() {\n  var h = '';", "function homeBanners() {\n  var h = syBanner() + atlCard();");
 js = must(js, "function pwaAct(act, v, el, ev) {\n", "function pwaAct(act, v, el, ev) {\n  if (syAct(act, v, el)) return true;\n");
 js = must(js, "function pwaBoot() {\n  applyTheme(themePref());", "function pwaBoot() {\n  applyTheme(themePref());\n  syBoot();");
 js = must(js, "  h += '<div class=\"card stack\"><h3>Apparence</h3>", "  h += sySettingsHtml();\n  h += '<div class=\"card stack\"><h3>Apparence</h3>");
