@@ -104,6 +104,7 @@ a{color:var(--lgold)}
 .small{font-size:13px}.muted{color:var(--mut)}
 mark.tic{background:rgba(232,85,59,.35);color:inherit;border-radius:3px}mark.att{background:rgba(224,160,48,.3);color:inherit;border-radius:3px}mark.vag{background:rgba(127,176,224,.28);color:inherit;border-radius:3px}
 svg.chart{width:100%;height:90px;background:var(--ink);border-radius:8px;cursor:pointer;display:block;margin-top:4px}
+.hist .hdel{width:auto;margin:0}.hrow{display:flex;gap:8px;align-items:stretch;margin-bottom:8px}.hrow .hopen{flex:1;text-align:left;margin:0}.hdel{flex:none;font:600 13px "Avenir Next",system-ui,sans-serif;color:var(--lgold);background:transparent;border:1px solid rgba(217,164,58,.4);border-radius:12px;padding:0 12px}.hdel.danger,.btn.danger{color:#fff;background:#B23A28;border-color:#B23A28}
 </style></head><body>
 
 <section class="scr on" id="s-home">
@@ -175,7 +176,7 @@ svg.chart{width:100%;height:90px;background:var(--ink);border-radius:8px;cursor:
 
 <script src="engine.js"></script><script src="analysis.js"></script><script src="voice.js"></script>
 <script type="module">
-const APP_VERSION='0.5.4';
+const APP_VERSION='0.5.5';
 const DEMO=/[?&]demo=1/.test(location.search);
 const $=s=>document.querySelector(s);
 const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
@@ -461,7 +462,7 @@ function openReport(it){
     <div><h3 style="margin:0 0 4px">${r.issues.length?r.issues.length+' moment'+(r.issues.length>1?'s':'')+' à revoir':'Rien de grave détecté'}</h3><div class="note">${fmt(r.duree)} · corps visible ${r.corpsVisiblePct} % du temps</div><div class="note">Note indicative sur 100.</div></div></div></div>
   <div class="tabs" id="tabs"><button data-tab="g" class="on">Gestes</button><button data-tab="v">Voix</button><button data-tab="s">Discours</button></div>
   <div id="tab-g"><div class="card"><h3>Ta vidéo</h3>
-   ${it.blob?`<div class="vwrap" style="aspect-ratio:${it.asp||9/16}"><video id="rv" playsinline controls></video><canvas id="rc"></canvas></div><div class="ctl" style="margin-top:10px"><button class="btn sec" id="saveVid">Enregistrer la vidéo</button></div><p class="note">La vidéo est gardée uniquement dans ce navigateur (les 6 derniers essais), jamais envoyée. Enregistre-la dans tes Photos pour la garder.</p>`:'<p class="note">Vidéo non disponible pour cet essai (enregistrement non pris en charge ou supprimé).</p>'}
+   ${it.blob?`<div class="vwrap" style="aspect-ratio:${it.asp||9/16}"><video id="rv" playsinline controls></video><canvas id="rc"></canvas></div><div class="ctl" style="margin-top:10px"><button class="btn sec" id="saveVid">Enregistrer la vidéo</button><button class="btn sec" id="delRep">Supprimer cet essai</button></div><p class="note">La vidéo est gardée uniquement dans ce navigateur (les 6 derniers essais), jamais envoyée. Enregistre-la dans tes Photos pour la garder.</p>`:'<p class="note">Vidéo non disponible pour cet essai (enregistrement non pris en charge ou supprimé).</p>'}
    <div class="mk" id="mk">${mk}<div class="cur" id="cur"></div></div>
    <div class="leg"><span><i class="i-bad" style="display:inline-block;width:10px;height:10px;border-radius:3px"></i> à corriger</span><span><i class="i-mid" style="display:inline-block;width:10px;height:10px;border-radius:3px"></i> mineur</span><span><i class="i-good" style="display:inline-block;width:10px;height:10px;border-radius:3px"></i> bien</span><span><i class="i-neu" style="display:inline-block;width:10px;height:10px;border-radius:3px"></i> compris par le contexte</span></div>
    <p class="note">Touche une barre pour aller au moment. Sur la vidéo, ton squelette et le geste concerné s’affichent.</p></div>
@@ -489,6 +490,7 @@ function openReport(it){
   bindTabs(it);
   if(!it.blob){document.querySelectorAll('.play').forEach(b=>b.disabled=true);return;}
   const v=$('#rv'),c=$('#rc'),cx=c.getContext('2d'),url=URL.createObjectURL(it.blob);pb={v,url,raf:0,stopAt:null};v.src=url;
+  twoTap($('#delRep'),async()=>{await delItem(it.id);histRender();show('s-hist');});
   $('#saveVid').onclick=async()=>{const ext=/mp4/.test(it.blob.type)?'mp4':'webm',f=new File([it.blob],'agora-gestuelle-'+new Date(it.date).toISOString().slice(0,16).replace(/[:T]/g,'-')+'.'+ext,{type:it.blob.type});try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return;}}catch(e){if(e&&e.name==='AbortError')return;}const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},3000);};
   const fixDur=()=>{if(v.duration===Infinity){v.currentTime=1e7;v.ontimeupdate=()=>{v.ontimeupdate=null;v.currentTime=0;};}};v.onloadedmetadata=fixDur;
   const act=t=>[...r.issues,...r.neutral].find(i=>t>=i.t0-0.2&&t<=i.t1+0.2);
@@ -522,9 +524,12 @@ function bindTabs(it){
   hook();
 }
 /* ---- historique ---- */
+async function delItem(id){try{await idb.del(id);}catch(e){}ls.set('agt_hist',ls.get('agt_hist',[]).filter(m=>m.id!==id));}
+function twoTap(btn,fn){let t=null;btn.onclick=()=>{if(btn.dataset.arm){clearTimeout(t);fn();return;}btn.dataset.arm='1';const old=btn.textContent;btn.textContent='Confirmer ?';btn.classList.add('danger');t=setTimeout(()=>{delete btn.dataset.arm;btn.textContent=old;btn.classList.remove('danger');},3000);};}
 function histRender(){const h=ls.get('agt_hist',[]);const L=$('#histList');
-  L.innerHTML=h.length?h.map(x=>`<button data-id="${x.id}"><b>${new Date(x.date).toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</b> — ${x.score}/100 · ${fmt(x.duree)}${x.video?' · vidéo':''}</button>`).join(''):'<p class="note">Aucun essai pour l’instant.</p>';
-  L.querySelectorAll('button').forEach(b=>b.onclick=async()=>{try{const it=await idb.get(+b.dataset.id);if(it)openReport(it);else alert('Cet essai n’est plus disponible.');}catch(e){}});}
+  L.innerHTML=h.length?h.map(x=>`<div class="hrow"><button class="hopen" data-id="${x.id}"><b>${new Date(x.date).toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</b> — ${x.score}/100 · ${fmt(x.duree)}${x.video?' · vidéo':''}</button><button class="hdel" data-id="${x.id}">Supprimer</button></div>`).join(''):'<p class="note">Aucun essai pour l’instant.</p>';
+  L.querySelectorAll('.hopen').forEach(b=>b.onclick=async()=>{try{const it=await idb.get(+b.dataset.id);if(it)openReport(it);else flash('Cet essai n’est plus disponible.');}catch(e){}});
+  L.querySelectorAll('.hdel').forEach(b=>twoTap(b,async()=>{await delItem(+b.dataset.id);histRender();}));}
 $('#histBtn').onclick=()=>{histRender();show('s-hist');};
 addEventListener('pagehide',()=>cleanup());
 </script>
