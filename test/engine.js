@@ -60,6 +60,26 @@ E.computeSway=function(series){
   return out;
 };
 
+/* ---------- maillage du visage (478 points) ---------- */
+const OVAL=[10,338,297,332,284,251,389,356,454,323,361,288,397,365,379,378,400,377,152,148,176,149,150,136,172,58,132,93,234,127,162,21,54,103,67,109];
+E.OVAL=OVAL;
+E.syntheticFace=function(cx,cy,fw,aspect,roll){ // visage de test : ellipse + repères principaux (cx,cy = milieu des yeux, en coordonnées image)
+  const F=Array.from({length:478},()=>({x:cx,y:cy,z:0}));roll=roll||0;const c=Math.cos(roll),s=Math.sin(roll);
+  const put=(i,lx,ly)=>{const dx=lx*fw,dy=ly*fw;F[i]={x:cx+(dx*c-dy*s)/aspect,y:cy+(dx*s+dy*c),z:0};};
+  put(33,-0.3,0);put(263,0.3,0);put(234,-0.5,0.05);put(454,0.5,0.05);put(10,0,-0.5);put(152,0,0.95);put(1,0,0.2);put(13,0,0.48);put(14,0,0.52);
+  OVAL.forEach((i,k)=>{if([10,152,234,454].includes(i))return;const a=2*Math.PI*k/OVAL.length;put(i,0.5*Math.sin(a),0.2-0.72*Math.cos(a)+ (Math.cos(a)>0?0:0));});
+  return F;};
+function headFromFace(face,A){
+  const g=i=>({x:face[i].x*A,y:face[i].y});
+  const eL=g(33),eR=g(263),cL=g(234),cR=g(454),nose=g(1),lu=g(13),ll=g(14),chin=g(152);
+  const fw=d2(cL,cR);if(!(fw>1e-4))return null;
+  const cx=(eL.x+eR.x)/2,cy=(eL.y+eR.y)/2,roll=Math.atan2(eR.y-eL.y,eR.x-eL.x);
+  const loc=p=>{const dx=p.x-cx,dy=p.y-cy,c=Math.cos(-roll),s=Math.sin(-roll);return {x:(dx*c-dy*s)/fw,y:(dx*s+dy*c)/fw};};
+  const mouth={x:(lu.x+ll.x)/2,y:(lu.y+ll.y)/2};
+  return {cx,cy,ed:fw,mouthDy:loc(mouth).y,chinDy:loc(chin).y,roll,poly:OVAL.map(g),yaw:(nose.x-(cL.x+cR.x)/2)/fw,pitch:(nose.y-cy)/fw,face:true};
+}
+function inPoly(p,poly){let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j];if((a.y>p.y)!==(b.y>p.y)&&p.x<(b.x-a.x)*(p.y-a.y)/(b.y-a.y)+a.x)c=!c;}return c;}
+
 /* ---------- épisodes ---------- */
 function Ep(gap){let cur=null;const list=[];return{
   on(t,active,d){if(active){if(!cur)cur={t0:t,t1:t,d:d||{}};else{cur.t1=t;}}else if(cur&&t-cur.t1>gap){list.push(cur);cur=null;}},
@@ -97,16 +117,19 @@ E.createAnalyzer=function(opts){
     return {cx,cy,ed,mouthDy};
   }
   function zoneOf(p,H,shDy){
-    const dx=(p.x-H.cx)/H.ed,dy=(p.y-H.cy)/H.ed,ax=Math.abs(dx),m=H.mouthDy;
+    let ddx=p.x-H.cx,ddy=p.y-H.cy;
+    if(H.roll){const c=Math.cos(-H.roll),sn=Math.sin(-H.roll);const x=ddx*c-ddy*sn,y=ddx*sn+ddy*c;ddx=x;ddy=y;}
+    const dx=ddx/H.ed,dy=ddy/H.ed,ax=Math.abs(dx),m=H.mouthDy,chin=H.chinDy!=null?H.chinDy+0.05:m+0.6;
     if(dy<-0.55&&dy>-2.1&&ax<1.0)return 'cheveux';
-    if(ax>=0.62&&ax<1.35&&dy>-1.2&&dy<0.45)return 'cheveux';       // côtés / autour de l'oreille
+    if(ax>=0.62&&ax<1.35&&dy>-1.2&&dy<0.45)return 'cheveux';
     if(ax<0.62){
       if(dy>=-0.55&&dy<-0.12)return 'front';
       if(dy>=-0.12&&dy<m-0.15)return 'visage';
-      if(dy>=m-0.15&&dy<m+0.6)return 'bouche';
-      if(dy>=m+0.6&&dy<shDy)return 'cou';
+      if(dy>=m-0.15&&dy<chin)return 'bouche';
+      if(dy>=chin&&dy<shDy)return 'cou';
     }
-    if(ax<1.0&&dy>=m+0.6&&dy<shDy)return 'cou';
+    if(ax<1.0&&dy>=chin&&dy<shDy)return 'cou';
+    if(H.poly&&inPoly(p,H.poly))return 'visage';
     return null;
   }
 
@@ -153,7 +176,7 @@ E.createAnalyzer=function(opts){
     else if(gs.on){gs.quiet+=dt;if(gs.quiet>0.3){if(tt-gs.t>0.25)gestures.push({t0:gs.t,t1:tt,amp:gs.amp});gs.on=false;}}
 
     /* contacts main ↔ tête : doigts réellement dans la zone, et main à la même profondeur que le visage */
-    const H=headGeom(L,SW);
+    const H=(f.face&&f.face.length>=468&&headFromFace(f.face,opts.aspect))||headGeom(L,SW);
     if(H){
       const shDy=Math.max(H.mouthDy+1.0,(Sm.y-H.cy)/H.ed-0.15);
       const sources=[];
@@ -187,10 +210,11 @@ E.createAnalyzer=function(opts){
 
     /* tête : orientation, hochements */
     if(H){const el=P(L,7),er=P(L,8),nose=P(L,0);
-      if(el.v>0.4&&er.v>0.4){const ed=Math.hypot(el.x-er.x,el.y-er.y)||1e-6,em={x:(el.x+er.x)/2,y:(el.y+er.y)/2},yaw=(nose.x-em.x)/ed,pit=(nose.y-em.y)/ed;
+      if(H.face||(el.v>0.4&&er.v>0.4)){let yaw,pit;if(H.face){yaw=H.yaw;pit=H.pitch;}else{const ed=Math.hypot(el.x-er.x,el.y-er.y)||1e-6,em={x:(el.x+er.x)/2,y:(el.y+er.y)/2};yaw=(nose.x-em.x)/ed;pit=(nose.y-em.y)/ed;}
+        const yTh=H.face?0.3:0.45,pTh=H.face?0.15:0.45;
         if(!headBase){baseHead.push([yaw,pit]);if(baseHead.length>25)headBase=[median(baseHead.map(a=>a[0])),median(baseHead.map(a=>a[1]))];}
         else{dur.headN+=dt;const dy=yaw-headBase[0],dp=pit-headBase[1];
-          epSide.on(tt,!opts.teleprompter&&Math.abs(dy)>0.45);epDown.on(tt,!opts.teleprompter&&dp>0.45);
+          epSide.on(tt,!opts.teleprompter&&Math.abs(dy)>yTh);epDown.on(tt,!opts.teleprompter&&dp>pTh);
           headBuf.push({t,x:nose.x/SW,y:nose.y/SW});while(headBuf.length&&t-headBuf[0].t>1.5)headBuf.shift();
           const rev=k=>{let r=0,d=0,l=headBuf[0][k];for(const h of headBuf){const v=h[k]-l;if(Math.abs(v)>0.03){const n=v>0?1:-1;if(d&&n!==d)r++;d=n;l=h[k];}}return r;};
           if(headBuf.length>8){if(rev('x')>=3&&t-lastShake>1.8){lastShake=t;events.push({t:tt,type:'non-tete'});}else if(rev('y')>=3&&t-lastNod>1.8){lastNod=t;events.push({t:tt,type:'oui-tete'});}}}}}

@@ -58,4 +58,16 @@ r=run(t=>({wl:REST[0],wr:REST[1],}),[],10);
 {const a=E.createAnalyzer({aspect:AS});for(let i=0;i<30*15;i++){const t=i/15,dx=t>=8&&t<24?.035*Math.sin(t*2*Math.PI/1.3):0;
  const L=pose(REST[0],REST[1]);[23,24].forEach(k=>L[k].x+=dx);a.push({t,pose:L});}
  const r=a.finish();const s=r.issues.find(i=>i.kind==='balancement');ok(s&&s.t0>7&&s.t1<25,'balancement localisé '+(s&&s.t0.toFixed(1))+'→'+(s&&s.t1.toFixed(1)));}
+console.log('K. avec le maillage du visage : main dans les cheveux, tête inclinée de 15°');
+{const roll=15*Math.PI/180,fw=ED/AS*0+0.036/1;
+ const run2=(words,touch)=>{const a=E.createAnalyzer({aspect:AS,hiddenAlert:8});words.forEach(w=>a.addWord(w[0],w[1]));for(let t=0;t<30;t+=.5)a.markSpeech(t);
+  for(let i=0;i<30*15;i++){const t=i/15,on=touch&&t>=10&&t<13;const face=E.syntheticFace(CX,EY,0.036/AS*AS,AS,roll);
+   // position cheveux en repère local incliné (0.05 largeur de visage au-dessus du front)
+   const lx=0.05,ly=-1.0,c=Math.cos(roll),sn=Math.sin(roll),hx=CX+(lx*0.036*c-ly*0.036*sn)/AS,hy=EY+(lx*0.036*sn+ly*0.036*c);
+   a.push({t,pose:pose(on?[hx,hy,.99]:REST[0],REST[1]),hands:on?[hand(hx,hy,.5)]:null,face});}return a.finish();};
+ let r=run2('on peut dire que ce projet va changer notre quartier'.split(' ').map((w,i)=>[w,8+i*.5]),true);
+ ok(r.issues.some(i=>i.kind==='contact'&&i.zone==='cheveux'),'contact cheveux détecté malgré l’inclinaison');
+ r=run2('ma couleur de cheveux est naturelle'.split(' ').map((w,i)=>[w,9+i*.5]),true);
+ ok(!r.issues.some(i=>i.kind==='contact')&&r.neutral.some(n=>n.kind==='contact-compris'),'« couleur de cheveux » : compris par le contexte');
+ r=run2([['bonjour',3]],false);ok(r.issues.length===0,'sans geste : aucun problème ('+r.issues.map(i=>i.kind)+')');}
 console.log(fails?'\n'+fails+' ÉCHEC(S)':'\nTous les tests passent');process.exit(fails?1:0);
