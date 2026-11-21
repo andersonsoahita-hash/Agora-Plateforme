@@ -65,7 +65,7 @@ input[type=range]{accent-color:var(--gold);width:55%}
 .alert{position:absolute;left:12px;right:12px;bottom:90px;z-index:4;background:rgba(181,48,31,.92);border-radius:12px;padding:10px 14px;font-weight:600;text-align:center;opacity:0;transition:.25s;pointer-events:none}.alert.on{opacity:1}
 .live{position:absolute;left:0;right:0;bottom:0;z-index:4;padding:10px 14px;background:linear-gradient(transparent,rgba(0,0,0,.85));min-height:60px}
 .live .tr{font-size:13px;min-height:44px;color:#fff}.live .tr em{color:var(--mut);font-style:normal}
-.bar{flex:none;width:100%;background:#000;padding:10px 12px max(12px,env(safe-area-inset-bottom))}
+.bar{position:relative;z-index:30;flex:none;width:100%;background:#000;padding:10px 12px max(12px,env(safe-area-inset-bottom))}
 .cset{position:absolute;left:10px;right:10px;bottom:84px;z-index:12;background:rgba(20,8,6,.96);border:1px solid rgba(217,164,58,.4);border-radius:14px;padding:6px 14px;max-height:60%;overflow:auto}.cset .row small{display:block;color:var(--mut);font-size:12px}.cset select{max-width:55%}
 .ctl{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.ctl{flex-wrap:nowrap;gap:6px}.ctl .btn{padding:11px 10px;font-size:13px;white-space:nowrap}
 .count{position:absolute;inset:0;z-index:6;display:none;align-items:center;justify-content:center;font:700 140px Didot,Georgia,serif;color:var(--lgold);background:rgba(0,0,0,.55)}.count.on{display:flex}
@@ -155,7 +155,7 @@ svg.chart{width:100%;height:90px;background:var(--ink);border-radius:8px;cursor:
       <div class="hud"><span class="pill rec" id="timer">0:00</span><span class="pill" id="pst">—</span></div>
       <div class="chips" id="chips"></div>
       <div class="alert" id="alert"></div>
-      <div class="live"><div class="tr" id="tr"><em>Place-toi : vérifie que la tête, les mains et les pieds sont dans le cadre.</em></div></div>
+      <div class="live"><div class="tr" id="tr"><em>Place-toi dans le cadre. Image de travers ? Touche ↻ jusqu’à ce qu’elle soit droite : c’est mémorisé.</em></div></div>
       <div class="count" id="count"></div>
       <div class="cset" id="camSet" hidden>
         <div class="row"><div>Caméra</div><select id="csCam"><option value="user">Avant (selfie)</option><option value="environment">Arrière</option></select></div>
@@ -175,7 +175,7 @@ svg.chart{width:100%;height:90px;background:var(--ink);border-radius:8px;cursor:
 
 <script src="engine.js"></script><script src="analysis.js"></script><script src="voice.js"></script>
 <script type="module">
-const APP_VERSION='0.5.2';
+const APP_VERSION='0.5.3';
 const DEMO=/[?&]demo=1/.test(location.search);
 const $=s=>document.querySelector(s);
 const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
@@ -261,15 +261,18 @@ const vid=$('#vid'),proc=$('#proc'),pctx=proc.getContext('2d'),cv=$('#cv'),ctx=c
 let aCtx=null,aProc=null,aSrc=null,pcmChunks=[],aSR=48000;
 function startPCM(){stopPCM();pcmChunks=[];try{if(!stream||!stream.getAudioTracks().length)return;const AC=window.AudioContext||window.webkitAudioContext;aCtx=new AC();aSR=aCtx.sampleRate;aSrc=aCtx.createMediaStreamSource(new MediaStream(stream.getAudioTracks()));aProc=aCtx.createScriptProcessor(4096,1,1);aProc.onaudioprocess=e=>{if(running)pcmChunks.push(new Float32Array(e.inputBuffer.getChannelData(0)));};const g=aCtx.createGain();g.gain.value=0;aSrc.connect(aProc);aProc.connect(g);g.connect(aCtx.destination);aCtx.resume&&aCtx.resume();}catch(e){console.error(e);}}
 function stopPCM(){try{aProc&&aProc.disconnect();aSrc&&aSrc.disconnect();aCtx&&aCtx.close();}catch(e){}aProc=aSrc=aCtx=null;}
-let raf=0,running=false,an=null,rec=null,chunks=[],recMime='',tStart=0,t0perf=0,transcript=[],frames=[],lastAlert=0,tpRaf=0,recWanted=false,lastVT=-1,frameN=0,lastState='force',lastHands=null,lastHandsT=-9,lastFace=null,lastFaceT=-9,sttObj=null,calibMiss=0,rotUser=0,calib=false,calibT=0,calibTries=0,calibOk=0;
+let raf=0,running=false,an=null,rec=null,chunks=[],recMime='',tStart=0,t0perf=0,transcript=[],frames=[],lastAlert=0,tpRaf=0,recWanted=false,lastVT=-1,frameN=0,lastState='force',lastHands=null,lastHandsT=-9,lastFace=null,lastFaceT=-9,sttObj=null,lastDet=0,calibMiss=0,rotUser=0,calib=false,calibT=0,calibTries=0,calibOk=0;
 let srcA=9/16;
 const PW=()=>{const a=S.fit==='native'?Math.min(.75,Math.max(9/16,srcA)):9/16,ev=n=>Math.round(n/2)*2;return S.orient==='v'?[720,ev(720/a)]:[ev(1280),ev(1280*a)];};
 function applyOrient(){if(vid.videoWidth)srcA=Math.min(vid.videoWidth,vid.videoHeight)/Math.max(vid.videoWidth,vid.videoHeight);const [W,H]=PW();$('#cam').style.aspectRatio=W+'/'+H;if(proc.width!==W||proc.height!==H){proc.width=W;proc.height=H;}$('#cam').classList.toggle('land',S.orient==='h');$('#orBtn').textContent=S.orient==='v'?'Vertical':'Horizontal';resize();}
 function drawProc(){const vw=vid.videoWidth,vh=vid.videoHeight;if(!vw)return;const [W,H]=PW();
   const auto=((vw>vh)===(S.orient==='v'))?1:0,q=(auto+rotUser)%4,sw=(q%2)?vh:vw,sh=(q%2)?vw:vh,sc=Math.max(W/sw,H/sh)*Math.max(1,+S.zoom||1);
   pctx.save();pctx.fillStyle='#000';pctx.fillRect(0,0,W,H);pctx.translate(W/2,H/2);pctx.rotate(q*Math.PI/2);pctx.drawImage(vid,-vw*sc/2,-vh*sc/2,vw*sc,vh*sc);pctx.restore();}
+const rotKey=()=>{const tr=stream&&stream.getVideoTracks()[0],f=(tr&&tr.getSettings&&tr.getSettings().facingMode)||S.cam;return 'agt_rot_'+f+'_'+S.orient+'_'+(vid.videoWidth>vid.videoHeight?'l':'p');};
+function loadRot(){const v=ls.get(rotKey(),null);if(v!==null&&v!==undefined){rotUser=v%4;calib=true;}}
+function saveRot(){ls.set(rotKey(),rotUser);}
 function setMir(){const tr=stream&&stream.getVideoTracks()[0],f=tr&&tr.getSettings&&tr.getSettings().facingMode;$('#cam').classList.toggle('mir',S.mir!==false&&(f?f==='user':(S.cam==='user'&&!S.lens)));}
-async function swapCam(){try{const old=stream.getVideoTracks();const nv=(await getStream(false)).getVideoTracks();stream=new MediaStream([...nv,...stream.getAudioTracks()]);old.forEach(t=>t.stop());vid.srcObject=stream;vid.play().catch(()=>{});rotUser=0;calib=false;calibT=0;calibTries=0;calibOk=0;await listLenses2();setTimeout(()=>{applyOrient();setMir();},400);}catch(e){flash('Caméra indisponible');console.error(e);}}
+async function swapCam(){try{const old=stream.getVideoTracks();const nv=(await getStream(false)).getVideoTracks();stream=new MediaStream([...nv,...stream.getAudioTracks()]);old.forEach(t=>t.stop());vid.srcObject=stream;vid.play().catch(()=>{});rotUser=0;calib=false;calibT=0;calibTries=0;calibOk=0;await listLenses2();setTimeout(()=>{applyOrient();loadRot();setMir();},400);}catch(e){flash('Caméra indisponible');console.error(e);}}
 async function listLenses2(){try{const d=(await navigator.mediaDevices.enumerateDevices()).filter(x=>x.kind==='videoinput'&&x.label);$('#csLens').innerHTML='<option value="">Par défaut</option>'+d.map(l=>`<option value="${l.deviceId}">${esc(l.label)}</option>`).join('');$('#csLens').value=S.lens||'';}catch(e){}}
 function bindCamSet(){$('#csCam').value=S.cam;$('#csFit').value=S.fit;$('#csZoom').value=S.zoom;$('#csZv').textContent='×'+(+S.zoom).toFixed(1);$('#csMir').checked=S.mir!==false;listLenses2();}
 $('#camBtn').onclick=()=>{const e=$('#camSet');e.hidden=!e.hidden;if(!e.hidden)bindCamSet();};
@@ -287,12 +290,12 @@ function openRun(){
   $('#tpTxt').textContent=S.script||'(aucun texte)';$('#tpTxt').style.setProperty('--tps',S.tpSize+'px');$('#tpTxt').style.transform='translateY(0)';
   $('#go').hidden=false;$('#orBtn').hidden=false;$('#rotBtn').hidden=false;$('#camBtn').hidden=false;$('#camSet').hidden=true;$('#stop').hidden=true;$('#timer').textContent='0:00';
   vid.srcObject=stream;vid.play().catch(()=>{});
-  setTimeout(()=>{applyOrient();running=false;lastVT=-1;loop();},200);
+  setTimeout(()=>{applyOrient();loadRot();running=false;lastVT=-1;loop();},300);
 }
 addEventListener('resize',()=>{if($('#s-run').classList.contains('on'))resize();});
 function resize(){const r=$('#cam').getBoundingClientRect();cv.width=Math.max(2,r.width*devicePixelRatio);cv.height=Math.max(2,r.height*devicePixelRatio);}
-$('#orBtn').onclick=()=>{S.orient=S.orient==='v'?'h':'v';save();rotUser=0;calib=false;calibT=0;calibTries=0;calibOk=0;applyOrient();};
-$('#rotBtn').onclick=()=>{rotUser=(rotUser+1)%4;calib=true;};
+$('#orBtn').onclick=()=>{S.orient=S.orient==='v'?'h':'v';save();rotUser=0;calib=false;calibT=0;calibTries=0;calibOk=0;applyOrient();loadRot();};
+$('#rotBtn').onclick=()=>{rotUser=(rotUser+1)%4;calib=true;saveRot();};
 $('#quit').onclick=()=>{cleanup();show('s-set');};
 
 /* synthèse de démonstration (?demo=1) : un corps simulé, pour tester tout le parcours sans modèle */
@@ -327,14 +330,14 @@ function loop(){
   raf=requestAnimationFrame(loop);
   if(vid.readyState<2)return;
   drawProc();
-  if(vid.currentTime===lastVT)return;lastVT=vid.currentTime;frameN++;
-  const now=performance.now();let L=null,hl=null,fl=null;
+  const now=performance.now();if(!DEMO&&now-lastDet<50)return;
+  if(vid.currentTime===lastVT)return;lastVT=vid.currentTime;frameN++;lastDet=now;let L=null,hl=null,fl=null;
   if(DEMO){const t=tStart?(now-tStart)/1000:0;const d=demoFrame(t);L=d.L;hl=d.hands;fl=d.face;}
   else{let pr=null;try{pr=pose.detectForVideo(proc,now);
       if(frameN%2===0){const hr=hand.detectForVideo(proc,now);lastHands=hr.landmarks&&hr.landmarks.length?hr.landmarks:null;lastHandsT=now;}
       else{const fr=face.detectForVideo(proc,now);lastFace=fr.faceLandmarks&&fr.faceLandmarks[0]?fr.faceLandmarks[0]:null;lastFaceT=now;}}catch(e){return;}
     L=pr&&pr.landmarks&&pr.landmarks[0];hl=(now-lastHandsT<350)?lastHands:null;fl=(now-lastFaceT<350)?lastFace:null;}
-  if(!DEMO&&!running&&!calib&&now-calibT>700){calibT=now;const k=headTurns(fl,L);if(k===null){if(++calibMiss>=3){calibMiss=0;if(++calibTries<=6)rotUser=(rotUser+1)%4;else calib=true;}}else{calibMiss=0;if(k===0){if(++calibOk>=2)calib=true;}else{calibOk=0;if(++calibTries<=6)rotUser=(rotUser+k)%4;else calib=true;}}}
+  if(!DEMO&&!running&&!calib&&now-calibT>700){calibT=now;const k=headTurns(fl,L);if(k===null){if(++calibMiss>=3){calibMiss=0;if(++calibTries<=6)rotUser=(rotUser+1)%4;else calib=true;}}else{calibMiss=0;if(k===0){if(++calibOk>=2){calib=true;saveRot();}}else{calibOk=0;if(++calibTries<=6)rotUser=(rotUser+k)%4;else calib=true;}}}
   const t=(now-t0perf)/1000;
   if(running&&an&&tStart){
     an.setOpts({aspect:proc.width/proc.height});
@@ -384,9 +387,9 @@ $('#go').onclick=async()=>{
   try{if(window.MediaRecorder&&stream.getAudioTracks){const cand=['video/mp4;codecs=avc1,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];const m=cand.find(x=>MediaRecorder.isTypeSupported(x));
     const rs=new MediaStream([...proc.captureStream(30).getVideoTracks(),...stream.getAudioTracks()]);rec=new MediaRecorder(rs,m?{mimeType:m,videoBitsPerSecond:2500000}:undefined);recMime=rec.mimeType||m||'video/webm';rec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};rec.start(1000);}}catch(e){rec=null;console.error(e);}
   tStart=performance.now();t0perf=tStart;lastVT=-1;running=true;
-  $('#stop').hidden=false;startTP();
+  $('#stop').hidden=false;$('#stop').textContent='Terminer';startTP();
 };
-$('#stop').onclick=()=>finish();
+let stopping=false;const doStop=e=>{if(e)e.preventDefault();if(stopping)return;stopping=true;$('#stop').textContent='Analyse…';setTimeout(()=>{stopping=false;},4000);finish();};$('#stop').addEventListener('pointerup',doStop);$('#stop').addEventListener('click',doStop);
 function startSTT(){
   if(!S.stt||DEMO)return;const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return;
   recWanted=true;sttObj=new SR();const x=sttObj;x.lang='fr-FR';x.continuous=true;x.interimResults=true;let finalTxt='';
@@ -406,7 +409,7 @@ async function finish(){
   if(!running||!an)return;running=false;const r=an.finish(),words=transcript.slice().sort((x,y)=>x.t-y.t),fr=frames,asp=proc.width/proc.height,fcp=FCP.slice();
   const pcmC=pcmChunks.slice(),sr=aSR;stopPCM();
   let blob=null;
-  if(rec&&rec.state!=='inactive'){await new Promise(res=>{rec.onstop=res;try{rec.stop()}catch(e){res()}});}
+  if(rec&&rec.state!=='inactive'){await new Promise(res=>{rec.onstop=res;setTimeout(res,2500);try{rec.stop()}catch(e){res()}});}
   if(chunks.length)blob=new Blob(chunks,{type:recMime||'video/webm'});
   cleanup();
   const c=$('#count');c.textContent='Analyse de la voix…';c.style.fontSize='26px';c.classList.add('on');
