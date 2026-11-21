@@ -175,7 +175,7 @@ svg.chart{width:100%;height:90px;background:var(--ink);border-radius:8px;cursor:
 
 <script src="engine.js"></script><script src="analysis.js"></script><script src="voice.js"></script>
 <script type="module">
-const APP_VERSION='0.5.0';
+const APP_VERSION='0.5.1';
 const DEMO=/[?&]demo=1/.test(location.search);
 const $=s=>document.querySelector(s);
 const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
@@ -445,7 +445,7 @@ function openReport(it){
     <div><h3 style="margin:0 0 4px">${r.issues.length?r.issues.length+' moment'+(r.issues.length>1?'s':'')+' à revoir':'Rien de grave détecté'}</h3><div class="note">${fmt(r.duree)} · corps visible ${r.corpsVisiblePct} % du temps</div><div class="note">Note indicative sur 100.</div></div></div></div>
   <div class="tabs" id="tabs"><button data-tab="g" class="on">Gestes</button><button data-tab="v">Voix</button><button data-tab="s">Discours</button></div>
   <div id="tab-g"><div class="card"><h3>Ta vidéo</h3>
-   ${it.blob?`<div class="vwrap" style="aspect-ratio:${it.asp||9/16}"><video id="rv" playsinline controls></video><canvas id="rc"></canvas></div>`:'<p class="note">Vidéo non disponible pour cet essai (enregistrement non pris en charge ou supprimé).</p>'}
+   ${it.blob?`<div class="vwrap" style="aspect-ratio:${it.asp||9/16}"><video id="rv" playsinline controls></video><canvas id="rc"></canvas></div><div class="ctl" style="margin-top:10px"><button class="btn sec" id="saveVid">Enregistrer la vidéo</button></div><p class="note">La vidéo est gardée uniquement dans ce navigateur (les 6 derniers essais), jamais envoyée. Enregistre-la dans tes Photos pour la garder.</p>`:'<p class="note">Vidéo non disponible pour cet essai (enregistrement non pris en charge ou supprimé).</p>'}
    <div class="mk" id="mk">${mk}<div class="cur" id="cur"></div></div>
    <div class="leg"><span><i class="i-bad" style="display:inline-block;width:10px;height:10px;border-radius:3px"></i> à corriger</span><span><i class="i-mid" style="display:inline-block;width:10px;height:10px;border-radius:3px"></i> mineur</span><span><i class="i-good" style="display:inline-block;width:10px;height:10px;border-radius:3px"></i> bien</span><span><i class="i-neu" style="display:inline-block;width:10px;height:10px;border-radius:3px"></i> compris par le contexte</span></div>
    <p class="note">Touche une barre pour aller au moment. Sur la vidéo, ton squelette et le geste concerné s’affichent.</p></div>
@@ -473,6 +473,7 @@ function openReport(it){
   bindTabs(it);
   if(!it.blob){document.querySelectorAll('.play').forEach(b=>b.disabled=true);return;}
   const v=$('#rv'),c=$('#rc'),cx=c.getContext('2d'),url=URL.createObjectURL(it.blob);pb={v,url,raf:0,stopAt:null};v.src=url;
+  $('#saveVid').onclick=async()=>{const ext=/mp4/.test(it.blob.type)?'mp4':'webm',f=new File([it.blob],'agora-gestuelle-'+new Date(it.date).toISOString().slice(0,16).replace(/[:T]/g,'-')+'.'+ext,{type:it.blob.type});try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return;}}catch(e){if(e&&e.name==='AbortError')return;}const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},3000);};
   const fixDur=()=>{if(v.duration===Infinity){v.currentTime=1e7;v.ontimeupdate=()=>{v.ontimeupdate=null;v.currentTime=0;};}};v.onloadedmetadata=fixDur;
   const act=t=>[...r.issues,...r.neutral].find(i=>t>=i.t0-0.2&&t<=i.t1+0.2);
   const tick=()=>{pb.raf=requestAnimationFrame(tick);const t=v.currentTime;$('#cur').style.left=(100*t/dur)+'%';
