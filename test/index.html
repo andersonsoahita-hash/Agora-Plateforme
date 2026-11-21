@@ -1,125 +1,118 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="robots" content="noindex,nofollow">
-<meta name="theme-color" content="#2E0B09">
+<meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#2E0B09">
 <title>Agora Test — Gestuelle</title>
 <style>
 :root{--wine:#5A1610;--deep:#2E0B09;--ink:#1F1416;--panel:#3A1A18;--red:#B5301F;--hot:#E8553B;--gold:#D9A43A;--lgold:#F3D082;--ok:#6FCF97;--txt:#F7EDE6;--mut:#C9AFA6;color-scheme:dark}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;background:var(--deep);color:var(--txt);font:16px/1.45 "Avenir Next",Avenir,system-ui,sans-serif}
-h1,h2,h3{font-family:Didot,"Bodoni 72","Playfair Display",Georgia,serif;font-weight:600;margin:0;letter-spacing:.01em}
+h1,h2,h3{font-family:Didot,"Bodoni 72","Playfair Display",Georgia,serif;font-weight:600;margin:0}
 .scr{position:fixed;inset:0;display:none;flex-direction:column;overflow:auto;padding:max(18px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(18px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left))}
 .scr.on{display:flex}
-.btn{appearance:none;border:0;border-radius:14px;padding:15px 22px;font:600 16px inherit;font-family:inherit;color:var(--deep);background:linear-gradient(135deg,var(--lgold),var(--gold));cursor:pointer}
+.btn{appearance:none;border:0;border-radius:14px;padding:15px 22px;font:600 16px "Avenir Next",system-ui,sans-serif;color:var(--deep);background:linear-gradient(135deg,var(--lgold),var(--gold));cursor:pointer}
 .btn.sec{background:transparent;color:var(--lgold);border:1px solid rgba(217,164,58,.5)}
-.btn.red{background:var(--red);color:#fff}
+.btn.red{background:var(--red);color:#fff}.btn:disabled{opacity:.4}
 .btn:active{transform:scale(.97)}
-.tag{display:inline-block;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
-/* accueil */
-#s-home{align-items:center;justify-content:center;text-align:center;gap:18px;background:radial-gradient(120% 80% at 50% 0%,var(--wine),var(--deep) 70%)}
-.orb{width:120px;height:120px;border-radius:50%;position:relative;margin-bottom:6px}
-.orb i{position:absolute;inset:0;border-radius:50%;border:1.5px solid var(--gold);opacity:0;animation:ring 3.6s infinite}
-.orb i:nth-child(2){animation-delay:1.2s}.orb i:nth-child(3){animation-delay:2.4s}
-.orb b{position:absolute;inset:38px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--lgold),var(--gold) 55%,var(--red));box-shadow:0 0 40px rgba(217,164,58,.5);animation:br 3.6s ease-in-out infinite}
-@keyframes ring{0%{transform:scale(.4);opacity:.9}100%{transform:scale(1.5);opacity:0}}
-@keyframes br{50%{transform:scale(1.12)}}
-#s-home h1{font-size:44px;line-height:1.05;animation:rise .9s both}
-#s-home p{margin:0;color:var(--mut);max-width:30ch;animation:rise .9s .25s both}
-#s-home .btns{display:flex;flex-direction:column;gap:10px;width:min(300px,100%);animation:rise .9s .5s both;margin-top:8px}
+.tag{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+#s-home{align-items:center;justify-content:center;text-align:center;gap:16px;background:radial-gradient(120% 80% at 50% 0%,var(--wine),var(--deep) 70%)}
+.orb{width:110px;height:110px;border-radius:50%;position:relative}
+.orb i{position:absolute;inset:0;border-radius:50%;border:1.5px solid var(--gold);opacity:0;animation:ring 3.6s infinite}.orb i:nth-child(2){animation-delay:1.2s}.orb i:nth-child(3){animation-delay:2.4s}
+.orb b{position:absolute;inset:36px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--lgold),var(--gold) 55%,var(--red));box-shadow:0 0 40px rgba(217,164,58,.5);animation:br 3.6s ease-in-out infinite}
+@keyframes ring{0%{transform:scale(.4);opacity:.9}100%{transform:scale(1.5);opacity:0}}@keyframes br{50%{transform:scale(1.12)}}
+#s-home h1{font-size:42px;line-height:1.05;animation:rise .9s both}#s-home p{margin:0;color:var(--mut);max-width:30ch;animation:rise .9s .25s both}
+#s-home .btns{display:flex;flex-direction:column;gap:10px;width:min(300px,100%);animation:rise .9s .5s both;margin-top:6px}
 @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-.by{font-size:13px;color:var(--mut);letter-spacing:.12em}
-.badge{font-size:12px;color:var(--gold);border:1px solid rgba(217,164,58,.4);padding:3px 10px;border-radius:99px}
-/* réglages */
-.hd{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
-.hd h2{font-size:26px}
+.by{font-size:13px;color:var(--mut);letter-spacing:.12em}.badge{font-size:12px;color:var(--gold);border:1px solid rgba(217,164,58,.4);padding:3px 10px;border-radius:99px}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.hd h2{font-size:26px}
 .card{background:var(--panel);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:14px;margin-bottom:12px}
 .card h3{font-size:18px;margin-bottom:8px;color:var(--lgold)}
-.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid rgba(255,255,255,.06)}
-.row:first-of-type{border-top:0}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid rgba(255,255,255,.06)}.row:first-of-type{border-top:0}
 .row small{display:block;color:var(--mut);font-size:13px}
-select,input[type=number],textarea{font:16px inherit;font-family:inherit;color:var(--txt);background:var(--ink);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:9px 10px;max-width:55%}
+select,textarea{font:16px "Avenir Next",system-ui,sans-serif;color:var(--txt);background:var(--ink);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:9px 10px;max-width:55%}
 textarea{width:100%;max-width:100%;min-height:110px;resize:vertical}
 .seg{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-.seg button{font:600 14px inherit;font-family:inherit;color:var(--mut);background:var(--ink);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:8px 12px}
+.seg button{font:600 14px "Avenir Next",system-ui,sans-serif;color:var(--mut);background:var(--ink);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:8px 12px}
 .seg button.on{color:var(--deep);background:var(--gold);border-color:var(--gold)}
-.sw{position:relative;width:50px;height:30px;flex:none}
-.sw input{opacity:0;position:absolute;inset:0;margin:0;width:100%;height:100%;z-index:2}
+.sw{position:relative;width:50px;height:30px;flex:none}.sw input{opacity:0;position:absolute;inset:0;margin:0;width:100%;height:100%;z-index:2}
 .sw span{position:absolute;inset:0;background:var(--ink);border-radius:99px;border:1px solid rgba(255,255,255,.18);transition:.2s}
 .sw span:after{content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:var(--mut);transition:.2s}
 .sw input:checked+span{background:var(--red)}.sw input:checked+span:after{left:23px;background:#fff}
 input[type=range]{accent-color:var(--gold);width:55%}
-.sticky{position:sticky;bottom:0;padding-top:10px;background:linear-gradient(transparent,var(--deep) 30%)}
-.sticky .btn{width:100%}
+.sticky{position:sticky;bottom:0;padding-top:10px;background:linear-gradient(transparent,var(--deep) 30%)}.sticky .btn{width:100%}
 .note{font-size:13px;color:var(--mut)}
-/* session */
+/* autorisations */
+.perm{display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid rgba(255,255,255,.07)}.perm:first-of-type{border-top:0}
+.dot{width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:14px;background:var(--ink);border:1px solid rgba(255,255,255,.2)}
+.dot.ok{background:var(--ok);color:#06240f;border-color:var(--ok)}.dot.ko{background:var(--hot);color:#fff;border-color:var(--hot)}.dot.wait{border-color:var(--gold);animation:br 1s infinite}
+.perm small{display:block;color:var(--mut);font-size:13px}
+/* session : cadre portrait */
 #s-run{padding:0;background:#000}
-.stage{position:relative;flex:1;display:flex;flex-direction:column;min-height:0}
-.tp{position:relative;overflow:hidden;background:#140807;flex:0 0 42%;display:none}
-.tp.on{display:block}
-.tp .txt{position:absolute;left:0;right:0;top:0;padding:50% 18px 80%;font:600 var(--tps,30px)/1.45 inherit;font-family:Didot,Georgia,serif;text-align:center;white-space:pre-wrap}
-.tp:after{content:"";position:absolute;left:0;right:0;top:38%;height:2px;background:var(--gold);opacity:.5}
-.tp.ovl{position:absolute;inset:0 0 auto 0;height:55%;background:rgba(20,8,7,.55);z-index:3;flex:none}
-.cam{position:relative;flex:1;min-height:0;overflow:hidden;background:#000}
+.stage{flex:1;display:flex;flex-direction:column;min-height:0;align-items:center}
+.tp{position:relative;overflow:hidden;background:#140807;flex:0 0 38%;width:100%;display:none}.tp.on{display:block}
+.tp .txt{position:absolute;left:0;right:0;top:0;padding:40% 18px 80%;font:600 var(--tps,30px)/1.45 Didot,Georgia,serif;text-align:center;white-space:pre-wrap}
+.tp:after{content:"";position:absolute;left:0;right:0;top:36%;height:2px;background:var(--gold);opacity:.5}
+.tp.ovl{position:absolute;inset:0 0 auto 0;height:50%;background:rgba(20,8,7,.55);z-index:3}
+.cam{position:relative;flex:1;min-height:0;aspect-ratio:9/16;max-width:100%;max-height:100%;overflow:hidden;background:#000;align-self:center}
 .cam video,.cam canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
 .cam.mir video,.cam.mir canvas{transform:scaleX(-1)}
 .hud{position:absolute;left:0;right:0;top:0;padding:max(10px,env(safe-area-inset-top)) 12px 0;display:flex;justify-content:space-between;gap:8px;z-index:4;pointer-events:none}
 .pill{background:rgba(31,20,22,.78);border:1px solid rgba(255,255,255,.12);border-radius:99px;padding:5px 12px;font-size:14px;font-variant-numeric:tabular-nums}
 .pill.rec:before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--hot);margin-right:7px;animation:br 1s infinite}
-.alert{position:absolute;left:12px;right:12px;top:calc(max(10px,env(safe-area-inset-top)) + 40px);z-index:4;background:rgba(181,48,31,.92);border-radius:12px;padding:10px 14px;font-weight:600;text-align:center;opacity:0;transition:.25s;pointer-events:none}
-.alert.on{opacity:1}
+.chips{position:absolute;left:10px;top:calc(max(10px,env(safe-area-inset-top)) + 38px);z-index:4;display:flex;flex-direction:column;gap:5px}
+.fc{font-size:12px;border-radius:99px;padding:3px 10px;background:rgba(31,20,22,.78);border:1px solid rgba(255,255,255,.12)}.fc.ok{color:var(--ok)}.fc.ko{color:#FF9C85}
+.alert{position:absolute;left:12px;right:12px;bottom:140px;z-index:4;background:rgba(181,48,31,.92);border-radius:12px;padding:10px 14px;font-weight:600;text-align:center;opacity:0;transition:.25s;pointer-events:none}.alert.on{opacity:1}
 .live{position:absolute;left:0;right:0;bottom:0;z-index:4;padding:10px 14px max(12px,env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(0,0,0,.85));min-height:84px}
-.live .tr{font-size:17px;min-height:46px;color:#fff}
-.live .tr em{color:var(--mut);font-style:normal}
+.live .tr{font-size:16px;min-height:44px;color:#fff}.live .tr em{color:var(--mut);font-style:normal}
 .live .ctl{display:flex;gap:10px;justify-content:center;margin-top:8px}
-.count{position:absolute;inset:0;z-index:6;display:none;align-items:center;justify-content:center;font:700 140px Didot,Georgia,serif;color:var(--lgold);background:rgba(0,0,0,.55)}
-.count.on{display:flex}
-.load{position:absolute;inset:0;z-index:7;display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;background:#000d;text-align:center;padding:24px}
+.count{position:absolute;inset:0;z-index:6;display:none;align-items:center;justify-content:center;font:700 140px Didot,Georgia,serif;color:var(--lgold);background:rgba(0,0,0,.55)}.count.on{display:flex}
+.rot{position:fixed;inset:0;z-index:20;background:var(--deep);display:none;flex-direction:column;gap:14px;align-items:center;justify-content:center;text-align:center;padding:30px}
+.rot.on{display:flex}.rot b{font:600 28px Didot,Georgia,serif;color:var(--lgold)}
 /* rapport */
-.score{display:flex;align-items:center;gap:18px}
-.ring{width:110px;height:110px;flex:none;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--gold) calc(var(--p)*1%),rgba(255,255,255,.09) 0)}
-.ring div{width:86px;height:86px;border-radius:50%;background:var(--panel);display:grid;place-items:center;text-align:center;font:600 30px Didot,Georgia,serif;line-height:1}
-.ring small{display:block;font:12px "Avenir Next",system-ui;color:var(--mut)}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.k{background:var(--ink);border-radius:12px;padding:10px 12px}
-.k b{display:block;font:600 24px Didot,Georgia,serif;color:var(--lgold)}.k span{font-size:13px;color:var(--mut)}
-.tl{display:flex;height:22px;border-radius:6px;overflow:hidden;background:var(--ink)}
-.tl i{flex:1;min-width:1px}
-.leg{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--mut);margin-top:8px}.leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
+.score{display:flex;align-items:center;gap:16px}
+.ring{width:96px;height:96px;flex:none;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--gold) calc(var(--p)*1%),rgba(255,255,255,.09) 0)}
+.ring div{width:74px;height:74px;border-radius:50%;background:var(--panel);display:grid;place-items:center;font:600 28px Didot,Georgia,serif}
+.vwrap{position:relative;background:#000;border-radius:14px;overflow:hidden;margin-bottom:6px;aspect-ratio:9/16;max-height:68vh;margin-inline:auto}
+.vwrap video,.vwrap canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}.vwrap canvas{pointer-events:none}
+.mk{position:relative;height:30px;background:var(--ink);border-radius:8px;margin:8px 0 4px;overflow:hidden;cursor:pointer}
+.mk i{position:absolute;top:4px;bottom:4px;min-width:5px;border-radius:4px;opacity:.95}
+.mk .cur{position:absolute;top:0;bottom:0;width:2px;background:#fff;z-index:2}
+.i-bad{background:var(--hot)}.i-mid{background:#E0A030}.i-good{background:var(--ok)}.i-neu{background:#7A5A55}
+.iss{border-left:4px solid var(--hot);background:var(--ink);border-radius:12px;padding:12px;margin-bottom:10px}
+.iss.s1{border-color:#E0A030}.iss.s0{border-color:var(--ok)}.iss.n{border-color:#7A5A55}
+.iss h4{margin:0 0 4px;font:600 16px "Avenir Next",system-ui,sans-serif}.iss p{margin:5px 0;font-size:15px}
+.iss .w{color:var(--mut)}.iss .f{color:var(--lgold)}
+.play{font:600 13px "Avenir Next",system-ui,sans-serif;background:rgba(217,164,58,.18);color:var(--lgold);border:1px solid rgba(217,164,58,.5);border-radius:99px;padding:5px 12px;float:right;margin-left:8px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.k{background:var(--ink);border-radius:12px;padding:10px 12px}
+.k b{display:block;font:600 22px Didot,Georgia,serif;color:var(--lgold)}.k span{font-size:13px;color:var(--mut)}
+.tl{display:flex;height:18px;border-radius:6px;overflow:hidden;background:var(--ink)}.tl i{flex:1;min-width:1px}
 .c-force{background:#6FCF97}.c-basse{background:#E0A030}.c-haute{background:#5FA8E0}.c-cachee{background:#E8553B}.c-hors{background:#7A5A55}.c-absent{background:#222}
-.tr2{line-height:1.9}
-.chip{display:inline-block;font-size:12px;border-radius:99px;padding:1px 8px;margin:0 3px;vertical-align:middle}
-.chip.g{background:rgba(111,207,151,.2);color:var(--ok)}.chip.w{background:rgba(232,85,59,.22);color:#FF9C85}.chip.m{background:rgba(217,164,58,.2);color:var(--lgold)}
-ul.adv{margin:0;padding-left:18px}ul.adv li{margin:6px 0}
-table{width:100%;border-collapse:collapse;font-size:15px}td{padding:6px 0;border-top:1px solid rgba(255,255,255,.06)}td:last-child{text-align:right;color:var(--lgold)}
-.hist button{width:100%;text-align:left;background:var(--ink);border:1px solid rgba(255,255,255,.08);color:var(--txt);border-radius:12px;padding:12px;margin-bottom:8px;font:15px inherit;font-family:inherit}
+.leg{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--mut);margin-top:8px}.leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
+.trs{line-height:1.9}.trs span.w{cursor:pointer}.trs span.w.hl{background:rgba(232,85,59,.3);border-radius:4px}
+details summary{cursor:pointer;color:var(--lgold);font-weight:600;margin:4px 0 8px}
+.hist button{width:100%;text-align:left;background:var(--ink);border:1px solid rgba(255,255,255,.08);color:var(--txt);border-radius:12px;padding:12px;margin-bottom:8px;font:15px "Avenir Next",system-ui,sans-serif}
+a{color:var(--lgold)}
 </style></head><body>
 
 <section class="scr on" id="s-home">
   <div class="orb"><i></i><i></i><i></i><b></b></div>
   <span class="tag">Prototype privé</span>
   <h1>Agora<br>Gestuelle</h1>
-  <p>Ton corps parle avant ta voix. Voyons ce qu’il dit.</p>
-  <div class="btns">
-    <button class="btn" id="enter">Entrer</button>
-    <button class="btn red" id="upd" hidden>Mettre à jour</button>
-    <button class="btn sec" id="histBtn">Mes essais</button>
-  </div>
-  <span class="badge" id="ver">Agora Test</span>
-  <span class="by">by Stephen</span>
+  <p>Filme-toi debout, en portrait. Tu verras sur la vidéo chaque moment à corriger.</p>
+  <div class="btns"><button class="btn" id="enter">Entrer</button><button class="btn red" id="upd" hidden>Mettre à jour</button><button class="btn sec" id="histBtn">Mes essais</button></div>
+  <span class="badge" id="ver">Agora Test</span><span class="by">by Stephen</span>
 </section>
 
 <section class="scr" id="s-set">
   <div class="hd"><h2>Réglages</h2><button class="btn sec" id="back1" style="padding:9px 14px">Retour</button></div>
   <div class="card"><h3>Caméra</h3>
     <div class="row"><div>Caméra<small>Selfie ou arrière</small></div><div class="seg" id="g-cam"><button data-v="user">Selfie</button><button data-v="environment" class="on">Arrière</button></div></div>
-    <div class="row"><div>Objectif<small id="lensNote">Ultra grand angle si le téléphone le permet</small></div><select id="lens"><option value="">Par défaut</option></select></div>
-    <div class="row"><div>Cadrage<small>Corps entier pour l’ancrage et les déplacements</small></div><div class="seg" id="g-mode"><button data-v="full" class="on">Corps entier</button><button data-v="upper">Haut du corps</button></div></div>
-    <div class="row"><div>Ta taille (cm)<small>Facultatif — pour des mètres approximatifs</small></div><input type="number" id="height" inputmode="numeric" placeholder="ex. 175" style="width:110px"></div>
+    <div class="row"><div>Objectif<small id="lensNote">Ultra grand angle, si le téléphone le propose</small></div><select id="lens"><option value="">Par défaut</option></select></div>
+    <div class="row"><div>Cadrage<small>Corps entier : ancrage et déplacements</small></div><div class="seg" id="g-mode"><button data-v="full" class="on">Corps entier</button><button data-v="upper">Haut du corps</button></div></div>
   </div>
   <div class="card"><h3>Prise de parole</h3>
     <div class="row"><div>Durée</div><div class="seg" id="g-dur"><button data-v="30">30 s</button><button data-v="60" class="on">1 min</button><button data-v="120">2 min</button><button data-v="300">5 min</button><button data-v="0">Libre</button></div></div>
-    <div class="row"><div>Transcription<small>Envoie la voix à Apple/Google (ok pour le test)</small></div><label class="sw"><input type="checkbox" id="stt" checked><span></span></label></div>
+    <div class="row"><div>Transcription<small>Sert à comprendre le contexte des gestes. Envoie la voix à Apple/Google (ok pour le test)</small></div><label class="sw"><input type="checkbox" id="stt" checked><span></span></label></div>
     <div class="row"><div>Alertes en direct</div><label class="sw"><input type="checkbox" id="liveFb" checked><span></span></label></div>
   </div>
   <div class="card"><h3>Téléprompteur</h3>
@@ -129,13 +122,17 @@ table{width:100%;border-collapse:collapse;font-size:15px}td{padding:6px 0;border
       <div class="row"><div>Vitesse</div><input type="range" id="tpSpeed" min="10" max="120" value="40"></div>
       <div class="row"><div>Taille</div><input type="range" id="tpSize" min="20" max="48" value="30"></div>
       <textarea id="script" placeholder="Colle ton texte ici…"></textarea>
-      <p class="note">Avec le téléprompteur, « regard vers le bas » est désactivé.</p>
-    </div>
+      <p class="note">Avec le téléprompteur, « tête baissée » n’est pas jugé.</p></div>
   </div>
-  <div class="card"><h3>Seuils</h3>
-    <div class="row"><div>Alerte mains cachées<small id="hdv">après 10 s</small></div><input type="range" id="hidT" min="3" max="30" value="10"></div>
-  </div>
-  <div class="sticky"><button class="btn" id="start">Lancer la caméra</button></div>
+  <div class="card"><h3>Seuil</h3><div class="row"><div>Mains cachées : à partir de<small id="hdv">8 s</small></div><input type="range" id="hidT" min="3" max="30" value="8"></div></div>
+  <div class="sticky"><button class="btn" id="start">Continuer : autorisations</button></div>
+</section>
+
+<section class="scr" id="s-perm">
+  <div class="hd"><h2>Autorisations</h2><button class="btn sec" id="back4" style="padding:9px 14px">Retour</button></div>
+  <p class="note" style="margin-top:0">Tout est demandé ici, avant de commencer. Une fois les voyants au vert, tu pourras lancer ta prise de parole sans autre fenêtre.</p>
+  <div class="card" id="permList"></div>
+  <div class="sticky"><button class="btn" id="grant">Tout autoriser</button></div>
 </section>
 
 <section class="scr" id="s-run">
@@ -143,220 +140,288 @@ table{width:100%;border-collapse:collapse;font-size:15px}td{padding:6px 0;border
     <div class="tp" id="tp"><div class="txt" id="tpTxt"></div></div>
     <div class="cam" id="cam"><video id="vid" playsinline muted></video><canvas id="cv"></canvas>
       <div class="hud"><span class="pill rec" id="timer">0:00</span><span class="pill" id="pst">—</span></div>
+      <div class="chips" id="chips"></div>
       <div class="alert" id="alert"></div>
-      <div class="live"><div class="tr" id="tr"><em>Prêt.</em></div><div class="ctl"><button class="btn" id="go">Commencer</button><button class="btn red" id="stop" hidden>Terminer</button><button class="btn sec" id="quit">Quitter</button></div></div>
+      <div class="live"><div class="tr" id="tr"><em>Place-toi : vérifie que la tête, les mains et les pieds sont dans le cadre.</em></div><div class="ctl"><button class="btn" id="go">Commencer</button><button class="btn red" id="stop" hidden>Terminer</button><button class="btn sec" id="quit">Quitter</button></div></div>
       <div class="count" id="count"></div>
-      <div class="load" id="load"><div class="tag">Chargement</div><div id="loadTxt">Caméra et modèles…</div></div>
     </div>
   </div>
+  <div class="rot" id="rot"><b>Tourne ton téléphone</b><span>Tiens-le à la verticale (portrait) pour voir ton corps de la tête aux pieds.</span></div>
 </section>
 
-<section class="scr" id="s-rep">
-  <div class="hd"><h2>Rapport</h2><button class="btn sec" id="back2" style="padding:9px 14px">Fermer</button></div>
-  <div id="rep"></div>
-</section>
-
-<section class="scr" id="s-hist">
-  <div class="hd"><h2>Mes essais</h2><button class="btn sec" id="back3" style="padding:9px 14px">Retour</button></div>
-  <div class="hist" id="histList"></div>
-</section>
+<section class="scr" id="s-rep"><div class="hd"><h2>Rapport</h2><button class="btn sec" id="back2" style="padding:9px 14px">Fermer</button></div><div id="rep"></div></section>
+<section class="scr" id="s-hist"><div class="hd"><h2>Mes essais</h2><button class="btn sec" id="back3" style="padding:9px 14px">Retour</button></div><div class="hist" id="histList"></div></section>
 
 <script src="engine.js"></script>
 <script type="module">
-const APP_VERSION='0.1.0';
+const APP_VERSION='0.2.0';
+const DEMO=/[?&]demo=1/.test(location.search);
 const $=s=>document.querySelector(s);
 const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-const show=id=>{document.querySelectorAll('.scr').forEach(s=>s.classList.toggle('on',s.id===id))};
+const show=id=>{document.querySelectorAll('.scr').forEach(s=>s.classList.toggle('on',s.id===id));if(id!=='s-rep')stopPlayback();};
+const fmt=AgoraEngine.fmt,esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const MODEL_POSE='https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task';
 const MODEL_HAND='https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task';
 
-/* ---- version / mise à jour ---- */
+/* ---- version ---- */
 $('#ver').textContent='Agora Test · v'+APP_VERSION;
-(async()=>{try{const r=await fetch('version.json?'+Date.now(),{cache:'no-store'});const j=await r.json();const seen=ls.get('agt_ver',null);
-  if(seen===null){ls.set('agt_ver',j.version);} else if(seen!==j.version||j.version!==APP_VERSION){$('#upd').hidden=false;$('#upd').dataset.v=j.version;}
-}catch(e){}})();
+(async()=>{try{const j=await (await fetch('version.json?'+Date.now(),{cache:'no-store'})).json();const seen=ls.get('agt_ver',null);
+  if(seen===null)ls.set('agt_ver',APP_VERSION);else if(seen!==j.version||j.version!==APP_VERSION){$('#upd').hidden=false;$('#upd').dataset.v=j.version;}}catch(e){}})();
 $('#upd').onclick=async()=>{try{const ks=await caches.keys();await Promise.all(ks.map(k=>caches.delete(k)));}catch(e){}ls.set('agt_ver',$('#upd').dataset.v);location.href=location.pathname+'?v='+Date.now();};
 
-/* ---- réglages ---- */
-const S=Object.assign({cam:'environment',mode:'full',dur:60,tp:'split',lens:'',stt:true,liveFb:true,tpOn:false,tpSpeed:40,tpSize:30,height:'',script:'',hidT:10},ls.get('agt_set',{}));
-const seg=(id,key)=>{const g=$(id);g.querySelectorAll('button').forEach(b=>{b.classList.toggle('on',String(S[key])===b.dataset.v);b.onclick=()=>{S[key]=isNaN(b.dataset.v)||b.dataset.v===''?b.dataset.v:+b.dataset.v;g.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));save();}});};
+/* ---- réglages (pas de taille : ça n’indique rien) ---- */
+const S=Object.assign({cam:'environment',mode:'full',dur:60,tp:'split',lens:'',stt:true,liveFb:true,tpOn:false,tpSpeed:40,tpSize:30,script:'',hidT:8},ls.get('agt_set',{}));
 const save=()=>ls.set('agt_set',S);
+const seg=(id,key)=>{const g=$(id);g.querySelectorAll('button').forEach(b=>{b.classList.toggle('on',String(S[key])===b.dataset.v);b.onclick=()=>{S[key]=isNaN(b.dataset.v)||b.dataset.v===''?b.dataset.v:+b.dataset.v;g.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));save();}});};
 seg('#g-cam','cam');seg('#g-mode','mode');seg('#g-dur','dur');seg('#g-tp','tp');
-const bind=(id,key,type)=>{const e=$(id);if(type==='c'){e.checked=!!S[key];e.onchange=()=>{S[key]=e.checked;save();sync();}}else{e.value=S[key];e.oninput=()=>{S[key]=e.value;save();sync();}}};
-bind('#stt','stt','c');bind('#liveFb','liveFb','c');bind('#tpOn','tpOn','c');bind('#tpSpeed','tpSpeed');bind('#tpSize','tpSize');bind('#height','height');bind('#script','script');bind('#hidT','hidT');
-const sync=()=>{$('#tpBox').hidden=!S.tpOn;$('#hdv').textContent='après '+S.hidT+' s';};sync();
-$('#enter').onclick=()=>{show('s-set');listLenses(false);};$('#back1').onclick=()=>show('s-home');
-$('#back2').onclick=()=>show('s-home');$('#back3').onclick=()=>show('s-home');
-
-/* ---- objectifs (ultra grand angle) ---- */
-let lenses=[];
-async function listLenses(){try{const d=await navigator.mediaDevices.enumerateDevices();lenses=d.filter(x=>x.kind==='videoinput');
-  const sel=$('#lens');sel.innerHTML='<option value="">Par défaut</option>'+lenses.filter(l=>l.label).map(l=>`<option value="${l.deviceId}">${l.label}</option>`).join('');sel.value=S.lens||'';
-  if(lenses.length&&!lenses[0].label)$('#lensNote').textContent='Les noms d’objectifs apparaîtront après le premier lancement de la caméra.';
-  else if(lenses.some(l=>/ultra|0[.,]5|grand/i.test(l.label)))$('#lensNote').textContent='Ultra grand angle détecté : choisis-le dans la liste.';
-}catch(e){}}
+const bind=(id,key,c)=>{const e=$(id);if(c){e.checked=!!S[key];e.onchange=()=>{S[key]=e.checked;save();sync();}}else{e.value=S[key];e.oninput=()=>{S[key]=e.value;save();sync();}}};
+bind('#stt','stt',1);bind('#liveFb','liveFb',1);bind('#tpOn','tpOn',1);bind('#tpSpeed','tpSpeed');bind('#tpSize','tpSize');bind('#script','script');bind('#hidT','hidT');
+const sync=()=>{$('#tpBox').hidden=!S.tpOn;$('#hdv').textContent=S.hidT+' s';};sync();
+$('#enter').onclick=()=>show('s-set');$('#back1').onclick=()=>show('s-home');$('#back2').onclick=()=>show('s-home');$('#back3').onclick=()=>show('s-home');
+$('#back4').onclick=()=>{cleanup();show('s-set');};
 $('#lens').onchange=e=>{S.lens=e.target.value;save();};
-$('#histBtn').onclick=()=>{histRender();show('s-hist');};
+async function listLenses(){try{const d=(await navigator.mediaDevices.enumerateDevices()).filter(x=>x.kind==='videoinput'&&x.label);
+  $('#lens').innerHTML='<option value="">Par défaut</option>'+d.map(l=>`<option value="${l.deviceId}">${esc(l.label)}</option>`).join('');$('#lens').value=S.lens||'';
+  if(d.some(l=>/ultra|0[.,]5|grand/i.test(l.label)))$('#lensNote').textContent='Ultra grand angle détecté : choisis-le dans la liste.';}catch(e){}}
 
-/* ---- session ---- */
-let stream=null,pose=null,hand=null,raf=0,running=false,an=null,rec=null,tStart=0,t0perf=0,transcript=[],lastAlert=0,modelsOk=false,tpY=0,tpRaf=0,recWanted=false;
-const vid=$('#vid'),cv=$('#cv'),ctx=cv.getContext('2d');
+/* ---- stockage des vidéos (IndexedDB) ---- */
+const idb={db:null,open(){return this.db?Promise.resolve(this.db):new Promise((res,rej)=>{const r=indexedDB.open('agora-test',1);r.onupgradeneeded=()=>r.result.createObjectStore('s',{keyPath:'id'});r.onsuccess=()=>{this.db=r.result;res(r.result)};r.onerror=()=>rej(r.error);});},
+ async put(o){const d=await this.open();return new Promise((res,rej)=>{const t=d.transaction('s','readwrite');t.objectStore('s').put(o);t.oncomplete=res;t.onerror=()=>rej(t.error);});},
+ async get(id){const d=await this.open();return new Promise((res,rej)=>{const q=d.transaction('s').objectStore('s').get(id);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error);});},
+ async del(id){const d=await this.open();return new Promise(res=>{const t=d.transaction('s','readwrite');t.objectStore('s').delete(id);t.oncomplete=res;t.onerror=res;});}};
 
-$('#start').onclick=()=>openRun();
-$('#quit').onclick=()=>{cleanup();show('s-set');};
-async function openRun(){
-  show('s-run');$('#load').style.display='flex';$('#loadTxt').textContent='Caméra…';
-  $('#go').hidden=false;$('#stop').hidden=true;$('#tr').innerHTML='<em>Prêt.</em>';
-  $('#cam').classList.toggle('mir',S.cam==='user');
-  const tp=$('#tp');tp.classList.toggle('on',!!S.tpOn);tp.classList.toggle('ovl',S.tpOn&&S.tp==='ovl');
-  $('#tpTxt').textContent=S.script||'(aucun texte)';$('#tpTxt').style.setProperty('--tps',S.tpSize+'px');$('#tpTxt').style.transform='translateY(0)';
-  try{
-    const c={audio:false,video:Object.assign({width:{ideal:1280},height:{ideal:1920},frameRate:{ideal:30}},S.lens?{deviceId:{exact:S.lens}}:{facingMode:{ideal:S.cam}})};
-    stream=await navigator.mediaDevices.getUserMedia(c);vid.srcObject=stream;await vid.play();await listLenses();
-  }catch(e){$('#loadTxt').innerHTML='Caméra refusée ou indisponible.<br><small>'+(e.name||e)+'</small><br><br><button class="btn" id="bk">Retour</button>';$('#bk').onclick=()=>{cleanup();show('s-set')};return;}
-  resize();
-  $('#loadTxt').textContent='Modèles d’analyse… (premier chargement : quelques secondes)';
-  try{await loadModels();modelsOk=true;}catch(e){modelsOk=false;console.error(e);
-    $('#loadTxt').innerHTML='Modèles non chargés (connexion ?).<br><small>'+(e.message||e)+'</small><br><br><button class="btn" id="rt">Réessayer</button> <button class="btn sec" id="bk">Retour</button>';
-    $('#rt').onclick=()=>{cleanup();openRun()};$('#bk').onclick=()=>{cleanup();show('s-set')};return;}
-  $('#load').style.display='none';running=true;loop();
+/* ---- autorisations ---- */
+const stt_ok=()=>!!(window.SpeechRecognition||window.webkitSpeechRecognition);
+let P={cam:'',mic:'',stt:'',mod:''},stream=null,modelsOk=false,pose=null,hand=null;
+const permRows=()=>[['cam','Caméra','Pour te filmer, en portrait'],['mic','Micro','Pour enregistrer ta voix avec la vidéo'],['stt','Transcription vocale',S.stt?'Pour comprendre le contexte de tes gestes':'Désactivée dans les réglages'],['mod','Modèles d’analyse','Téléchargés une fois (connexion nécessaire)']];
+function paintPerm(msgs={}){$('#permList').innerHTML=permRows().map(([k,t,d])=>{const v=P[k];const c=v==='ok'?'ok':v==='ko'?'ko':v==='wait'?'wait':'';const ic=v==='ok'?'✓':v==='ko'?'!':'';
+  return `<div class="perm"><div class="dot ${c}">${ic}</div><div><b>${t}</b><small>${esc(msgs[k]||d)}</small></div></div>`}).join('');}
+$('#start').onclick=()=>{P={cam:'',mic:'',stt:S.stt?'':'ok',mod:''};paintPerm();$('#grant').textContent='Tout autoriser';show('s-perm');listLenses();};
+const portraitScreen=()=>matchMedia('(pointer:coarse)').matches;
+async function getStream(audio){
+  const v=Object.assign({width:{ideal:1080},height:{ideal:1920},aspectRatio:{ideal:9/16},frameRate:{ideal:30}},S.lens?{deviceId:{exact:S.lens}}:{facingMode:{ideal:S.cam}});
+  return navigator.mediaDevices.getUserMedia({video:v,audio:audio?{echoCancellation:true,noiseSuppression:true}:false});
 }
+$('#grant').onclick=async()=>{
+  const msgs={};$('#grant').disabled=true;cleanup(true);
+  P.cam='wait';P.mic='wait';paintPerm();
+  try{stream=await getStream(true);P.cam='ok';P.mic='ok';}
+  catch(e){try{stream=await getStream(false);P.cam='ok';P.mic='ko';msgs.mic='Micro refusé : réglages du navigateur, puis recharge la page.';}catch(e2){P.cam='ko';P.mic='ko';msgs.cam='Caméra refusée ou indisponible ('+(e2.name||e2)+').';}}
+  paintPerm(msgs);
+  if(stream){try{await listLenses();}catch(e){}
+    const tr=stream.getVideoTracks()[0],st=tr.getSettings?tr.getSettings():{};
+    if(st.width&&st.height&&st.width>st.height&&portraitScreen()){try{await tr.applyConstraints({width:{ideal:1080},height:{ideal:1920}});}catch(e){}}
+  }
+  if(S.stt){P.stt='wait';paintPerm(msgs);
+    if(!stt_ok()){P.stt='ko';msgs.stt='Non disponible sur ce navigateur (Safari ou Chrome récents).';}
+    else{const r=await new Promise(res=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition,x=new SR();x.lang='fr-FR';let done=false;const f=v=>{if(!done){done=true;try{x.abort()}catch(e){}res(v)}};
+      x.onstart=()=>setTimeout(()=>f('ok'),400);x.onerror=e=>f(e.error==='not-allowed'||e.error==='service-not-allowed'?'denied':'ok');setTimeout(()=>f('ok'),7000);try{x.start()}catch(e){f('ok')}});
+      P.stt=r==='ok'?'ok':'ko';if(r!=='ok')msgs.stt='Refusée : active-la dans les réglages du navigateur, ou désactive la transcription.';}
+    paintPerm(msgs);}
+  P.mod='wait';paintPerm(msgs);
+  try{if(DEMO){modelsOk=true;}else await loadModels();P.mod='ok';}catch(e){P.mod='ko';msgs.mod='Modèles non chargés : vérifie ta connexion. ('+(e.message||e)+')';console.error(e);}
+  paintPerm(msgs);$('#grant').disabled=false;
+  const need=[P.cam,P.mic,P.mod,S.stt?P.stt:'ok'];
+  if(need.every(x=>x==='ok')){openRun();}
+  else{$('#grant').textContent='Réessayer';if(P.cam==='ok'&&P.mod==='ok'&&P.mic!=='ok'){}}
+};
 async function loadModels(){
   if(pose&&hand)return;
-  const V=await import('./vendor/vision_bundle.mjs');
-  const fs=await V.FilesetResolver.forVisionTasks('./vendor/wasm');
-  const mk=async(cls,url)=>{try{return await V[cls].createFromOptions(fs,{baseOptions:{modelAssetPath:url,delegate:'GPU'},runningMode:'VIDEO',...(cls==='PoseLandmarker'?{numPoses:1}:{numHands:2})});}
-    catch(e){return await V[cls].createFromOptions(fs,{baseOptions:{modelAssetPath:url,delegate:'CPU'},runningMode:'VIDEO',...(cls==='PoseLandmarker'?{numPoses:1}:{numHands:2})});}};
-  pose=await mk('PoseLandmarker',MODEL_POSE);hand=await mk('HandLandmarker',MODEL_HAND);
+  const V=await import('./vendor/vision_bundle.mjs');const fs=await V.FilesetResolver.forVisionTasks('./vendor/wasm');
+  const mk=async(cls,url,extra)=>{for(const d of ['GPU','CPU']){try{return await V[cls].createFromOptions(fs,{baseOptions:{modelAssetPath:url,delegate:d},runningMode:'VIDEO',...extra});}catch(e){if(d==='CPU')throw e;}}};
+  pose=await mk('PoseLandmarker',MODEL_POSE,{numPoses:1});hand=await mk('HandLandmarker',MODEL_HAND,{numHands:2});
 }
-function resize(){const r=$('#cam').getBoundingClientRect();cv.width=r.width*devicePixelRatio;cv.height=r.height*devicePixelRatio;}
-addEventListener('resize',()=>{if(stream)resize()});
-const CONN=[[11,12],[11,13],[13,15],[12,14],[14,16],[11,23],[12,24],[23,24],[23,25],[25,27],[24,26],[26,28]];
-const COL={force:'#6FCF97',basse:'#E0A030',haute:'#5FA8E0',cachee:'#E8553B',hors:'#7A5A55'};
-const LAB={force:'Zone de force',basse:'Mains basses',haute:'Mains hautes',cachee:'Mains cachées',hors:'Mains hors cadre'};
-let lastVT=-1,frameN=0,lastState='force';
+
+/* ---- session ---- */
+const vid=$('#vid'),cv=$('#cv'),ctx=cv.getContext('2d');
+let raf=0,running=false,an=null,rec=null,chunks=[],recMime='',tStart=0,t0perf=0,transcript=[],frames=[],lastAlert=0,tpRaf=0,recWanted=false,lastVT=-1,frameN=0,lastState='force',lastHands=null,lastHandsT=-9,sttObj=null;
+function openRun(){
+  show('s-run');
+  $('#cam').classList.toggle('mir',S.cam==='user'&&!S.lens);
+  const tp=$('#tp');tp.classList.toggle('on',!!S.tpOn);tp.classList.toggle('ovl',S.tpOn&&S.tp==='ovl');
+  $('#tpTxt').textContent=S.script||'(aucun texte)';$('#tpTxt').style.setProperty('--tps',S.tpSize+'px');$('#tpTxt').style.transform='translateY(0)';
+  $('#go').hidden=false;$('#stop').hidden=true;$('#timer').textContent='0:00';
+  try{screen.orientation&&screen.orientation.lock&&screen.orientation.lock('portrait').catch(()=>{});}catch(e){}
+  vid.srcObject=stream;vid.play().catch(()=>{});
+  setTimeout(()=>{resize();running=false;lastVT=-1;loop();checkRot();},200);
+}
+function checkRot(){const land=portraitScreen()&&matchMedia('(orientation:landscape)').matches;$('#rot').classList.toggle('on',land&&$('#s-run').classList.contains('on'));}
+addEventListener('resize',()=>{if($('#s-run').classList.contains('on')){resize();checkRot();}});
+function resize(){const r=$('#cam').getBoundingClientRect();cv.width=Math.max(2,r.width*devicePixelRatio);cv.height=Math.max(2,r.height*devicePixelRatio);}
+$('#quit').onclick=()=>{cleanup();show('s-set');};
+
+/* synthèse de démonstration (?demo=1) : un corps simulé, pour tester tout le parcours sans modèle */
+function demoFrame(t){
+  const AS=(vid.videoWidth||9)/(vid.videoHeight||16),ED=0.036,CX=.5,EY=.2;
+  const L=Array.from({length:33},()=>({x:.5,y:.5,visibility:.99}));const s=(i,x,y,v)=>L[i]={x,y,visibility:v==null?.99:v};
+  const e=ED/AS;s(0,CX,EY+.01);s(2,CX-e*.25,EY);s(5,CX+e*.25,EY);s(7,CX-e/2,EY+.005);s(8,CX+e/2,EY+.005);s(9,CX-e*.1,EY+ED*.5);s(10,CX+e*.1,EY+ED*.5);
+  s(11,CX-.09,.33);s(12,CX+.09,.33);s(23,CX-.06,.62);s(24,CX+.06,.62);s(27,CX-.08,.93);s(28,CX+.08,.93);
+  let wl=[.40,.48,.99],wr=[.60,.48,.99],hands=null;
+  const hair=[CX+.01,EY-ED*1.0];
+  const mk=(x,y,ratio=.5)=>{const pw=ratio*ED/AS;const H=Array.from({length:21},()=>({x,y}));H[5]={x:x-pw/2,y};H[17]={x:x+pw/2,y};[4,8,12,16,20].forEach((i,k)=>H[i]={x:x+(k-2)*pw/8,y:y-0.004*(k%2)});H[0]={x,y:y+.03};H[2]={x:x-pw/3,y:y+.01};[6,10,14,18].forEach(i=>H[i]={x,y:y-.005});return H;};
+  const _set=()=>{s(15,...wl);s(16,...wr);[17,19,21].forEach(i=>s(i,wl[0],wl[1],wl[2]));[18,20,22].forEach(i=>s(i,wr[0],wr[1],wr[2]));};
+  if(t>=5&&t<8.5){wl=[hair[0],hair[1],.99];hands=[mk(hair[0],hair[1])];}
+  else if(t>=12&&t<22){wl=[.45,.6,.1];wr=[.55,.6,.1];}
+  else if(t>=26&&t<29){wl=[hair[0],hair[1],.99];hands=[mk(hair[0],hair[1])];}
+  else hands=[mk(wl[0],wl[1])];
+  _set();
+  return {L,hands};
+}
+const DEMO_WORDS=[[3,'bonjour'],[3.4,'à'],[3.7,'tous'],[4.2,'aujourd’hui'],[4.8,'je'],[5.2,'vais'],[5.6,'vous'],[6,'parler'],[6.4,'de'],[6.8,'notre'],[7.2,'projet'],[7.6,'de'],[8,'quartier'],[24.5,'ma'],[25,'couleur'],[25.5,'de'],[26,'cheveux'],[26.6,'est'],[27.2,'naturelle'],[28,'oui']];
+let demoI=0;
+
 function loop(){
   raf=requestAnimationFrame(loop);
   if(vid.readyState<2||vid.currentTime===lastVT)return;lastVT=vid.currentTime;frameN++;
-  const now=performance.now();let pr=null,hr=null;
-  try{pr=pose.detectForVideo(vid,now);if(frameN%2===0)hr=hand.detectForVideo(vid,now);}catch(e){return;}
-  const L=pr&&pr.landmarks&&pr.landmarks[0];
+  const now=performance.now();let L=null,hl=null;
+  if(DEMO){const t=tStart?(now-tStart)/1000:0;const d=demoFrame(t);L=d.L;hl=d.hands;}
+  else{let pr=null,hr=null;try{pr=pose.detectForVideo(vid,now);if(frameN%2===0)hr=hand.detectForVideo(vid,now);}catch(e){return;}
+    L=pr&&pr.landmarks&&pr.landmarks[0];if(hr){lastHands=hr.landmarks&&hr.landmarks.length?hr.landmarks:null;lastHandsT=now;}
+    hl=(now-lastHandsT<350)?lastHands:null;}
   const t=(now-t0perf)/1000;
-  let out=null;
   if(running&&an&&tStart){
     an.setOpts({aspect:vid.videoWidth/vid.videoHeight});
-    out=an.push({t,pose:L});
-    if(hr&&hr.landmarks&&hr.landmarks.length)an.hand({t,hands:hr.landmarks.map(lm=>({lm}))});
+    if(DEMO){while(demoI<DEMO_WORDS.length&&DEMO_WORDS[demoI][0]<=t){an.addWord(DEMO_WORDS[demoI][1],DEMO_WORDS[demoI][0]);transcript.push({w:DEMO_WORDS[demoI][1],t:DEMO_WORDS[demoI][0]});an.markSpeech(t);demoI++;}if(t<30&&t>3)an.markSpeech(t);}
+    const out=an.push({t,pose:L,hands:hl});
+    if(frameN%2===0&&L)frames.push([Math.round(t*100)/100,L.map(p=>[Math.round(p.x*1000),Math.round(p.y*1000),Math.round((p.visibility||0)*100)]),hl?hl.map(h=>h.map(p=>[Math.round(p.x*1000),Math.round(p.y*1000)])):null]);
     if(out&&out.state){lastState=out.state;$('#pst').textContent=LAB[out.state];$('#pst').style.borderColor=COL[out.state];}
     if(S.liveFb&&out&&out.alerts.length&&now-lastAlert>6000){lastAlert=now;flash(out.alerts[0]);}
     const el=Math.floor((now-tStart)/1000);$('#timer').textContent=Math.floor(el/60)+':'+String(el%60).padStart(2,'0');
     if(S.dur&&el>=S.dur)finish();
-  }
-  draw(L,hr);
+  }else if(!running&&L&&frameN%6===0)framing(L);
+  drawLive(L,hl);
 }
-function draw(L,hr){
-  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
-  const vw=vid.videoWidth,vh=vid.videoHeight;if(!vw)return;
-  const sc=Math.min(W/vw,H/vh),dw=vw*sc,dh=vh*sc,ox=(W-dw)/2,oy=(H-dh)/2;
-  const X=p=>ox+p.x*dw,Y=p=>oy+p.y*dh;
-  if(!L)return;
-  // zone de force
-  if(L[11].visibility>.4&&L[12].visibility>.4){
-    const sy=(L[11].y+L[12].y)/2,hipOk=L[23].visibility>.4&&L[24].visibility>.4;
-    const hy=hipOk?(L[23].y+L[24].y)/2:sy+0.25,sx=(L[11].x+L[12].x)/2,sw=Math.abs(L[11].x-L[12].x)*vw/vw;
-    const x0=sx-sw*2.2*(vh/vw)*0+ -sw*1.6,x1=sx+sw*1.6;
-    ctx.fillStyle='rgba(111,207,151,.12)';ctx.strokeStyle='rgba(111,207,151,.6)';ctx.lineWidth=2*devicePixelRatio;ctx.setLineDash([8,6]);
-    ctx.beginPath();ctx.rect(ox+x0*dw,oy+sy*dh,(x1-x0)*dw,(hy-sy)*dh);ctx.fill();ctx.stroke();ctx.setLineDash([]);
-  }
-  ctx.lineWidth=3*devicePixelRatio;ctx.strokeStyle='rgba(243,208,130,.9)';
-  CONN.forEach(([a,b])=>{if(L[a].visibility>.4&&L[b].visibility>.4){ctx.beginPath();ctx.moveTo(X(L[a]),Y(L[a]));ctx.lineTo(X(L[b]),Y(L[b]));ctx.stroke();}});
-  [0,11,12,13,14,23,24,25,26,27,28].forEach(i=>{if(L[i].visibility>.4){ctx.fillStyle='#F3D082';ctx.beginPath();ctx.arc(X(L[i]),Y(L[i]),4*devicePixelRatio,0,7);ctx.fill();}});
-  [15,16].forEach(i=>{ctx.fillStyle=COL[lastState]||'#fff';ctx.beginPath();ctx.arc(X(L[i]),Y(L[i]),8*devicePixelRatio,0,7);ctx.fill();});
-  if(hr&&hr.landmarks)hr.landmarks.forEach(h=>{ctx.fillStyle='rgba(255,255,255,.85)';h.forEach(p=>{ctx.beginPath();ctx.arc(X(p),Y(p),2*devicePixelRatio,0,7);ctx.fill();});});
+function framing(L){const v=i=>L[i]&&L[i].visibility>.5&&L[i].y<1&&L[i].y>0;
+  const chips=[['Tête',v(0)],['Mains',v(15)||v(16)],S.mode==='full'?['Pieds',v(27)&&v(28)]:null].filter(Boolean);
+  $('#chips').innerHTML=chips.map(([n,ok])=>`<span class="fc ${ok?'ok':'ko'}">${ok?'✓':'✕'} ${n} dans le cadre</span>`).join('');}
+const COL={force:'#6FCF97',basse:'#E0A030',haute:'#5FA8E0',cachee:'#E8553B',hors:'#7A5A55'};
+const LAB={force:'Zone de force',basse:'Mains basses',haute:'Mains hautes',cachee:'Mains cachées',hors:'Mains hors cadre'};
+const CONN=[[11,12],[11,13],[13,15],[12,14],[14,16],[11,23],[12,24],[23,24],[23,25],[25,27],[24,26],[26,28]];
+function skeleton(c,W,H,vw,vh,L,hands,wcol){
+  c.clearRect(0,0,W,H);if(!vw||!L)return null;
+  const sc=Math.min(W/vw,H/vh),dw=vw*sc,dh=vh*sc,ox=(W-dw)/2,oy=(H-dh)/2,dp=devicePixelRatio||1;
+  const X=p=>ox+p.x*dw,Y=p=>oy+p.y*dh,vis=i=>L[i].visibility>.4;
+  if(vis(11)&&vis(12)){const sy=(L[11].y+L[12].y)/2,hy=(vis(23)&&vis(24))?(L[23].y+L[24].y)/2:sy+.25,sx=(L[11].x+L[12].x)/2,sw=Math.abs(L[11].x-L[12].x);
+    c.fillStyle='rgba(111,207,151,.12)';c.strokeStyle='rgba(111,207,151,.6)';c.lineWidth=2*dp;c.setLineDash([8,6]);c.beginPath();c.rect(ox+(sx-sw*1.6)*dw,oy+sy*dh,sw*3.2*dw,(hy-sy)*dh);c.fill();c.stroke();c.setLineDash([]);}
+  c.lineWidth=3*dp;c.strokeStyle='rgba(243,208,130,.9)';
+  CONN.forEach(([a,b])=>{if(vis(a)&&vis(b)){c.beginPath();c.moveTo(X(L[a]),Y(L[a]));c.lineTo(X(L[b]),Y(L[b]));c.stroke();}});
+  [0,11,12,13,14,23,24,25,26,27,28].forEach(i=>{if(vis(i)){c.fillStyle='#F3D082';c.beginPath();c.arc(X(L[i]),Y(L[i]),4*dp,0,7);c.fill();}});
+  [15,16].forEach(i=>{c.fillStyle=wcol||'#fff';c.beginPath();c.arc(X(L[i]),Y(L[i]),8*dp,0,7);c.fill();});
+  if(hands)hands.forEach(h=>{c.fillStyle='rgba(255,255,255,.85)';h.forEach(p=>{c.beginPath();c.arc(X(p),Y(p),2*dp,0,7);c.fill();});});
+  return {X,Y,dp,ox,oy,dw,dh};
 }
-function flash(msg){const a=$('#alert');a.textContent=msg;a.classList.add('on');setTimeout(()=>a.classList.remove('on'),2800);}
+function drawLive(L,hl){skeleton(ctx,cv.width,cv.height,vid.videoWidth,vid.videoHeight,L,hl,COL[lastState]);}
+function flash(m){const a=$('#alert');a.textContent=m;a.classList.add('on');setTimeout(()=>a.classList.remove('on'),2800);}
 
-/* compte à rebours puis enregistrement */
 $('#go').onclick=async()=>{
-  $('#go').hidden=true;const c=$('#count');c.classList.add('on');
+  $('#go').hidden=true;$('#chips').innerHTML='';const c=$('#count');c.classList.add('on');
   for(const n of [3,2,1]){c.textContent=n;await new Promise(r=>setTimeout(r,900));}
   c.classList.remove('on');
-  an=AgoraEngine.createAnalyzer({aspect:vid.videoWidth/vid.videoHeight,mode:S.mode,teleprompter:!!S.tpOn,hiddenAlert:+S.hidT,heightCm:S.height||null});
-  transcript=[];t0perf=performance.now()-(vid.currentTime*0);tStart=performance.now();t0perf=tStart;lastVT=-1;
-  $('#stop').hidden=false;$('#tr').innerHTML='<em>En écoute…</em>';
-  startSTT();startTP();
+  an=AgoraEngine.createAnalyzer({aspect:vid.videoWidth/vid.videoHeight,mode:S.mode,teleprompter:!!S.tpOn,hiddenAlert:+S.hidT});
+  transcript=[];frames=[];demoI=0;chunks=[];recMime='';
+  try{if(window.MediaRecorder&&stream.getAudioTracks){const cand=['video/mp4;codecs=avc1,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];const m=cand.find(x=>MediaRecorder.isTypeSupported(x));
+    rec=new MediaRecorder(stream,m?{mimeType:m,videoBitsPerSecond:2500000}:undefined);recMime=rec.mimeType||m||'video/webm';rec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};rec.start(1000);}}catch(e){rec=null;console.error(e);}
+  tStart=performance.now();t0perf=tStart;lastVT=-1;running=true;
+  $('#stop').hidden=false;$('#tr').innerHTML='<em>En écoute…</em>';startSTT();startTP();
 };
 $('#stop').onclick=()=>finish();
-
 function startSTT(){
-  if(!S.stt)return;const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){$('#tr').innerHTML='<em>Transcription non disponible sur ce navigateur.</em>';return;}
-  recWanted=true;rec=new SR();rec.lang='fr-FR';rec.continuous=true;rec.interimResults=true;let shown=0,finalTxt='';
-  rec.onresult=e=>{
-    const t=(performance.now()-t0perf)/1000;an&&an.markSpeech(t);let interim='';
+  if(!S.stt||DEMO)return;const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return;
+  recWanted=true;sttObj=new SR();const x=sttObj;x.lang='fr-FR';x.continuous=true;x.interimResults=true;let finalTxt='';
+  x.onresult=e=>{const t=(performance.now()-t0perf)/1000;an&&an.markSpeech(t);let interim='';
     for(let i=e.resultIndex;i<e.results.length;i++){const r=e.results[i],tx=r[0].transcript;
-      if(r.isFinal){const ws=tx.trim().split(/\s+/);const dt=Math.min(ws.length*0.35,t);ws.forEach((w,k)=>{const tt=t-dt+(k+1)*dt/ws.length;an.addWord(w,tt);transcript.push({w,t:tt});});finalTxt+=tx+' ';}
-      else interim+=tx;}
-    $('#tr').innerHTML=(finalTxt.slice(-120))+'<em> '+interim+'</em>';
-  };
-  rec.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){recWanted=false;$('#tr').innerHTML='<em>Micro refusé : transcription coupée.</em>';}};
-  rec.onend=()=>{if(recWanted&&running){try{rec.start()}catch(e){}}};
-  try{rec.start()}catch(e){}
+      if(r.isFinal){const ws=tx.trim().split(/\s+/).filter(Boolean);const dt=Math.min(ws.length*0.4,t);ws.forEach((w,k)=>{const tt=t-dt+(k+1)*dt/ws.length;an.addWord(w,tt);transcript.push({w,t:tt});});finalTxt+=tx+' ';}else interim+=tx;}
+    $('#tr').innerHTML=esc(finalTxt.slice(-110))+'<em> '+esc(interim)+'</em>';};
+  x.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){recWanted=false;$('#tr').innerHTML='<em>Transcription coupée.</em>';}};
+  x.onend=()=>{if(recWanted&&running){try{x.start()}catch(e){}}};try{x.start()}catch(e){}
 }
-function startTP(){
-  if(!S.tpOn)return;cancelAnimationFrame(tpRaf);tpY=0;let last=performance.now();const el=$('#tpTxt');
-  const step=n=>{if(!running)return;tpY+=(n-last)/1000*S.tpSpeed;last=n;el.style.transform=`translateY(${-tpY}px)`;tpRaf=requestAnimationFrame(step);};tpRaf=requestAnimationFrame(step);
-}
-function cleanup(){running=false;recWanted=false;cancelAnimationFrame(raf);cancelAnimationFrame(tpRaf);try{rec&&rec.stop()}catch(e){}rec=null;
-  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}vid.srcObject=null;tStart=0;lastVT=-1;
-  try{pose&&pose.close();hand&&hand.close();}catch(e){}pose=hand=null;}
-function finish(){
-  if(!running||!an)return;const r=an.finish();const words=transcript.slice();cleanup();
-  const item={id:Date.now(),date:new Date().toISOString(),r,words,settings:{...S,script:''}};
-  const h=ls.get('agt_hist',[]);h.unshift(item);ls.set('agt_hist',h.slice(0,15));
-  renderReport(item);show('s-rep');
+function startTP(){if(!S.tpOn)return;cancelAnimationFrame(tpRaf);let y=0,last=performance.now();const el=$('#tpTxt');
+  const step=n=>{if(!running)return;y+=(n-last)/1000*S.tpSpeed;last=n;el.style.transform=`translateY(${-y}px)`;tpRaf=requestAnimationFrame(step);};tpRaf=requestAnimationFrame(step);}
+function cleanup(keepModels){running=false;recWanted=false;cancelAnimationFrame(raf);cancelAnimationFrame(tpRaf);try{sttObj&&sttObj.abort()}catch(e){}sttObj=null;
+  try{rec&&rec.state!=='inactive'&&rec.stop()}catch(e){}rec=null;
+  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}vid.srcObject=null;tStart=0;lastVT=-1;$('#rot').classList.remove('on');}
+async function finish(){
+  if(!running||!an)return;running=false;const r=an.finish(),words=transcript.slice(),fr=frames,asp=vid.videoWidth/vid.videoHeight;
+  let blob=null;
+  if(rec&&rec.state!=='inactive'){await new Promise(res=>{rec.onstop=res;try{rec.stop()}catch(e){res()}});}
+  if(chunks.length)blob=new Blob(chunks,{type:recMime||'video/webm'});
+  cleanup();
+  const item={id:Date.now(),date:new Date().toISOString(),r,words,frames:fr,blob,asp,vw:0,vh:0};
+  const meta=ls.get('agt_hist',[]);meta.unshift({id:item.id,date:item.date,score:r.score.total,duree:r.duree,video:!!blob});
+  try{await idb.put(item);}catch(e){console.error(e);item.blob=item.blob;}
+  meta.slice(6).forEach(m=>idb.del(m.id));ls.set('agt_hist',meta.slice(0,6));
+  openReport(item);
 }
 
-/* ---- rapport ---- */
-const fmt=t=>Math.floor(t/60)+':'+String(Math.floor(t%60)).padStart(2,'0');
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function renderReport(it){
-  const r=it.r;const el=$('#rep');
+/* ---- rapport : la vidéo, les moments à corriger, le contexte ---- */
+let pb=null;
+function stopPlayback(){if(pb){cancelAnimationFrame(pb.raf);try{pb.v.pause()}catch(e){}if(pb.url)URL.revokeObjectURL(pb.url);pb=null;}}
+function nearest(fr,t){let lo=0,hi=fr.length-1;if(!hi&&!fr.length)return null;while(lo<hi){const m=(lo+hi)>>1;if(fr[m][0]<t)lo=m+1;else hi=m;}const a=fr[Math.max(0,lo-1)],b=fr[lo];return Math.abs(a[0]-t)<Math.abs(b[0]-t)?a:b;}
+function toLM(f){return f[1].map(p=>({x:p[0]/1000,y:p[1]/1000,visibility:p[2]/100}));}
+function openReport(it){
+  stopPlayback();show('s-rep');const r=it.r,dur=Math.max(1,r.duree);
+  const sevCls=s=>s>=3?'':(s===2?'':'s1');
+  const card=(i,kind)=>{const cls=kind==='n'?'n':kind==='g'?'s0':(i.sev>=2?'':'s1');
+    return `<div class="iss ${cls}" data-id="${i.id}"><button class="play" data-t0="${i.t0}" data-t1="${i.t1}">▶ ${fmt(i.t0)}${i.t1-i.t0>1?'–'+fmt(i.t1):''}</button><h4>${esc(i.title)}</h4>
+      <p>${esc(i.what)}</p>${i.ctx?`<p class="w">${esc(i.ctx)}</p>`:''}${i.why?`<p class="w">${esc(i.why)}</p>`:''}${i.fix?`<p class="f">→ ${esc(i.fix)}</p>`:''}</div>`;};
+  const pri=r.issues.filter(i=>r.priorites.includes(i.id));
+  const marks=[...r.issues.map(i=>[i,i.sev>=2?'i-bad':'i-mid']),...r.good.map(i=>[i,'i-good']),...r.neutral.map(i=>[i,'i-neu'])];
+  const mk=marks.map(([i,c])=>`<i class="${c}" data-t0="${i.t0}" style="left:${100*i.t0/dur}%;width:${Math.max(0.8,100*(i.t1-i.t0)/dur)}%"></i>`).join('');
   const tlh=r.timeline.map(k=>`<i class="c-${k}"></i>`).join('');
-  // transcription annotée
-  const marks=[];
-  r.events.forEach(e=>{const m={geste:['g','geste'],visage:['w','main au visage'],croises:['w','bras croisés'],deplacement:['m','déplacement'],cachees:['w','mains cachées'],'pouce-haut':['g','pouce levé'],'pouce-bas':['w','pouce baissé'],'oui-tete':['m','tête oui'],'non-tete':['m','tête non'],doigts:['g',(e.data||'')+' doigt(s)']}[e.type];if(m)marks.push({t:e.t,c:m[0],l:m[1]});});
-  r.contradictions.forEach(c=>marks.push({t:c.t,c:'w',l:(c.niveau==='contradiction'?'⚠ ':'? ')+c.mot+' + '+c.geste}));
-  marks.sort((a,b)=>a.t-b.t);
-  let tr='',mi=0;const t0=it.words.length?it.words[0].t:0;
-  if(it.words.length){it.words.forEach(w=>{const wt=w.t;while(mi<marks.length&&marks[mi].t<=wt){tr+=`<span class="chip ${marks[mi].c}">${esc(marks[mi].l)}</span>`;mi++;}tr+=esc(w.w)+' ';});while(mi<marks.length){tr+=`<span class="chip ${marks[mi].c}">${esc(marks[mi].l)}</span>`;mi++;}}
-  else tr='<span class="note">Pas de transcription pour cet essai. Moments repérés :</span><br>'+marks.map(m=>`<span class="chip ${m.c}">${fmt(m.t)} ${esc(m.l)}</span>`).join('');
-  const d=r.score.detail;
-  el.innerHTML=`
-  <div class="card"><div class="score"><div class="ring" style="--p:${r.score.total}"><div>${r.score.total}<small>/100 · ${r.score.rang}</small></div></div>
-   <div><h3 style="margin:0">Ta gestuelle</h3><div class="note">${fmt(r.duree)} · corps visible ${r.corpsVisiblePct}% du temps</div><div class="note">Score indicatif de test, à affiner avec de vrais essais.</div></div></div></div>
-  <div class="card"><h3>À travailler d’abord</h3><ul class="adv">${r.conseils.map(c=>`<li>${esc(c)}</li>`).join('')}</ul></div>
-  <div class="card"><h3>Zone des mains</h3><div class="tl">${tlh}</div>
-   <div class="leg">${Object.entries({force:'Force',basse:'Basses',haute:'Hautes',cachee:'Cachées',hors:'Hors cadre'}).map(([k,v])=>`<span><i class="c-${k}"></i>${v} ${r.hands[k]}%</span>`).join('')}</div></div>
+  const ann=[];r.issues.forEach(i=>ann.push({t:i.t0,l:i.title}));
+  const trs=it.words.length?it.words.map((w,k)=>`<span class="w" data-t="${w.t}">${esc(w.w)}</span>`).join(' '):'<span class="note">Pas de transcription pour cet essai.</span>';
+  $('#rep').innerHTML=`
+  <div class="card"><div class="score"><div class="ring" style="--p:${r.score.total}"><div>${r.score.total}</div></div>
+    <div><h3 style="margin:0 0 4px">${r.issues.length?r.issues.length+' moment'+(r.issues.length>1?'s':'')+' à revoir':'Rien de grave détecté'}</h3><div class="note">${fmt(r.duree)} · corps visible ${r.corpsVisiblePct} % du temps</div><div class="note">Note indicative sur 100.</div></div></div></div>
+  <div class="card"><h3>Ta vidéo</h3>
+   ${it.blob?`<div class="vwrap"><video id="rv" playsinline controls></video><canvas id="rc"></canvas></div>`:'<p class="note">Vidéo non disponible pour cet essai (enregistrement non pris en charge ou supprimé).</p>'}
+   <div class="mk" id="mk">${mk}<div class="cur" id="cur"></div></div>
+   <div class="leg"><span><i class="i-bad" style="display:inline-block;width:10px;height:10px;border-radius:3px"></i> à corriger</span><span><i class="i-mid" style="display:inline-block;width:10px;height:10px;border-radius:3px"></i> mineur</span><span><i class="i-good" style="display:inline-block;width:10px;height:10px;border-radius:3px"></i> bien</span><span><i class="i-neu" style="display:inline-block;width:10px;height:10px;border-radius:3px"></i> compris par le contexte</span></div>
+   <p class="note">Touche une barre pour aller au moment. Sur la vidéo, ton squelette et le geste concerné s’affichent.</p></div>
+  ${pri.length?`<div class="card"><h3>À corriger d’abord</h3>${pri.map(i=>card(i)).join('')}</div>`:''}
+  <div class="card"><h3>Tous les moments à revoir (${r.issues.length})</h3>${r.issues.length?r.issues.map(i=>card(i)).join(''):'<p class="note">Aucun.</p>'}</div>
+  ${r.good.length?`<div class="card"><h3>Ce qui était bien</h3>${r.good.map(i=>card(i,'g')).join('')}</div>`:''}
+  ${r.neutral.length?`<div class="card"><details><summary>Gestes compris par le contexte (${r.neutral.length})</summary>${r.neutral.map(i=>card(i,'n')).join('')}</details></div>`:''}
+  <div class="card"><h3>Zone des mains seconde par seconde</h3><div class="tl">${tlh}</div>
+   <div class="leg">${Object.entries({force:'Force',basse:'Basses',haute:'Hautes',cachee:'Cachées',hors:'Hors cadre'}).map(([k,v])=>`<span><i class="c-${k}"></i>${v} ${r.hands[k]} %</span>`).join('')}</div></div>
   <div class="card"><h3>Chiffres</h3><div class="grid">
-   <div class="k"><b>${r.hands.auMoinsUneEnForce}%</b><span>au moins une main en zone de force</span></div>
-   <div class="k"><b>${r.hands.pireSerieCachee}s</b><span>plus longue série mains cachées</span></div>
+   <div class="k"><b>${r.hands.auMoinsUneEnForce} %</b><span>au moins une main en zone de force</span></div>
+   <div class="k"><b>${r.hands.enForcePendantParole==null?'—':r.hands.enForcePendantParole+' %'}</b><span>…pendant que tu parles</span></div>
    <div class="k"><b>${r.balancement.perMin}</b><span>balancements / min</span></div>
-   <div class="k"><b>${r.deplacements.total}</b><span>déplacements (${r.deplacements.utiles} utiles, ${r.deplacements.parasites} parasites)</span></div>
-   <div class="k"><b>${r.gestes.parMin}</b><span>gestes / min</span></div>
-   <div class="k"><b>${r.bras_croises_pct}%</b><span>bras croisés</span></div></div></div>
-  <div class="card"><h3>Détail</h3><table>
-   <tr><td>Ancrage des pieds</td><td>${r.ancrage?esc(r.ancrage.label)+' ('+r.ancrage.ratio+'×)':'non mesuré'}</td></tr>
-   <tr><td>Part du temps en balancement</td><td>${r.balancement.pctTime}%</td></tr>
-   <tr><td>Mains au visage</td><td>${r.visage}</td></tr>
-   <tr><td>Tête de côté / vers le bas</td><td>${r.tete.deCotePct}% / ${r.tete.versLeBasPct}%</td></tr>
-   <tr><td>Hochements / secouements</td><td>${r.tete.hochements} / ${r.tete.secouements}</td></tr>
-   <tr><td>Points : mains ${d.mains}/25 · cachées ${d.cachees}/20 · ancrage ${d.ancrage}/20 · déplacements ${d.deplacements}/15 · posture ${d.posture}/10 · tête ${d.tete}/10</td><td></td></tr></table></div>
-  <div class="card"><h3>Ce que tu disais, ce que ton corps faisait</h3><div class="tr2">${tr}</div>
-   ${r.contradictions.length?'<p class="note">⚠ contradiction probable · ? à vérifier toi-même en revoyant le geste. Ce sont des règles sur des mots-clés, pas une compréhension du sens.</p>':''}</div>`;
+   <div class="k"><b>${r.deplacements.total}</b><span>déplacements (${r.deplacements.utiles} bien placés, ${r.deplacements.parasites} parasites)</span></div>
+   <div class="k"><b>${r.gestes.parMin}</b><span>gestes de mains / min</span></div>
+   <div class="k"><b>${r.contacts.total}</b><span>contacts main–tête (${r.contacts.tics} comptés comme tics)</span></div></div>
+   ${r.notes.length?'<ul style="margin:10px 0 0;padding-left:18px">'+r.notes.map(n=>'<li>'+esc(n)+'</li>').join('')+'</ul>':''}</div>
+  <div class="card"><h3>Transcription</h3><div class="trs" id="trs">${trs}</div></div>
+  <div class="card"><details><summary>Comment c’est jugé, et les limites</summary>
+   <p class="note">Les gestes qui touchent la tête (cheveux, visage, cou) sont jugés avec ce que tu disais autour : si tu parlais de ta coiffure, de ta couleur de cheveux ou d’un visage caché, le geste est compris et non compté. Un contact bref n’est pas compté non plus. Un geste sans lien avec le propos, long ou répété, est signalé.</p>
+   <p class="note">Les gestes d’auto-contact sont étudiés depuis <i>Ekman et Friesen (1969)</i>, qui les appellent « adaptateurs ». La recherche les associe plutôt à la tension, à la réflexion ou à l’habitude, mais il s’agit d’associations, pas de preuves, et la sincérité d’une personne ne se lit pas dessus. Voir par exemple <a href="https://www.uh.edu/news-events/stories/2025/october/10152025-spontaneous-facial-self-touching-study.php" target="_blank" rel="noopener">l’étude de l’Université de Houston (2025)</a> et <a href="https://repozytorium.umk.pl/bitstream/handle/item/4029/Self-regulators%20%e2%80%93%20A%20hidden%20dimension%20of%20interaction%20PREPRINT.pdf?sequence=1" target="_blank" rel="noopener">cet article sur les auto-régulateurs</a>.</p>
+   <p class="note">Limites : la caméra donne une image plate. Je compare la taille de ta main à celle de ta tête pour savoir si elle touche vraiment le visage, mais cela reste une estimation (« sûr » ou « probable » est indiqué). Le contexte vient de la transcription et de mots-clés, pas d’une vraie compréhension. Revois toujours la vidéo avant de te juger.</p></details></div>`;
+  if(!it.blob){document.querySelectorAll('.play').forEach(b=>b.disabled=true);return;}
+  const v=$('#rv'),c=$('#rc'),cx=c.getContext('2d'),url=URL.createObjectURL(it.blob);pb={v,url,raf:0,stopAt:null};v.src=url;
+  const fixDur=()=>{if(v.duration===Infinity){v.currentTime=1e7;v.ontimeupdate=()=>{v.ontimeupdate=null;v.currentTime=0;};}};v.onloadedmetadata=fixDur;
+  const act=t=>[...r.issues,...r.neutral].find(i=>t>=i.t0-0.2&&t<=i.t1+0.2);
+  const tick=()=>{pb.raf=requestAnimationFrame(tick);const t=v.currentTime;$('#cur').style.left=(100*t/dur)+'%';
+    if(pb.stopAt!=null&&t>=pb.stopAt){v.pause();pb.stopAt=null;}
+    const rc=c.getBoundingClientRect();if(c.width!==Math.round(rc.width*devicePixelRatio)){c.width=rc.width*devicePixelRatio;c.height=rc.height*devicePixelRatio;}
+    const f=it.frames.length?nearest(it.frames,t):null;const a=act(t);
+    const g=f&&Math.abs(f[0]-t)<0.5?skeleton(cx,c.width,c.height,v.videoWidth||9,v.videoHeight||16,toLM(f),f[2]?f[2].map(h=>h.map(p=>({x:p[0]/1000,y:p[1]/1000}))):null,a&&(a.kind==='cachees')?'#E8553B':'#6FCF97'):(cx.clearRect(0,0,c.width,c.height),null);
+    if(a){const bad=r.issues.includes(a);cx.fillStyle=bad?'rgba(181,48,31,.9)':'rgba(90,60,55,.9)';const h=34*devicePixelRatio;cx.fillRect(0,0,c.width,h);cx.fillStyle='#fff';cx.font=`600 ${14*devicePixelRatio}px sans-serif`;cx.fillText(a.title,10*devicePixelRatio,22*devicePixelRatio);
+      if(g&&f&&a.zone){const L=f[1];const n=L[0],ex=(L[7][0]+L[8][0])/2000,cxn=n[0]/1000,cyn=(L[2][1]+L[5][1])/2000;cx.strokeStyle=bad?'#E8553B':'#B0A0A0';cx.lineWidth=4*devicePixelRatio;cx.beginPath();cx.ellipse(g.ox+cxn*g.dw,g.oy+(cyn-0.01)*g.dh,Math.abs(L[7][0]-L[8][0])/1000*g.dw*1.2+14,Math.abs(L[7][0]-L[8][0])/1000*g.dw*1.5+18,0,0,7);cx.stroke();}
+      if(g&&f&&a.kind==='cachees'){[15,16].forEach(i=>{cx.strokeStyle='#E8553B';cx.lineWidth=4*devicePixelRatio;cx.beginPath();cx.arc(g.X({x:f[1][i][0]/1000}),g.Y({y:f[1][i][1]/1000}),16*devicePixelRatio,0,7);cx.stroke();});}}
+    document.querySelectorAll('#trs .w').forEach(s=>s.classList.toggle('hl',Math.abs(+s.dataset.t-t)<0.45));};
+  tick();
+  const seek=(t0,t1)=>{v.currentTime=Math.max(0,t0-1);pb.stopAt=t1!=null?Math.min(dur,t1+1.2):null;v.play().catch(()=>{});$('#rv').scrollIntoView({behavior:'smooth',block:'center'});};
+  document.querySelectorAll('.play').forEach(b=>b.onclick=()=>seek(+b.dataset.t0,+b.dataset.t1));
+  $('#mk').onclick=e=>{const rc=$('#mk').getBoundingClientRect(),t=(e.clientX-rc.left)/rc.width*dur;const m=e.target.closest('i[data-t0]');if(m)seek(+m.dataset.t0,null);else{v.currentTime=t;}};
+  document.querySelectorAll('#trs .w').forEach(s=>s.onclick=()=>{v.currentTime=Math.max(0,+s.dataset.t-.5);v.play().catch(()=>{});});
 }
+
+/* ---- historique ---- */
 function histRender(){const h=ls.get('agt_hist',[]);const L=$('#histList');
-  L.innerHTML=h.length?h.map((x,i)=>`<button data-i="${i}"><b>${new Date(x.date).toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</b> — ${x.r.score.total}/100 (${x.r.score.rang}) · ${fmt(x.r.duree)}</button>`).join(''):'<p class="note">Aucun essai pour l’instant.</p>';
-  L.querySelectorAll('button').forEach(b=>b.onclick=()=>{renderReport(h[b.dataset.i]);show('s-rep');});}
+  L.innerHTML=h.length?h.map(x=>`<button data-id="${x.id}"><b>${new Date(x.date).toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</b> — ${x.score}/100 · ${fmt(x.duree)}${x.video?' · vidéo':''}</button>`).join(''):'<p class="note">Aucun essai pour l’instant.</p>';
+  L.querySelectorAll('button').forEach(b=>b.onclick=async()=>{try{const it=await idb.get(+b.dataset.id);if(it)openReport(it);else alert('Cet essai n’est plus disponible.');}catch(e){}});}
+$('#histBtn').onclick=()=>{histRender();show('s-hist');};
+addEventListener('pagehide',()=>cleanup());
 </script>
 </body></html>
