@@ -167,7 +167,7 @@ svg.chart{width:100%;height:90px;background:var(--ink);border-radius:8px;cursor:
 
 <script src="engine.js"></script><script src="analysis.js"></script><script src="voice.js"></script>
 <script type="module">
-const APP_VERSION='0.4.0';
+const APP_VERSION='0.4.1';
 const DEMO=/[?&]demo=1/.test(location.search);
 const $=s=>document.querySelector(s);
 const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
@@ -253,14 +253,14 @@ const vid=$('#vid'),proc=$('#proc'),pctx=proc.getContext('2d'),cv=$('#cv'),ctx=c
 let aCtx=null,aProc=null,aSrc=null,pcmChunks=[],aSR=48000;
 function startPCM(){pcmChunks=[];try{if(!stream||!stream.getAudioTracks().length)return;const AC=window.AudioContext||window.webkitAudioContext;aCtx=new AC();aSR=aCtx.sampleRate;aSrc=aCtx.createMediaStreamSource(new MediaStream(stream.getAudioTracks()));aProc=aCtx.createScriptProcessor(4096,1,1);aProc.onaudioprocess=e=>{if(running)pcmChunks.push(new Float32Array(e.inputBuffer.getChannelData(0)));};const g=aCtx.createGain();g.gain.value=0;aSrc.connect(aProc);aProc.connect(g);g.connect(aCtx.destination);aCtx.resume&&aCtx.resume();}catch(e){console.error(e);}}
 function stopPCM(){try{aProc&&aProc.disconnect();aSrc&&aSrc.disconnect();aCtx&&aCtx.close();}catch(e){}aProc=aSrc=aCtx=null;}
-let raf=0,running=false,an=null,rec=null,chunks=[],recMime='',tStart=0,t0perf=0,transcript=[],frames=[],lastAlert=0,tpRaf=0,recWanted=false,lastVT=-1,frameN=0,lastState='force',lastHands=null,lastHandsT=-9,lastFace=null,lastFaceT=-9,sttObj=null,rotUser=0;
+let raf=0,running=false,an=null,rec=null,chunks=[],recMime='',tStart=0,t0perf=0,transcript=[],frames=[],lastAlert=0,tpRaf=0,recWanted=false,lastVT=-1,frameN=0,lastState='force',lastHands=null,lastHandsT=-9,lastFace=null,lastFaceT=-9,sttObj=null,rotUser=0,calib=false,calibT=0,calibTries=0,calibOk=0;
 const PW=()=>S.orient==='v'?[720,1280]:[1280,720];
 function applyOrient(){const [W,H]=PW();if(proc.width!==W||proc.height!==H){proc.width=W;proc.height=H;}$('#cam').classList.toggle('land',S.orient==='h');$('#orBtn').textContent=S.orient==='v'?'Vertical':'Horizontal';resize();}
 function drawProc(){const vw=vid.videoWidth,vh=vid.videoHeight;if(!vw)return;const [W,H]=PW();
   const auto=((vw>vh)===(S.orient==='v'))?1:0,q=(auto+rotUser)%4,sw=(q%2)?vh:vw,sh=(q%2)?vw:vh,sc=Math.max(W/sw,H/sh);
   pctx.save();pctx.fillStyle='#000';pctx.fillRect(0,0,W,H);pctx.translate(W/2,H/2);pctx.rotate(q*Math.PI/2);pctx.drawImage(vid,-vw*sc/2,-vh*sc/2,vw*sc,vh*sc);pctx.restore();}
 function openRun(){
-  show('s-run');rotUser=0;
+  show('s-run');rotUser=0;calib=false;calibT=0;calibTries=0;calibOk=0;
   $('#cam').classList.toggle('mir',S.cam==='user'&&!S.lens);
   const tp=$('#tp');tp.classList.toggle('on',!!S.tpOn);tp.classList.toggle('ovl',S.tpOn&&S.tp==='ovl');
   $('#tpTxt').textContent=S.script||'(aucun texte)';$('#tpTxt').style.setProperty('--tps',S.tpSize+'px');$('#tpTxt').style.transform='translateY(0)';
@@ -270,8 +270,8 @@ function openRun(){
 }
 addEventListener('resize',()=>{if($('#s-run').classList.contains('on'))resize();});
 function resize(){const r=$('#cam').getBoundingClientRect();cv.width=Math.max(2,r.width*devicePixelRatio);cv.height=Math.max(2,r.height*devicePixelRatio);}
-$('#orBtn').onclick=()=>{S.orient=S.orient==='v'?'h':'v';save();rotUser=0;applyOrient();};
-$('#rotBtn').onclick=()=>{rotUser=(rotUser+1)%4;};
+$('#orBtn').onclick=()=>{S.orient=S.orient==='v'?'h':'v';save();rotUser=0;calib=false;calibT=0;calibTries=0;calibOk=0;applyOrient();};
+$('#rotBtn').onclick=()=>{rotUser=(rotUser+1)%4;calib=true;};
 $('#quit').onclick=()=>{cleanup();show('s-set');};
 
 /* synthèse de démonstration (?demo=1) : un corps simulé, pour tester tout le parcours sans modèle */
@@ -307,6 +307,10 @@ function loop(){
       if(frameN%2===0){const hr=hand.detectForVideo(proc,now);lastHands=hr.landmarks&&hr.landmarks.length?hr.landmarks:null;lastHandsT=now;}
       else{const fr=face.detectForVideo(proc,now);lastFace=fr.faceLandmarks&&fr.faceLandmarks[0]?fr.faceLandmarks[0]:null;lastFaceT=now;}}catch(e){return;}
     L=pr&&pr.landmarks&&pr.landmarks[0];hl=(now-lastHandsT<350)?lastHands:null;fl=(now-lastFaceT<350)?lastFace:null;}
+  if(!DEMO&&!running&&!calib&&fl&&now-calibT>700){calibT=now;
+    const W=proc.width,H=proc.height,a=fl[33],b=fl[263],c=fl[152],ex=(b.x-a.x)*W,ey=(b.y-a.y)*H,my=((a.y+b.y)/2)*H,cy=c.y*H;
+    const up=Math.abs(ey)<0.45*Math.abs(ex)&&cy-my>0.8*Math.hypot(ex,ey)*0.9;
+    if(up){if(++calibOk>=2)calib=true;}else{calibOk=0;if(++calibTries<=3)rotUser=(rotUser+1)%4;else calib=true;}}
   const t=(now-t0perf)/1000;
   if(running&&an&&tStart){
     an.setOpts({aspect:proc.width/proc.height});
