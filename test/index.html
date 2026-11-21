@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#2E0B09">
 <title>Agora Test — Gestuelle</title>
 <style>
@@ -58,16 +58,16 @@ input[type=range]{accent-color:var(--gold);width:55%}
 .cam.land{aspect-ratio:16/9;flex:none;width:100%;max-height:100%}
 .cam.mir canvas{transform:scaleX(-1)}
 .hud{position:absolute;left:0;right:0;top:0;padding:max(10px,env(safe-area-inset-top)) 12px 0;display:flex;justify-content:space-between;gap:8px;z-index:4;pointer-events:none}
-.pill{background:rgba(31,20,22,.78);border:1px solid rgba(255,255,255,.12);border-radius:99px;padding:5px 12px;font-size:14px;font-variant-numeric:tabular-nums}
+.pill{background:rgba(31,20,22,.78);border:1px solid rgba(255,255,255,.12);border-radius:99px;padding:4px 10px;font-size:12px;font-variant-numeric:tabular-nums}
 .pill.rec:before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--hot);margin-right:7px;animation:br 1s infinite}
 .chips{position:absolute;left:10px;top:calc(max(10px,env(safe-area-inset-top)) + 38px);z-index:4;display:flex;flex-direction:column;gap:5px}
-.fc{font-size:12px;border-radius:99px;padding:3px 10px;background:rgba(31,20,22,.78);border:1px solid rgba(255,255,255,.12)}.fc.ok{color:var(--ok)}.fc.ko{color:#FF9C85}
+.fc{font-size:11px;border-radius:99px;padding:2px 8px;background:rgba(31,20,22,.78);border:1px solid rgba(255,255,255,.12)}.fc.ok{color:var(--ok)}.fc.ko{color:#FF9C85}
 .alert{position:absolute;left:12px;right:12px;bottom:90px;z-index:4;background:rgba(181,48,31,.92);border-radius:12px;padding:10px 14px;font-weight:600;text-align:center;opacity:0;transition:.25s;pointer-events:none}.alert.on{opacity:1}
 .live{position:absolute;left:0;right:0;bottom:0;z-index:4;padding:10px 14px;background:linear-gradient(transparent,rgba(0,0,0,.85));min-height:60px}
-.live .tr{font-size:16px;min-height:44px;color:#fff}.live .tr em{color:var(--mut);font-style:normal}
+.live .tr{font-size:13px;min-height:44px;color:#fff}.live .tr em{color:var(--mut);font-style:normal}
 .bar{flex:none;width:100%;background:#000;padding:10px 12px max(12px,env(safe-area-inset-bottom))}
 .cset{position:absolute;left:10px;right:10px;bottom:84px;z-index:12;background:rgba(20,8,6,.96);border:1px solid rgba(217,164,58,.4);border-radius:14px;padding:6px 14px;max-height:60%;overflow:auto}.cset .row small{display:block;color:var(--mut);font-size:12px}.cset select{max-width:55%}
-.ctl{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.ctl .btn{padding:12px 16px;font-size:15px}
+.ctl{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.ctl{flex-wrap:nowrap;gap:6px}.ctl .btn{padding:11px 10px;font-size:13px;white-space:nowrap}
 .count{position:absolute;inset:0;z-index:6;display:none;align-items:center;justify-content:center;font:700 140px Didot,Georgia,serif;color:var(--lgold);background:rgba(0,0,0,.55)}.count.on{display:flex}
 .rot{position:fixed;inset:0;z-index:20;background:var(--deep);display:none;flex-direction:column;gap:14px;align-items:center;justify-content:center;text-align:center;padding:30px}
 .rot.on{display:flex}.rot b{font:600 28px Didot,Georgia,serif;color:var(--lgold)}
@@ -175,7 +175,7 @@ svg.chart{width:100%;height:90px;background:var(--ink);border-radius:8px;cursor:
 
 <script src="engine.js"></script><script src="analysis.js"></script><script src="voice.js"></script>
 <script type="module">
-const APP_VERSION='0.5.1';
+const APP_VERSION='0.5.2';
 const DEMO=/[?&]demo=1/.test(location.search);
 const $=s=>document.querySelector(s);
 const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
@@ -259,9 +259,9 @@ async function loadModels(){
 /* ---- session ---- */
 const vid=$('#vid'),proc=$('#proc'),pctx=proc.getContext('2d'),cv=$('#cv'),ctx=cv.getContext('2d');
 let aCtx=null,aProc=null,aSrc=null,pcmChunks=[],aSR=48000;
-function startPCM(){pcmChunks=[];try{if(!stream||!stream.getAudioTracks().length)return;const AC=window.AudioContext||window.webkitAudioContext;aCtx=new AC();aSR=aCtx.sampleRate;aSrc=aCtx.createMediaStreamSource(new MediaStream(stream.getAudioTracks()));aProc=aCtx.createScriptProcessor(4096,1,1);aProc.onaudioprocess=e=>{if(running)pcmChunks.push(new Float32Array(e.inputBuffer.getChannelData(0)));};const g=aCtx.createGain();g.gain.value=0;aSrc.connect(aProc);aProc.connect(g);g.connect(aCtx.destination);aCtx.resume&&aCtx.resume();}catch(e){console.error(e);}}
+function startPCM(){stopPCM();pcmChunks=[];try{if(!stream||!stream.getAudioTracks().length)return;const AC=window.AudioContext||window.webkitAudioContext;aCtx=new AC();aSR=aCtx.sampleRate;aSrc=aCtx.createMediaStreamSource(new MediaStream(stream.getAudioTracks()));aProc=aCtx.createScriptProcessor(4096,1,1);aProc.onaudioprocess=e=>{if(running)pcmChunks.push(new Float32Array(e.inputBuffer.getChannelData(0)));};const g=aCtx.createGain();g.gain.value=0;aSrc.connect(aProc);aProc.connect(g);g.connect(aCtx.destination);aCtx.resume&&aCtx.resume();}catch(e){console.error(e);}}
 function stopPCM(){try{aProc&&aProc.disconnect();aSrc&&aSrc.disconnect();aCtx&&aCtx.close();}catch(e){}aProc=aSrc=aCtx=null;}
-let raf=0,running=false,an=null,rec=null,chunks=[],recMime='',tStart=0,t0perf=0,transcript=[],frames=[],lastAlert=0,tpRaf=0,recWanted=false,lastVT=-1,frameN=0,lastState='force',lastHands=null,lastHandsT=-9,lastFace=null,lastFaceT=-9,sttObj=null,rotUser=0,calib=false,calibT=0,calibTries=0,calibOk=0;
+let raf=0,running=false,an=null,rec=null,chunks=[],recMime='',tStart=0,t0perf=0,transcript=[],frames=[],lastAlert=0,tpRaf=0,recWanted=false,lastVT=-1,frameN=0,lastState='force',lastHands=null,lastHandsT=-9,lastFace=null,lastFaceT=-9,sttObj=null,calibMiss=0,rotUser=0,calib=false,calibT=0,calibTries=0,calibOk=0;
 let srcA=9/16;
 const PW=()=>{const a=S.fit==='native'?Math.min(.75,Math.max(9/16,srcA)):9/16,ev=n=>Math.round(n/2)*2;return S.orient==='v'?[720,ev(720/a)]:[ev(1280),ev(1280*a)];};
 function applyOrient(){if(vid.videoWidth)srcA=Math.min(vid.videoWidth,vid.videoHeight)/Math.max(vid.videoWidth,vid.videoHeight);const [W,H]=PW();$('#cam').style.aspectRatio=W+'/'+H;if(proc.width!==W||proc.height!==H){proc.width=W;proc.height=H;}$('#cam').classList.toggle('land',S.orient==='h');$('#orBtn').textContent=S.orient==='v'?'Vertical':'Horizontal';resize();}
@@ -317,6 +317,12 @@ const DEMO_WORDS=[[3,'bonjour'],[3.4,'à'],[3.7,'tous'],[4.2,'aujourd’hui'],[4
 (()=>{const extra='parce que premièrement soixante dix pour cent des jeunes osent rarement parler en public. Par exemple en 2024 une étude montre que deux jeunes sur trois ont peur. Alors imaginez ce que je ressens quand je raconte mon histoire. Euh je pense que nous devons agir ensemble. Donc voici trois raisons. Pourquoi pas vous ?'.split(' ');extra.forEach((w,i)=>DEMO_WORDS.push([9.2+i*.42,w]));DEMO_WORDS.sort((a,b)=>a[0]-b[0]);})();
 let demoI=0;
 
+/* nombre de quarts de tour (sens horaire) à appliquer pour que la tête soit en haut ; null si on ne voit personne */
+function headTurns(fl,L){const W=proc.width,H=proc.height;let v=null;
+  if(fl&&fl[33]&&fl[263]&&fl[152]){v=[((fl[33].x+fl[263].x)/2-fl[152].x)*W,((fl[33].y+fl[263].y)/2-fl[152].y)*H];}
+  else if(L&&L[0]&&L[11]&&L[12]&&L[11].visibility>.5&&L[12].visibility>.5){v=[(L[0].x-(L[11].x+L[12].x)/2)*W,(L[0].y-(L[11].y+L[12].y)/2)*H];}
+  return v?turnsFor(v[0],v[1]):null;}
+function turnsFor(x,y){if(Math.abs(y)>=Math.abs(x))return y<0?0:2;return x>0?3:1;}
 function loop(){
   raf=requestAnimationFrame(loop);
   if(vid.readyState<2)return;
@@ -328,10 +334,7 @@ function loop(){
       if(frameN%2===0){const hr=hand.detectForVideo(proc,now);lastHands=hr.landmarks&&hr.landmarks.length?hr.landmarks:null;lastHandsT=now;}
       else{const fr=face.detectForVideo(proc,now);lastFace=fr.faceLandmarks&&fr.faceLandmarks[0]?fr.faceLandmarks[0]:null;lastFaceT=now;}}catch(e){return;}
     L=pr&&pr.landmarks&&pr.landmarks[0];hl=(now-lastHandsT<350)?lastHands:null;fl=(now-lastFaceT<350)?lastFace:null;}
-  if(!DEMO&&!running&&!calib&&fl&&now-calibT>700){calibT=now;
-    const W=proc.width,H=proc.height,a=fl[33],b=fl[263],c=fl[152],ex=(b.x-a.x)*W,ey=(b.y-a.y)*H,my=((a.y+b.y)/2)*H,cy=c.y*H;
-    const up=Math.abs(ey)<0.45*Math.abs(ex)&&cy-my>0.8*Math.hypot(ex,ey)*0.9;
-    if(up){if(++calibOk>=2)calib=true;}else{calibOk=0;if(++calibTries<=3)rotUser=(rotUser+1)%4;else calib=true;}}
+  if(!DEMO&&!running&&!calib&&now-calibT>700){calibT=now;const k=headTurns(fl,L);if(k===null){if(++calibMiss>=3){calibMiss=0;if(++calibTries<=6)rotUser=(rotUser+1)%4;else calib=true;}}else{calibMiss=0;if(k===0){if(++calibOk>=2)calib=true;}else{calibOk=0;if(++calibTries<=6)rotUser=(rotUser+k)%4;else calib=true;}}}
   const t=(now-t0perf)/1000;
   if(running&&an&&tStart){
     an.setOpts({aspect:proc.width/proc.height});
@@ -371,6 +374,7 @@ function drawLive(L,hl,fl){skeleton(ctx,cv.width,cv.height,proc.width,proc.heigh
 function flash(m){const a=$('#alert');a.textContent=m;a.classList.add('on');setTimeout(()=>a.classList.remove('on'),2800);}
 
 $('#go').onclick=async()=>{
+  startPCM();
   $('#go').hidden=true;$('#chips').innerHTML='';$('#camSet').hidden=true;const c=$('#count');c.classList.add('on');
   an=AgoraEngine.createAnalyzer({aspect:proc.width/proc.height,mode:S.mode,teleprompter:!!S.tpOn,hiddenAlert:+S.hidT});transcript=[];frames=[];demoI=0;chunks=[];recMime='';t0perf=performance.now();
   $('#tr').innerHTML='<em>Parle dès maintenant, je t’écoute…</em>';startSTT();
@@ -379,7 +383,7 @@ $('#go').onclick=async()=>{
   $('#orBtn').hidden=true;$('#rotBtn').hidden=true;$('#camBtn').hidden=true;$('#camSet').hidden=true;
   try{if(window.MediaRecorder&&stream.getAudioTracks){const cand=['video/mp4;codecs=avc1,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];const m=cand.find(x=>MediaRecorder.isTypeSupported(x));
     const rs=new MediaStream([...proc.captureStream(30).getVideoTracks(),...stream.getAudioTracks()]);rec=new MediaRecorder(rs,m?{mimeType:m,videoBitsPerSecond:2500000}:undefined);recMime=rec.mimeType||m||'video/webm';rec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};rec.start(1000);}}catch(e){rec=null;console.error(e);}
-  tStart=performance.now();t0perf=tStart;lastVT=-1;running=true;startPCM();
+  tStart=performance.now();t0perf=tStart;lastVT=-1;running=true;
   $('#stop').hidden=false;startTP();
 };
 $('#stop').onclick=()=>finish();
@@ -407,7 +411,12 @@ async function finish(){
   cleanup();
   const c=$('#count');c.textContent='Analyse de la voix…';c.style.fontSize='26px';c.classList.add('on');
   const item={id:Date.now(),date:new Date().toISOString(),r,words,frames:fr,blob,asp,fcp};
-  try{const pcm=AgoraVoice.resample16(pcmC,sr);item.sig=pcm.length>=32000?await AO_ANALYSIS.analyzeSignal(pcm):null;}catch(e){console.error(e);item.sig=null;}
+  const rmsOf=a=>{let q=0;for(let i=0;i<a.length;i+=7)q+=a[i]*a[i];return Math.sqrt(q/Math.max(1,a.length/7));};
+  let pcm=null,src='micro';
+  try{pcm=AgoraVoice.resample16(pcmC,sr);}catch(e){console.error(e);}
+  if((!pcm||pcm.length<32000||rmsOf(pcm)<0.002)&&blob){try{const AC=window.AudioContext||window.webkitAudioContext,ac=new AC(),buf=await ac.decodeAudioData(await blob.arrayBuffer());const p2=AgoraVoice.resample16([buf.getChannelData(0)],buf.sampleRate);try{ac.close()}catch(e){}if(p2&&p2.length>=32000&&rmsOf(p2)>(pcm?rmsOf(pcm):0)){pcm=p2;src='vidéo';}}catch(e){console.error(e);}}
+  item.audioInfo={sec:pcm?Math.round(pcm.length/160)/100:0,rms:pcm?Math.round(rmsOf(pcm)*10000)/10000:0,src,micro:pcmC.length};
+  try{item.sig=pcm&&pcm.length>=32000?await AO_ANALYSIS.analyzeSignal(pcm):null;}catch(e){console.error(e);item.sig=null;}
   analyseText(item,words.map(w=>w.w).join(' '));
   c.classList.remove('on');c.style.fontSize='';
   const meta=ls.get('agt_hist',[]);meta.unshift({id:item.id,date:item.date,score:r.score.total,duree:r.duree,video:!!blob});
@@ -468,7 +477,7 @@ function openReport(it){
    <p class="note">Les gestes qui touchent la tête (cheveux, visage, cou) sont jugés avec ce que tu disais autour : si tu parlais de ta coiffure, de ta couleur de cheveux ou d’un visage caché, le geste est compris et non compté. Un contact bref n’est pas compté non plus. Un geste sans lien avec le propos, long ou répété, est signalé.</p>
    <p class="note">Les gestes d’auto-contact sont étudiés depuis <i>Ekman et Friesen (1969)</i>, qui les appellent « adaptateurs ». La recherche les associe plutôt à la tension, à la réflexion ou à l’habitude, mais il s’agit d’associations, pas de preuves, et la sincérité d’une personne ne se lit pas dessus. Voir par exemple <a href="https://www.uh.edu/news-events/stories/2025/october/10152025-spontaneous-facial-self-touching-study.php" target="_blank" rel="noopener">l’étude de l’Université de Houston (2025)</a> et <a href="https://repozytorium.umk.pl/bitstream/handle/item/4029/Self-regulators%20%e2%80%93%20A%20hidden%20dimension%20of%20interaction%20PREPRINT.pdf?sequence=1" target="_blank" rel="noopener">cet article sur les auto-régulateurs</a>.</p>
    <p class="note">Limites : la caméra donne une image plate. Je compare la taille de ta main à celle de ta tête pour savoir si elle touche vraiment le visage, mais cela reste une estimation (« sûr » ou « probable » est indiqué). Le contexte vient de la transcription et de mots-clés, pas d’une vraie compréhension. Revois toujours la vidéo avant de te juger.</p></details></div></div>
-  <div id="tab-v" hidden>${AgoraVoice.voiceHtml(it.sig,it.txt,it.advice)}</div>
+  <div id="tab-v" hidden>${AgoraVoice.voiceHtml(it.sig,it.txt,it.advice)}${audioDiag(it)}</div>
   <div id="tab-s" hidden>${AgoraVoice.speechHtml(it.txt,it.pil,it.text,AO_ANALYSIS)}</div>`;
   bindTabs(it);
   if(!it.blob){document.querySelectorAll('.play').forEach(b=>b.disabled=true);return;}
@@ -492,6 +501,7 @@ function openReport(it){
   document.querySelectorAll('#trs .w').forEach(s=>s.onclick=()=>{v.currentTime=Math.max(0,+s.dataset.t-.5);v.play().catch(()=>{});});
 }
 
+function audioDiag(it){const a=it.audioInfo;if(!a)return '';return `<p class="note small">Son capté : ${a.sec} s, niveau ${a.rms} (source : ${a.src}). ${a.rms<0.002?'Le niveau est quasi nul : le micro a été coupé pendant la transcription vocale du téléphone.':''}</p>`;}
 function bindTabs(it){
   const sw=t=>{document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));['g','v','s'].forEach(k=>{const e=$('#tab-'+k);if(e)e.hidden=k!==t;});};
   document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>sw(b.dataset.tab));
@@ -501,7 +511,7 @@ function bindTabs(it){
     let pos=0;el.innerHTML=ws.length?ws.map(w=>{const k=kAt[pos];pos+=w.w.length+1;const h=`<span class="w" data-t="${w.t}">${esc(w.w)}</span>`;return k?`<mark class="${k}">${h}</mark>`:h;}).join(' '):'<span class="note">Pas de transcription pour cet essai.</span>';
     el.querySelectorAll('.w').forEach(sp=>sp.onclick=()=>window.__goSeek(+sp.dataset.t));};
   const hook=()=>{fillTrs();document.querySelectorAll('svg.chart').forEach(c=>c.onclick=e=>{const rc=c.getBoundingClientRect();window.__goSeek((e.clientX-rc.left)/rc.width*(+c.dataset.dur));});
-    const b=$('#reAn');if(b)b.onclick=()=>{const txt=$('#trEdit').value;analyseText(it,txt);$('#tab-s').innerHTML=AgoraVoice.speechHtml(it.txt,it.pil,it.text,AO_ANALYSIS);$('#tab-v').innerHTML=AgoraVoice.voiceHtml(it.sig,it.txt,it.advice);it.words=it.words.length&&txt.trim()===it.words.map(w=>w.w).join(' ')?it.words:txt.trim().split(/\s+/).filter(Boolean).map((w,i,a)=>({w,t:(it.r.duree*i/Math.max(1,a.length))}));hook();idb.put(it).catch(()=>{});};};
+    const b=$('#reAn');if(b)b.onclick=()=>{const txt=$('#trEdit').value;analyseText(it,txt);$('#tab-s').innerHTML=AgoraVoice.speechHtml(it.txt,it.pil,it.text,AO_ANALYSIS);$('#tab-v').innerHTML=AgoraVoice.voiceHtml(it.sig,it.txt,it.advice)+audioDiag(it);it.words=it.words.length&&txt.trim()===it.words.map(w=>w.w).join(' ')?it.words:txt.trim().split(/\s+/).filter(Boolean).map((w,i,a)=>({w,t:(it.r.duree*i/Math.max(1,a.length))}));hook();idb.put(it).catch(()=>{});};};
   hook();
 }
 /* ---- historique ---- */
