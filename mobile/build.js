@@ -10,7 +10,7 @@ const RL = f => fs.readFileSync(path.join(__dirname, f), 'utf8');
 const W = (f, s) => fs.writeFileSync(path.join(__dirname, f), s);
 const must = (s, a, b) => { if (!s.includes(a)) throw new Error('retouche introuvable : ' + a.slice(0, 60)); return s.split(a).join(b); };
 
-const parts = ['analysis.js', 'data-orators.js', 'data-eristic.js', 'data-exercises.js', 'data-quiz.js', 'data-themes.js', 'data-objections.js', 'data-ateliers.js', 'discours.js', 'app.js'];
+const parts = ['analysis.js', 'data-orators.js', 'data-eristic.js', 'data-exercises.js', 'data-quiz.js', 'data-themes.js', 'data-objections.js', 'data-ateliers.js', 'discours.js', 'gest-engine.js', 'gest-voice.js', 'gest-ui.js', 'app.js'];
 const shim = "window.AO_DATA = window.AO_DATA || {}; window.AO_DATA.lessons = []; window.AO_DATA.modules = [];";
 let js = [R(parts[0]), shim].concat(parts.slice(1).map(R)).join('\n;\n');
 js = js.replace('/*@@LEVELS@@*/', () => R('levels.js')).replace('/*@@PREP@@*/', () => R('prep.js')).replace('/*@@ERIST@@*/', () => R('erist.js'))
@@ -53,7 +53,8 @@ let html = R('index.template.html');
 html = must(html, '<title>Agora · L’art oratoire</title>', '<title>Agora Studio · by Stephen</title>');
 html = must(html, 'content="Agora, l’art oratoire, by Stephen. Ton coach de prise de parole."', 'content="Agora Studio, by Stephen. S’entraîner à parler, vite et partout."');
 html = must(html, 'name="apple-mobile-web-app-title" content="Agora"', 'name="apple-mobile-web-app-title" content="Agora Studio"');
-html = must(html, "connect-src 'self' data: blob:", "connect-src 'self' data: blob: https://script.google.com https://script.googleusercontent.com");
+html = must(html, "connect-src 'self' data: blob:", "connect-src 'self' data: blob: https://script.google.com https://script.googleusercontent.com https://storage.googleapis.com");
+html = html.replace("script-src 'self';", "script-src 'self' 'wasm-unsafe-eval';");
 html = html.replace(/(['"])ao_/g, '$1am_');
 let man = JSON.parse(R('manifest.template.json'));
 man.name = 'Agora Studio · by Stephen'; man.short_name = 'Agora Studio'; man.description = 'S’entraîner à parler, vite et partout. Agora, by Stephen.'; man.id = './mobile/'; 

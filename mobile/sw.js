@@ -1,5 +1,5 @@
 /* Agora Studio — service worker (généré par build.js, ne pas éditer à la main) */
-const CACHE = 'amob-d1f4fd5a2d';
+const CACHE = 'amob-ae43da7401';
 const FILES = [
  "./",
  "index.html",
@@ -32,6 +32,10 @@ self.addEventListener('fetch', e => {
   const url = new URL(req.url);
   if (url.origin !== location.origin) return;
   if (url.pathname.endsWith('/acces.json')) return; /* toujours en direct */
+  if (url.pathname.indexOf('/gestuelle/vendor/') !== -1) { /* gros fichiers (modèle de vision) : mis en cache à la première utilisation, conservés entre les mises à jour */
+    e.respondWith(caches.open('avendor').then(c => c.match(req).then(r => r || fetch(req).then(n => { if (n.ok) c.put(req, n.clone()); return n; }))));
+    return;
+  }
   if (req.mode === 'navigate') {
     e.respondWith(caches.match('./index.html', { ignoreSearch: true }).then(r => r || fetch(req)));
     return;
