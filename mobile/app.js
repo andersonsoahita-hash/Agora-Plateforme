@@ -1,4 +1,4 @@
-window.AGORA_BUILD='72483a3e15';
+window.AGORA_BUILD='3500c7e0fb';
 /* ============================================================
    Analyse de la voix (signal) et du texte (transcription)
    Tout se calcule dans la page. Aucun audio n'est envoyé nulle part.
@@ -1044,6 +1044,16 @@ window.AO_DATA.exerciseTypes = [
     sujets: ['Qu’est-ce que le bonheur ?', 'Faut-il toujours dire la vérité ?', 'La réussite se mérite-t-elle ?', 'Parler en public est-il un don ?', 'Faut-il apprendre à perdre ?', 'Le luxe est-il utile ?', 'Que vaut une promesse ?'] },
   { id: 'discours', nom: 'Discours complet', modele: 'Ouverture → Plan → 3 parties → Appel', aide: 'Annonce ton plan, finis par une demande.',
     sujets: ['Pourquoi j’ai écrit ce livre', 'Ce que je veux transmettre à ma génération', 'Présenter un projet à un jury', 'Un discours de remerciement'] },
+  { id: 'objection', nom: 'Répondre à une objection', modele: 'Concéder → Recadrer → Preuve → Conclure', aide: 'Reconnais ce qui est juste, déplace la question, appuie-toi sur un cas ou un chiffre dont tu cites la source, puis conclus en une phrase. 45 secondes.',
+    sujets: ['« Ta cantine coûte trop cher, non ? »', '« Les cours de l’après-midi ne servent à rien. »', '« Ce projet va coûter plus que prévu, tout le monde le sait. »', '« Pourquoi ne l’avoir pas fait plus tôt ? »', '« Ça ne marche que pour les gens qui ont déjà de l’argent. »', '« Les transports de ta ville sont pires qu’ailleurs. »', '« Tu cites un chiffre, mais d’où vient-il ? »', '« Un seul contre-exemple suffit à te contredire. »'] },
+  { id: 'reprise', nom: 'Reprendre la parole', modele: 'Phrase-pont → Numéroter → Finir', aide: 'On te coupe (voix d’un proche ou d’un enregistrement). Reprends sans hausser la voix : « je voudrais terminer mon raisonnement », puis « premièrement, deuxièmement ».',
+    sujets: ['Tu présentes un projet et on te coupe après vingt secondes', 'Un collègue t’interrompt pour corriger un détail', 'Quelqu’un parle en même temps que toi dans une réunion', 'Tu expliques ta position et on te dit « on a compris »'] },
+  { id: 'interview', nom: 'Mini-interview hostile', modele: 'Chiffre → Piège → Personnel', aide: 'Trois questions de suite : une sur un chiffre, une piégeuse, une personnelle. Réponds à chacune sans esquiver ni attaquer.',
+    sujets: ['Combien ça coûte ? Pourquoi avoir attendu si longtemps ? Et vous, l’avez-vous déjà vécu ?', 'Quelle est votre source ? N’est-ce pas contradictoire avec ce que vous disiez hier ? Qu’est-ce que votre famille en pense ?', 'Combien de personnes sont concernées ? Vous ne répondez pas à la question, non ? Avez-vous déjà échoué ?'] },
+  { id: 'fetiche', nom: 'Histoire fétiche en trois durées', modele: 'Situation → Détail → Leçon', aide: 'Choisis une histoire vraie et raconte-la trois fois : en 20 secondes, en 1 minute, puis en 3 minutes. Même leçon, plus ou moins de détails.',
+    sujets: ['Mon premier échec', 'Quelqu’un qui m’a fait confiance', 'Un moment où j’ai changé d’avis', 'Une décision difficile', 'Ce que mes parents m’ont appris sans le dire'] },
+  { id: 'aveu', nom: 'L’aveu honnête', modele: 'Aveu → Ordre de grandeur → Échéance', aide: 'On te demande un chiffre ou un détail que tu n’as pas. Dis-le clairement, donne un ordre de grandeur et annonce quand tu reviendras avec la réponse.',
+    sujets: ['« Combien de personnes seront concernées ? »', '« Quel budget faut-il prévoir ? »', '« Quand serez-vous prêt ? »', '« Quel est le risque exact ? »'] },
   { id: 'express', nom: 'Recherche express', modele: 'Chercher → Structurer → Expliquer', aide: 'Tire un thème, cherche l’essentiel sans IA, structure, puis explique en un cinquième du temps de préparation.', sujets: [] }
 ];
 
@@ -1147,7 +1157,7 @@ window.AO_DATA.objections = {
     'Résume-moi ça en une phrase. Maintenant.', 'Tu tournes autour : quelle est ta thèse, exactement ?', 'Et dans dix ans, est-ce que ça tient encore ?', 'Si tu avais tort, ce serait sur quel point ?',
     'Quel argument ton adversaire utiliserait-il contre toi ?', 'Tu parles pour qui ? Pour tout le monde, vraiment ?', 'Et concrètement, qui paie ?', 'Ça marche peut-être ailleurs. Pourquoi ici ?',
     'Belle idée. Comment la met-on en œuvre lundi matin ?', 'Tu confonds peut-être cause et conséquence. Démontre-moi le contraire.', 'Admettons. Et alors ?', 'On dirait que tu te contredis. Lequel des deux tient ?',
-    'Donne-moi un contre-exemple à ton propre argument.', 'Qu’est-ce que tu ne dis pas, et qui pourrait changer la conclusion ?', 'On t’a déjà répondu ça mille fois. Qu’est-ce que tu ajoutes ?', 'Qu’est-ce qui me ferait changer d’avis ?',
+    'Donne-moi un contre-exemple à ton propre argument.', 'Qu’est-ce que tu ne dis pas, et qui pourrait changer la conclusion ?', 'On t’a déjà répondu ça mille fois. Qu’est-ce que tu ajoutes ?', 'Qu’est-ce qui me ferait changer d’avis ?', 'Tu cites un chiffre : de quelle source, de quelle année ?', 'Compare-t-on bien la même chose ?', 'Tu n’as pas répondu à la question posée. Reprends.', 'Pourquoi ne pas l’avoir fait plus tôt ?', 'Ton exemple est-il représentatif ou exceptionnel ?', 'Si tu n’as pas le chiffre, donne-moi un ordre de grandeur.',
     'Trop abstrait. Un visage, une histoire, un lieu.', 'Comment saurait-on que tu as raison ? Quelle mesure ?', 'Tu as dix secondes : pourquoi est-ce important pour moi ?', 'Et si on t’interdisait cet argument, que te resterait-il ?'
   ],
   noExample: ['Tu n’as pas encore donné d’exemple. Un cas précis, maintenant.', 'Je n’ai entendu aucun exemple. Raconte-moi une situation réelle.'],
