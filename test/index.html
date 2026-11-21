@@ -94,6 +94,15 @@ input[type=range]{accent-color:var(--gold);width:55%}
 details summary{cursor:pointer;color:var(--lgold);font-weight:600;margin:4px 0 8px}
 .hist button{width:100%;text-align:left;background:var(--ink);border:1px solid rgba(255,255,255,.08);color:var(--txt);border-radius:12px;padding:12px;margin-bottom:8px;font:15px "Avenir Next",system-ui,sans-serif}
 a{color:var(--lgold)}
+.tabs{display:flex;gap:6px;margin:0 0 12px;position:sticky;top:-18px;z-index:5;background:var(--deep);padding:8px 0}
+.tabs button{flex:1;font:600 15px "Avenir Next",system-ui,sans-serif;color:var(--mut);background:var(--ink);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px 6px}
+.tabs button.on{color:var(--deep);background:var(--gold);border-color:var(--gold)}
+.metric{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid rgba(255,255,255,.07);font-size:15px}.metric:first-of-type{border-top:0}.metric b{text-align:right;color:var(--lgold);font-weight:600}
+.tag-ok{color:var(--ok)!important}.tag-warn{color:#E0A030!important}.tag-bad{color:#FF9C85!important}
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.pil{text-align:center}.pil b{font:600 2rem Didot,Georgia,serif;display:block;line-height:1}
+.small{font-size:13px}.muted{color:var(--mut)}
+mark.tic{background:rgba(232,85,59,.35);color:inherit;border-radius:3px}mark.att{background:rgba(224,160,48,.3);color:inherit;border-radius:3px}mark.vag{background:rgba(127,176,224,.28);color:inherit;border-radius:3px}
+svg.chart{width:100%;height:90px;background:var(--ink);border-radius:8px;cursor:pointer;display:block;margin-top:4px}
 </style></head><body>
 
 <section class="scr on" id="s-home">
@@ -156,9 +165,9 @@ a{color:var(--lgold)}
 <section class="scr" id="s-rep"><div class="hd"><h2>Rapport</h2><button class="btn sec" id="back2" style="padding:9px 14px">Fermer</button></div><div id="rep"></div></section>
 <section class="scr" id="s-hist"><div class="hd"><h2>Mes essais</h2><button class="btn sec" id="back3" style="padding:9px 14px">Retour</button></div><div class="hist" id="histList"></div></section>
 
-<script src="engine.js"></script>
+<script src="engine.js"></script><script src="analysis.js"></script><script src="voice.js"></script>
 <script type="module">
-const APP_VERSION='0.3.0';
+const APP_VERSION='0.4.0';
 const DEMO=/[?&]demo=1/.test(location.search);
 const $=s=>document.querySelector(s);
 const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
@@ -241,6 +250,9 @@ async function loadModels(){
 
 /* ---- session ---- */
 const vid=$('#vid'),proc=$('#proc'),pctx=proc.getContext('2d'),cv=$('#cv'),ctx=cv.getContext('2d');
+let aCtx=null,aProc=null,aSrc=null,pcmChunks=[],aSR=48000;
+function startPCM(){pcmChunks=[];try{if(!stream||!stream.getAudioTracks().length)return;const AC=window.AudioContext||window.webkitAudioContext;aCtx=new AC();aSR=aCtx.sampleRate;aSrc=aCtx.createMediaStreamSource(new MediaStream(stream.getAudioTracks()));aProc=aCtx.createScriptProcessor(4096,1,1);aProc.onaudioprocess=e=>{if(running)pcmChunks.push(new Float32Array(e.inputBuffer.getChannelData(0)));};const g=aCtx.createGain();g.gain.value=0;aSrc.connect(aProc);aProc.connect(g);g.connect(aCtx.destination);aCtx.resume&&aCtx.resume();}catch(e){console.error(e);}}
+function stopPCM(){try{aProc&&aProc.disconnect();aSrc&&aSrc.disconnect();aCtx&&aCtx.close();}catch(e){}aProc=aSrc=aCtx=null;}
 let raf=0,running=false,an=null,rec=null,chunks=[],recMime='',tStart=0,t0perf=0,transcript=[],frames=[],lastAlert=0,tpRaf=0,recWanted=false,lastVT=-1,frameN=0,lastState='force',lastHands=null,lastHandsT=-9,lastFace=null,lastFaceT=-9,sttObj=null,rotUser=0;
 const PW=()=>S.orient==='v'?[720,1280]:[1280,720];
 function applyOrient(){const [W,H]=PW();if(proc.width!==W||proc.height!==H){proc.width=W;proc.height=H;}$('#cam').classList.toggle('land',S.orient==='h');$('#orBtn').textContent=S.orient==='v'?'Vertical':'Horizontal';resize();}
@@ -281,6 +293,7 @@ function demoFrame(t){
   return {L,hands,face};
 }
 const DEMO_WORDS=[[3,'bonjour'],[3.4,'à'],[3.7,'tous'],[4.2,'aujourd’hui'],[4.8,'je'],[5.2,'vais'],[5.6,'vous'],[6,'parler'],[6.4,'de'],[6.8,'notre'],[7.2,'projet'],[7.6,'de'],[8,'quartier'],[24.5,'ma'],[25,'couleur'],[25.5,'de'],[26,'cheveux'],[26.6,'est'],[27.2,'naturelle'],[28,'oui']];
+(()=>{const extra='parce que premièrement soixante dix pour cent des jeunes osent rarement parler en public. Par exemple en 2024 une étude montre que deux jeunes sur trois ont peur. Alors imaginez ce que je ressens quand je raconte mon histoire. Euh je pense que nous devons agir ensemble. Donc voici trois raisons. Pourquoi pas vous ?'.split(' ');extra.forEach((w,i)=>DEMO_WORDS.push([9.2+i*.42,w]));DEMO_WORDS.sort((a,b)=>a[0]-b[0]);})();
 let demoI=0;
 
 function loop(){
@@ -341,7 +354,7 @@ $('#go').onclick=async()=>{
   transcript=[];frames=[];demoI=0;chunks=[];recMime='';
   try{if(window.MediaRecorder&&stream.getAudioTracks){const cand=['video/mp4;codecs=avc1,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];const m=cand.find(x=>MediaRecorder.isTypeSupported(x));
     const rs=new MediaStream([...proc.captureStream(30).getVideoTracks(),...stream.getAudioTracks()]);rec=new MediaRecorder(rs,m?{mimeType:m,videoBitsPerSecond:2500000}:undefined);recMime=rec.mimeType||m||'video/webm';rec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};rec.start(1000);}}catch(e){rec=null;console.error(e);}
-  tStart=performance.now();t0perf=tStart;lastVT=-1;running=true;
+  tStart=performance.now();t0perf=tStart;lastVT=-1;running=true;startPCM();
   $('#stop').hidden=false;$('#tr').innerHTML='<em>En écoute…</em>';startSTT();startTP();
 };
 $('#stop').onclick=()=>finish();
@@ -361,16 +374,28 @@ function cleanup(keepModels){running=false;recWanted=false;cancelAnimationFrame(
   try{rec&&rec.state!=='inactive'&&rec.stop()}catch(e){}rec=null;
   if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}vid.srcObject=null;tStart=0;lastVT=-1;}
 async function finish(){
-  if(!running||!an)return;running=false;const r=an.finish(),words=transcript.slice(),fr=frames,asp=proc.width/proc.height,fci=FCI.slice(),fcp=FCP.slice();
+  if(!running||!an)return;running=false;const r=an.finish(),words=transcript.slice().sort((x,y)=>x.t-y.t),fr=frames,asp=proc.width/proc.height,fcp=FCP.slice();
+  const pcmC=pcmChunks.slice(),sr=aSR;stopPCM();
   let blob=null;
   if(rec&&rec.state!=='inactive'){await new Promise(res=>{rec.onstop=res;try{rec.stop()}catch(e){res()}});}
   if(chunks.length)blob=new Blob(chunks,{type:recMime||'video/webm'});
   cleanup();
+  const c=$('#count');c.textContent='Analyse de la voix…';c.style.fontSize='26px';c.classList.add('on');
   const item={id:Date.now(),date:new Date().toISOString(),r,words,frames:fr,blob,asp,fcp};
+  try{const pcm=AgoraVoice.resample16(pcmC,sr);item.sig=pcm.length>=32000?await AO_ANALYSIS.analyzeSignal(pcm):null;}catch(e){console.error(e);item.sig=null;}
+  analyseText(item,words.map(w=>w.w).join(' '));
+  c.classList.remove('on');c.style.fontSize='';
   const meta=ls.get('agt_hist',[]);meta.unshift({id:item.id,date:item.date,score:r.score.total,duree:r.duree,video:!!blob});
-  try{await idb.put(item);}catch(e){console.error(e);item.blob=item.blob;}
+  try{await idb.put(item);}catch(e){console.error(e);}
   meta.slice(6).forEach(m=>idb.del(m.id));ls.set('agt_hist',meta.slice(0,6));
   openReport(item);
+}
+function analyseText(item,text){
+  item.text=text;const dur=item.sig&&item.sig.ok?(item.sig.spanSec||item.sig.durationSec):item.r.duree;
+  let t=null;try{t=text.trim()?AO_ANALYSIS.analyzeText(text,dur):null;}catch(e){}
+  item.txt=t&&t.ok?t:null;item.pil=AO_ANALYSIS.pillars(item.sig&&item.sig.ok?item.sig:null,item.txt);
+  if(item.sig&&item.sig.pauses&&item.sig.pauses.list)item.sig.pauses.list=item.sig.pauses.list.slice(0,12);
+  item.advice=AgoraVoice.advice(item.sig&&item.sig.ok?item.sig:null,item.txt);
 }
 
 /* ---- rapport : la vidéo, les moments à corriger, le contexte ---- */
@@ -393,7 +418,8 @@ function openReport(it){
   $('#rep').innerHTML=`
   <div class="card"><div class="score"><div class="ring" style="--p:${r.score.total}"><div>${r.score.total}</div></div>
     <div><h3 style="margin:0 0 4px">${r.issues.length?r.issues.length+' moment'+(r.issues.length>1?'s':'')+' à revoir':'Rien de grave détecté'}</h3><div class="note">${fmt(r.duree)} · corps visible ${r.corpsVisiblePct} % du temps</div><div class="note">Note indicative sur 100.</div></div></div></div>
-  <div class="card"><h3>Ta vidéo</h3>
+  <div class="tabs" id="tabs"><button data-tab="g" class="on">Gestes</button><button data-tab="v">Voix</button><button data-tab="s">Discours</button></div>
+  <div id="tab-g"><div class="card"><h3>Ta vidéo</h3>
    ${it.blob?`<div class="vwrap" style="aspect-ratio:${it.asp||9/16}"><video id="rv" playsinline controls></video><canvas id="rc"></canvas></div>`:'<p class="note">Vidéo non disponible pour cet essai (enregistrement non pris en charge ou supprimé).</p>'}
    <div class="mk" id="mk">${mk}<div class="cur" id="cur"></div></div>
    <div class="leg"><span><i class="i-bad" style="display:inline-block;width:10px;height:10px;border-radius:3px"></i> à corriger</span><span><i class="i-mid" style="display:inline-block;width:10px;height:10px;border-radius:3px"></i> mineur</span><span><i class="i-good" style="display:inline-block;width:10px;height:10px;border-radius:3px"></i> bien</span><span><i class="i-neu" style="display:inline-block;width:10px;height:10px;border-radius:3px"></i> compris par le contexte</span></div>
@@ -416,7 +442,10 @@ function openReport(it){
   <div class="card"><details><summary>Comment c’est jugé, et les limites</summary>
    <p class="note">Les gestes qui touchent la tête (cheveux, visage, cou) sont jugés avec ce que tu disais autour : si tu parlais de ta coiffure, de ta couleur de cheveux ou d’un visage caché, le geste est compris et non compté. Un contact bref n’est pas compté non plus. Un geste sans lien avec le propos, long ou répété, est signalé.</p>
    <p class="note">Les gestes d’auto-contact sont étudiés depuis <i>Ekman et Friesen (1969)</i>, qui les appellent « adaptateurs ». La recherche les associe plutôt à la tension, à la réflexion ou à l’habitude, mais il s’agit d’associations, pas de preuves, et la sincérité d’une personne ne se lit pas dessus. Voir par exemple <a href="https://www.uh.edu/news-events/stories/2025/october/10152025-spontaneous-facial-self-touching-study.php" target="_blank" rel="noopener">l’étude de l’Université de Houston (2025)</a> et <a href="https://repozytorium.umk.pl/bitstream/handle/item/4029/Self-regulators%20%e2%80%93%20A%20hidden%20dimension%20of%20interaction%20PREPRINT.pdf?sequence=1" target="_blank" rel="noopener">cet article sur les auto-régulateurs</a>.</p>
-   <p class="note">Limites : la caméra donne une image plate. Je compare la taille de ta main à celle de ta tête pour savoir si elle touche vraiment le visage, mais cela reste une estimation (« sûr » ou « probable » est indiqué). Le contexte vient de la transcription et de mots-clés, pas d’une vraie compréhension. Revois toujours la vidéo avant de te juger.</p></details></div>`;
+   <p class="note">Limites : la caméra donne une image plate. Je compare la taille de ta main à celle de ta tête pour savoir si elle touche vraiment le visage, mais cela reste une estimation (« sûr » ou « probable » est indiqué). Le contexte vient de la transcription et de mots-clés, pas d’une vraie compréhension. Revois toujours la vidéo avant de te juger.</p></details></div></div>
+  <div id="tab-v" hidden>${AgoraVoice.voiceHtml(it.sig,it.txt,it.advice)}</div>
+  <div id="tab-s" hidden>${AgoraVoice.speechHtml(it.txt,it.pil,it.text,AO_ANALYSIS)}</div>`;
+  bindTabs(it);
   if(!it.blob){document.querySelectorAll('.play').forEach(b=>b.disabled=true);return;}
   const v=$('#rv'),c=$('#rc'),cx=c.getContext('2d'),url=URL.createObjectURL(it.blob);pb={v,url,raf:0,stopAt:null};v.src=url;
   const fixDur=()=>{if(v.duration===Infinity){v.currentTime=1e7;v.ontimeupdate=()=>{v.ontimeupdate=null;v.currentTime=0;};}};v.onloadedmetadata=fixDur;
@@ -437,6 +466,18 @@ function openReport(it){
   document.querySelectorAll('#trs .w').forEach(s=>s.onclick=()=>{v.currentTime=Math.max(0,+s.dataset.t-.5);v.play().catch(()=>{});});
 }
 
+function bindTabs(it){
+  const sw=t=>{document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));['g','v','s'].forEach(k=>{const e=$('#tab-'+k);if(e)e.hidden=k!==t;});};
+  document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>sw(b.dataset.tab));
+  window.__goSeek=t=>{sw('g');const v=$('#rv');if(v){v.currentTime=Math.max(0,t-0.5);v.play().catch(()=>{});v.scrollIntoView({behavior:'smooth',block:'center'});}};
+  const fillTrs=()=>{const el=$('#trs2');if(!el)return;const ws=it.words,text=ws.map(w=>w.w).join(' '),kAt=new Array(text.length+1).fill(null);
+    try{let pos=0;AO_ANALYSIS.markTics(text).forEach(p=>{if(p.k)for(let i=0;i<p.t.length;i++)kAt[pos+i]=p.k;pos+=p.t.length;});}catch(e){}
+    let pos=0;el.innerHTML=ws.length?ws.map(w=>{const k=kAt[pos];pos+=w.w.length+1;const h=`<span class="w" data-t="${w.t}">${esc(w.w)}</span>`;return k?`<mark class="${k}">${h}</mark>`:h;}).join(' '):'<span class="note">Pas de transcription pour cet essai.</span>';
+    el.querySelectorAll('.w').forEach(sp=>sp.onclick=()=>window.__goSeek(+sp.dataset.t));};
+  const hook=()=>{fillTrs();document.querySelectorAll('svg.chart').forEach(c=>c.onclick=e=>{const rc=c.getBoundingClientRect();window.__goSeek((e.clientX-rc.left)/rc.width*(+c.dataset.dur));});
+    const b=$('#reAn');if(b)b.onclick=()=>{const txt=$('#trEdit').value;analyseText(it,txt);$('#tab-s').innerHTML=AgoraVoice.speechHtml(it.txt,it.pil,it.text,AO_ANALYSIS);$('#tab-v').innerHTML=AgoraVoice.voiceHtml(it.sig,it.txt,it.advice);it.words=it.words.length&&txt.trim()===it.words.map(w=>w.w).join(' ')?it.words:txt.trim().split(/\s+/).filter(Boolean).map((w,i,a)=>({w,t:(it.r.duree*i/Math.max(1,a.length))}));hook();idb.put(it).catch(()=>{});};};
+  hook();
+}
 /* ---- historique ---- */
 function histRender(){const h=ls.get('agt_hist',[]);const L=$('#histList');
   L.innerHTML=h.length?h.map(x=>`<button data-id="${x.id}"><b>${new Date(x.date).toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</b> — ${x.score}/100 · ${fmt(x.duree)}${x.video?' · vidéo':''}</button>`).join(''):'<p class="note">Aucun essai pour l’instant.</p>';
