@@ -175,7 +175,7 @@ svg.chart{width:100%;height:90px;background:var(--ink);border-radius:8px;cursor:
 
 <script src="engine.js"></script><script src="analysis.js"></script><script src="voice.js"></script>
 <script type="module">
-const APP_VERSION='0.5.3';
+const APP_VERSION='0.5.4';
 const DEMO=/[?&]demo=1/.test(location.search);
 const $=s=>document.querySelector(s);
 const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
@@ -272,7 +272,7 @@ const rotKey=()=>{const tr=stream&&stream.getVideoTracks()[0],f=(tr&&tr.getSetti
 function loadRot(){const v=ls.get(rotKey(),null);if(v!==null&&v!==undefined){rotUser=v%4;calib=true;}}
 function saveRot(){ls.set(rotKey(),rotUser);}
 function setMir(){const tr=stream&&stream.getVideoTracks()[0],f=tr&&tr.getSettings&&tr.getSettings().facingMode;$('#cam').classList.toggle('mir',S.mir!==false&&(f?f==='user':(S.cam==='user'&&!S.lens)));}
-async function swapCam(){try{const old=stream.getVideoTracks();const nv=(await getStream(false)).getVideoTracks();stream=new MediaStream([...nv,...stream.getAudioTracks()]);old.forEach(t=>t.stop());vid.srcObject=stream;vid.play().catch(()=>{});rotUser=0;calib=false;calibT=0;calibTries=0;calibOk=0;await listLenses2();setTimeout(()=>{applyOrient();loadRot();setMir();},400);}catch(e){flash('Caméra indisponible');console.error(e);}}
+async function swapCam(){try{const old=stream.getTracks();old.forEach(t=>t.stop());stream=await getStream(true);vid.srcObject=stream;vid.play().catch(()=>{});rotUser=0;calib=false;calibT=0;calibTries=0;calibOk=0;await listLenses2();setTimeout(()=>{applyOrient();loadRot();setMir();},400);}catch(e){flash('Caméra indisponible');console.error(e);}}
 async function listLenses2(){try{const d=(await navigator.mediaDevices.enumerateDevices()).filter(x=>x.kind==='videoinput'&&x.label);$('#csLens').innerHTML='<option value="">Par défaut</option>'+d.map(l=>`<option value="${l.deviceId}">${esc(l.label)}</option>`).join('');$('#csLens').value=S.lens||'';}catch(e){}}
 function bindCamSet(){$('#csCam').value=S.cam;$('#csFit').value=S.fit;$('#csZoom').value=S.zoom;$('#csZv').textContent='×'+(+S.zoom).toFixed(1);$('#csMir').checked=S.mir!==false;listLenses2();}
 $('#camBtn').onclick=()=>{const e=$('#camSet');e.hidden=!e.hidden;if(!e.hidden)bindCamSet();};
@@ -392,13 +392,17 @@ $('#go').onclick=async()=>{
 let stopping=false;const doStop=e=>{if(e)e.preventDefault();if(stopping)return;stopping=true;$('#stop').textContent='Analyse…';setTimeout(()=>{stopping=false;},4000);finish();};$('#stop').addEventListener('pointerup',doStop);$('#stop').addEventListener('click',doStop);
 function startSTT(){
   if(!S.stt||DEMO)return;const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return;
-  recWanted=true;sttObj=new SR();const x=sttObj;x.lang='fr-FR';x.continuous=true;x.interimResults=true;let finalTxt='';
-  x.onresult=e=>{const t=running?(performance.now()-t0perf)/1000:0;an&&an.markSpeech(t);let interim='';
-    for(let i=e.resultIndex;i<e.results.length;i++){const r=e.results[i],tx=r[0].transcript;
-      if(r.isFinal){const ws=tx.trim().split(/\s+/).filter(Boolean);const dt=Math.min(ws.length*0.4,t);ws.forEach((w,k)=>{const tt=t-dt+(k+1)*dt/ws.length;an.addWord(w,tt);transcript.push({w,t:tt});});finalTxt+=tx+' ';}else interim+=tx;}
-    $('#tr').innerHTML=esc(finalTxt.slice(-110))+'<em> '+esc(interim)+'</em>';};
-  x.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){recWanted=false;$('#tr').innerHTML='<em>Transcription coupée.</em>';}};
-  x.onend=()=>{if(recWanted){try{x.start()}catch(e){}}};try{x.start()}catch(e){}
+  recWanted=true;
+  /* chaque mot est gardé dès qu'il apparaît (même provisoire) : sur iPhone, le texte « final » n'arrive souvent jamais */
+  const begin=()=>{if(!recWanted)return;const x=new SR();sttObj=x;x.lang='fr-FR';x.continuous=true;x.interimResults=true;const commit=[];
+    x.onresult=e=>{const t=running?(performance.now()-t0perf)/1000:0;an&&an.markSpeech(t);const arr=[];
+      for(let i=0;i<e.results.length;i++)arr.push(...e.results[i][0].transcript.trim().split(/\s+/).filter(Boolean));
+      for(let i=0;i<commit.length&&i<arr.length;i++)commit[i].w=arr[i];
+      if(arr.length>commit.length){const nw=arr.slice(commit.length),dt=Math.min(nw.length*0.4,t);nw.forEach((w,k)=>{const o={w,t:t-dt+(k+1)*dt/nw.length};commit.push(o);transcript.push(o);});}
+      $('#tr').textContent=transcript.slice(-20).map(w=>w.w).join(' ');};
+    x.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){recWanted=false;$('#tr').innerHTML='<em>Transcription coupée.</em>';}};
+    x.onend=()=>{if(recWanted)setTimeout(begin,120);};try{x.start()}catch(e){setTimeout(begin,400);}};
+  begin();
 }
 function startTP(){if(!S.tpOn)return;cancelAnimationFrame(tpRaf);let y=0,last=performance.now();const el=$('#tpTxt');
   const step=n=>{if(!running)return;y+=(n-last)/1000*S.tpSpeed;last=n;el.style.transform=`translateY(${-y}px)`;tpRaf=requestAnimationFrame(step);};tpRaf=requestAnimationFrame(step);}
@@ -406,7 +410,7 @@ function cleanup(keepModels){running=false;recWanted=false;cancelAnimationFrame(
   try{rec&&rec.state!=='inactive'&&rec.stop()}catch(e){}rec=null;
   if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}vid.srcObject=null;tStart=0;lastVT=-1;}
 async function finish(){
-  if(!running||!an)return;running=false;const r=an.finish(),words=transcript.slice().sort((x,y)=>x.t-y.t),fr=frames,asp=proc.width/proc.height,fcp=FCP.slice();
+  if(!running||!an)return;running=false;const words=transcript.map(o=>({w:o.w,t:o.t})).sort((x,y)=>x.t-y.t);if(!DEMO)words.forEach(o=>an.addWord(o.w,o.t));const r=an.finish(),fr=frames,asp=proc.width/proc.height,fcp=FCP.slice();
   const pcmC=pcmChunks.slice(),sr=aSR;stopPCM();
   let blob=null;
   if(rec&&rec.state!=='inactive'){await new Promise(res=>{rec.onstop=res;setTimeout(res,2500);try{rec.stop()}catch(e){res()}});}
