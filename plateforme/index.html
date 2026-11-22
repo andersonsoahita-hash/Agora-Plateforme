@@ -2336,6 +2336,8 @@ function byId(a,id){for(var i=0;i<a.length;i++)if(a[i].id===id)return a[i]}
 var LV=[null,{n:'Fondements et structure',m:['p1','p2']},{n:'Langage et argumentation',m:['p3','pa','cx']},{n:'Voix et corps',m:['p4','p5','st']},{n:'Mémoire, public, confiance',m:['p6','p7','p8']},{n:'Entraînement et terrains',m:['p9','p10','p11','po','ve','ch','pb','ng']}];
 function lvOf(mid){for(var i=1;i<6;i++)if(LV[i].m.indexOf(mid)>-1)return i}
 function lessonsOf(lv){return D.lessons.filter(function(l){return lvOf(l.m)===lv})}
+/* numérotation d'affichage : 1, 2, 3… à l'intérieur de chaque niveau (les anciens codes A2, X2, P1… restent dans n0) */
+(function(){[1,2,3,4,5].forEach(function(lv){lessonsOf(lv).forEach(function(l,i){if(l.n0===undefined)l.n0=l.n;l.n=i+1})})})();
 function modTitle(id){return byId(D.modules,id).titre}
 /* ---- état persistant ---- */
 var P={tmq:45,name:'',pts:0,done:{},sessions:[],goals:[],preuves:[],preps:[],exos:{},at:{},fb:[],tab:'home',sub:null,
@@ -2378,7 +2380,7 @@ function fmAssign(lv){
     FMIL[l.id]=best;use[best]=(use[best]||0)+1;p2=p1;p1=best;
   });
 }
-function fmIlOf(L){var lv=lvOf(L.m);if(lv&&!FMIL[L.id])fmAssign(lv);return FMIL[L.id]||(L.id==='c2'?'tri_all':ilFor(L.titre,parseInt(L.n,10)||0))}
+function fmIlOf(L){var lv=lvOf(L.m);if(lv&&!FMIL[L.id])fmAssign(lv);return FMIL[L.id]||(L.id==='c2'?'tri_all':ilFor(L.titre,parseInt(L.n0!==undefined?L.n0:L.n,10)||0))}
 function ilFor(h,k){for(var i=0;i<ILR.length;i++)if(ILR[i][0].test(h))return ILR[i][1];return ILC[k%ILC.length]}
 function sents(t){if(/^\d{1,2}[.)]\s/.test(t))return [t];return t.split(/(?<=[.!?…»])(?<!(?:^|\s)\d{1,2}\.)\s+(?=[«"“A-ZÀ-ÖØ-Þ0-9])/).filter(Boolean)}
 function chunk(arr,n){n=Math.max(1,Math.min(n,arr.length));var tot=arr.join(' ').length,out=[],cur=[],len=0,tg=tot/n;
@@ -2406,7 +2408,7 @@ function genSlides(L,mode){
   var x=XC[L.m]||'ethos',S=[],secs=L.sections,ns=secs.length,qn=L.quiz.length;
   var fixed=2+1+(L.erreur?1:0)+(L.exercice?1:0)+qn+1+1;
   var budget=Math.max(ns*2,20-fixed),per=Math.max(2,Math.round(budget/ns));
-  var ln=parseInt(L.n,10)||0,AG=(window.AGE&&window.AGE[L.id])||[];
+  var ln=parseInt(L.n0!==undefined?L.n0:L.n,10)||0,AG=(window.AGE&&window.AGE[L.id])||[];
   S.push({k:'cover',x:x,il:fmIlOf(L)});
   S.push({k:'goals',x:x,il:null});
   var mt=(L.titre+' '+secs.map(function(s){return s.h+' '+s.p.join(' ')}).join(' ')).match(/ethos|pathos|logos|kairos|crédibilit|émotion|preuve|persua|argument/gi);if(L.id==='c2'&&mt&&mt.length>=4)S.push({k:'tri',x:x,il:null});
