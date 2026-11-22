@@ -1474,6 +1474,78 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 #es .a-brand{order:1!important}#es #agear{order:2!important}#es #esx{order:3!important}#es #estab{order:4!important}
 }
 @media(max-width:700px){#esb,#ehero{padding-inline:max(16px,env(safe-area-inset-left,0px))}}
+/* ===== agv4 : menu latéral, fond, pied de page, contact ===== */
+#es{background:#E9E9EB}
+#esb{background:transparent}
+#es::before{background:radial-gradient(1200px 520px at 70% 0,rgba(175,50,28,.07),transparent 70%),#E9E9EB!important}
+#esb .a-c,#esb .w-st,#esb .a-card{background:#fff}
+/* pied de page */
+#es .a-foot{order:9;background:#151312;color:rgba(255,255,255,.72);border:0;text-align:left;padding:48px max(20px,calc((100% - 1200px)/2)) 22px;font-size:14px;backdrop-filter:none;margin-top:40px}
+.ft-in{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:32px}
+.ft-c{display:flex;flex-direction:column;gap:9px;min-width:0}
+.ft-c h4{margin:0 0 4px;font:600 11px/1 'DM Sans',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#C79746}
+.ft-c a{color:rgba(255,255,255,.78);text-decoration:none;font-size:14px}
+.ft-c a:hover{color:#fff;text-decoration:underline;text-underline-offset:3px}
+.ft-c p{margin:0;max-width:34ch;line-height:1.6;font-size:14px}
+.ft-lg{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.ft-lg svg{width:38px;height:38px}
+.ft-lg b{display:block;font:700 30px/1 'Dancing Script',cursive;color:#fff}
+.ft-lg span{display:block;font:600 10px/1 'DM Sans',sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#C79746;margin-top:4px}
+.ft-bt{display:flex;gap:12px;justify-content:space-between;flex-wrap:wrap;margin-top:34px;padding-top:18px;border-top:1px solid rgba(255,255,255,.12);font-size:12.5px;color:rgba(255,255,255,.55)}
+@media(max-width:860px){.ft-in{grid-template-columns:1fr 1fr}.ft-b{grid-column:1/-1}}
+@media(max-width:480px){.ft-in{grid-template-columns:1fr}}
+/* fiche contact */
+#ctc{position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(14,12,11,.66);backdrop-filter:blur(4px)}
+#ctc.on{display:flex}
+.ctc-b{position:relative;width:100%;max-width:520px;max-height:100%;overflow:auto;background:#fff;color:#1B1817;border-radius:20px;padding:28px;box-shadow:0 40px 80px -30px rgba(0,0,0,.6);font-family:'DM Sans',system-ui,sans-serif}
+.ctc-b h2{margin:6px 0 8px;font:700 30px/1.1 'Fraunces',Georgia,serif}
+.ctc-i{margin:0 0 16px;color:#66605D;font-size:14.5px;line-height:1.55}
+.ctc-b label{display:grid;gap:6px;margin-bottom:12px;font-size:13px;font-weight:600;color:#1B1817}
+.ctc-b input,.ctc-b select,.ctc-b textarea{font:400 16px 'DM Sans',sans-serif;padding:11px 13px;border:1px solid rgba(21,19,18,.2);border-radius:11px;background:#fff;color:#1B1817;width:100%;box-sizing:border-box}
+.ctc-b input:focus,.ctc-b select:focus,.ctc-b textarea:focus{outline:2px solid #AF321C;outline-offset:1px}
+.ctc-a{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.ctc-x{position:absolute;right:14px;top:14px;width:34px;height:34px;border-radius:50%;border:0;background:#EFEFF1;color:#1B1817;cursor:pointer;font-size:14px}
+.ctc-b .btn{border-radius:999px;background:#AF321C;color:#fff;border:0;padding:12px 22px;font-weight:700;cursor:pointer}
+.ctc-b .btn.ghost{background:transparent;color:#1B1817;border:1.5px solid rgba(21,19,18,.28)}
+#es .a-foot{display:block}
+#es .a-foot .ft-in{width:100%}
+#es .a-foot .ft-c h4{color:#C79746;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;margin:0 0 4px}
+#es .a-foot .ft-c a{color:rgba(255,255,255,.8)}
+#es .a-foot .ft-c p,#es .a-foot .ft-bt{color:rgba(255,255,255,.6)}
+#es{padding-bottom:0!important}#es>.a-foot{margin-bottom:0}
+@media(min-width:1024px){#es .fm-g{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}}
+/* menu latéral (écrans larges) */
+.esd-k{font:600 10.5px/1 'DM Sans',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#C79746}
+#esd{display:none}
+@media(min-width:1024px){
+ #es{--sw:248px;display:none}
+ #es.on{display:block}
+ #es>.a-hd{position:sticky;top:0}
+ #es>#estab{position:fixed;left:0;top:72px;width:var(--sw);bottom:230px;z-index:25;display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;gap:2px;padding:20px 14px 10px;background:#1B1817;border:0;overflow-y:auto;flex:none;order:0;min-width:0}
+ #es>#estab::before{content:"Menu";font:600 10.5px/1 'DM Sans',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.4);padding:4px 12px 10px}
+ #es>#estab button{display:flex;align-items:center;gap:12px;justify-content:flex-start;text-align:left;padding:11px 12px;border-radius:12px;background:transparent;color:rgba(255,255,255,.76);font:500 15px 'DM Sans',sans-serif;border:0;width:100%}
+ #es #estab button svg{display:block;width:20px;height:20px;flex:none;opacity:.9}
+ #es>#estab button:hover{background:rgba(255,255,255,.07);color:#fff}
+ #es>#estab button.on{background:#AF321C;color:#fff}
+ #es>#estab button[data-tab=studio],#es>#estab button[data-tab=orators]{margin-top:10px;position:relative}
+ #es>#estab button[data-tab=studio]::before,#es>#estab button[data-tab=orators]::before{content:"";position:absolute;left:12px;right:12px;top:-6px;height:1px;background:rgba(255,255,255,.1)}
+ #esd{display:flex;flex-direction:column;gap:12px;position:fixed;left:0;bottom:0;width:var(--sw);height:230px;box-sizing:border-box;z-index:25;background:#1B1817;padding:6px 14px 16px;border-top:1px solid rgba(255,255,255,.08)}
+ .esd-p{padding:12px;border-radius:14px;background:rgba(255,255,255,.06);display:grid;gap:8px}
+ .esd-bar{height:6px;border-radius:99px;background:rgba(255,255,255,.14);overflow:hidden}.esd-bar i{display:block;height:100%;background:linear-gradient(90deg,#C79746,#e0b765);border-radius:99px;min-width:3px}
+ .esd-p p{margin:0;font-size:12.5px;line-height:1.45;color:rgba(255,255,255,.72)}.esd-p b{color:#fff}
+ .esd-l{display:grid;gap:2px}
+ .esd-l button,.esd-l a{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:10px;background:transparent;border:0;color:rgba(255,255,255,.72);font:500 14px 'DM Sans',sans-serif;text-decoration:none;cursor:pointer;text-align:left}
+ .esd-l button:hover,.esd-l a:hover{background:rgba(255,255,255,.07);color:#fff}
+ .esd-l svg{width:18px;height:18px;flex:none}
+ .esd-s{margin:auto 0 0;font-size:11px;color:rgba(255,255,255,.35);padding-left:12px}
+ #es>#ehero,#es>#esb,#es>.a-foot{margin-left:var(--sw)}
+ #es.adm>#estab,#es.adm>#esd{display:none}
+ #es.adm>#ehero,#es.adm>#esb,#es.adm>.a-foot{margin-left:0}
+ #ehero,#esb,#es .a-foot{padding-inline:max(32px,calc((100% - 1240px)/2))}
+ #ehero .eh-il{right:max(32px,calc((100% - 1240px)/2))}
+ #es>.a-hd .a-brand{margin-right:auto}
+ #es>.a-hd #agear{display:none}
+}
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=DM+Sans:wght@400;500;600;700&family=Dancing+Script:wght@600;700&display=swap">
 
@@ -1702,7 +1774,16 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
   <section id="ehero"></section>
   <main id="esb"></main>
   <nav id="estab" aria-label="Navigation"></nav>
-  <footer class="a-foot">Agora · L’art oratoire</footer>
+  <aside id="esd" aria-label="Raccourcis"></aside>
+  <footer class="a-foot" id="esf">
+    <div class="ft-in">
+      <div class="ft-c ft-b"><div class="ft-lg"><svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="22" r="11" fill="#C79746"/><circle cx="142.2" cy="34.4" r="11" fill="#fff"/><circle cx="171" cy="67.6" r="11" fill="#fff"/><circle cx="171" cy="132.4" r="11" fill="#fff"/><circle cx="142.2" cy="165.6" r="11" fill="#fff"/><circle cx="100" cy="178" r="11" fill="#fff"/><circle cx="57.8" cy="165.6" r="11" fill="#fff"/><circle cx="29" cy="132.4" r="11" fill="#fff"/><circle cx="29" cy="67.6" r="11" fill="#fff"/><circle cx="57.8" cy="34.4" r="11" fill="#fff"/><circle cx="100" cy="100" r="16" fill="#C79746"/></svg><div><b>Agora</b><span>by Stephen</span></div></div><p>La place publique de l’art oratoire : apprendre, s’entraîner et se retrouver pour parler mieux, devant les autres.</p></div>
+      <div class="ft-c"><h4>Plateforme</h4><a href="#" data-tab="home">Accueil</a><a href="#" data-tab="course">Formation</a><a href="#" data-tab="studio">Studio</a><a href="#" data-tab="com">Communauté</a><a href="#" data-tab="orators">Orateurs</a></div>
+      <div class="ft-c"><h4>Aide et contact</h4><a href="#" data-a="contact">Nous écrire</a><a href="#" data-a="comwa">Groupe WhatsApp</a><a href="#" data-a="contact" data-sub="acces">Un problème d’accès</a><a href="#" data-a="contact" data-sub="avis">Donner mon avis</a></div>
+      <div class="ft-c"><h4>Informations</h4><a href="../conditions/" target="_blank" rel="noopener">Conditions générales</a><a href="../conditions/#donnees" target="_blank" rel="noopener">Données personnelles</a><a href="../conditions/#remboursement" target="_blank" rel="noopener">Remboursement</a><a href="../conditions/#editeur" target="_blank" rel="noopener">Qui est derrière Agora</a></div>
+    </div>
+    <div class="ft-bt"><span>© <span id="ftY"></span> Agora · L’art oratoire · by Stephen</span><span>Fait pour parler mieux, ensemble.</span></div>
+  </footer>
 </div>
 <div id="lp" role="dialog" aria-modal="true" aria-label="Leçon"></div>
 <div id="lv" role="dialog" aria-modal="true" aria-label="Leçon">
@@ -2433,7 +2514,7 @@ function finishLesson(){
 
 /* ---- espace élève : onglets de l'app Agora ---- */
 var role='el',orF='Tous';
-(function(){var hd=document.querySelector('#es .a-hd'),tb=document.getElementById('estab'),sg=hd&&hd.querySelector('.seg');if(hd&&tb&&sg)hd.insertBefore(tb,sg)})();
+(function(){var hd=document.querySelector('#es .a-hd'),tb=document.getElementById('estab'),sg=hd&&hd.querySelector('.seg'),es=document.getElementById('es'),mq=window.matchMedia('(min-width:1024px)');if(!(hd&&tb&&sg&&es))return;function put(){if(mq.matches){if(tb.parentNode!==es)es.insertBefore(tb,hd.nextSibling)}else if(tb.parentNode!==hd)hd.insertBefore(tb,sg)}put();(mq.addEventListener?mq.addEventListener('change',put):mq.addListener(put));var y=document.getElementById('ftY');if(y)y.textContent=new Date().getFullYear();var f=document.getElementById('esf');f&&f.addEventListener('click',function(e){var a=e.target.closest('a[href="#"]');if(a){e.preventDefault();var t=a.getAttribute('data-tab');if(t){var bt=document.querySelector('#estab button[data-tab="'+t+'"]');bt&&bt.click();var es=document.getElementById('es');es&&es.scrollTo(0,0)}}})})();
 var TABS=[['home','Accueil','<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>'],['studio','Studio','<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/>'],['course','Formation','<path d="M4 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6M20 4v14h-6"/>'],['com','Communauté','<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20a6 6 0 0 1 12 0M15 15a5 5 0 0 1 6 5"/>'],['orators','Orateurs','<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'],['prep','Préparer','<path d="M12 3v18M5 7h14M5 7l-2 7a3 3 0 0 0 6 0zM19 7l-2 7a3 3 0 0 0 6 0z"/>'],['proofs','Preuves','<circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/>']];
 function nav(tab,sub){if(tab==='studio'&&SD.keep){SD.keep=0;SD.home=false}else if(tab==='studio'&&!SD.run){SD.home=true;SD.bank=false;if(window.AGDISC&&AGDISC.reset)AGDISC.reset()}P.tab=tab;P.sub=sub||null;save();render();$('#esb').scrollTop=0}
 function statusT(){var m={none:['','Test pas encore passé'],queued:['wt','Hors ligne : envoi automatique au retour du réseau'],pending:['wt','En attente de validation par Stephen'],approved:['ok','Niveau '+TL+' validé'],redo:['ko','Reprise demandée'],fail:['ko','Score insuffisant : reprise possible']}[TS().st];return '<span class="a-st '+m[0]+'">'+m[1]+'</span>'}
@@ -2774,6 +2855,20 @@ function fAc(){
 function vFo(){return '<div class="a-w wide"><div class="a-hs" role="tablist">'+TT.map(function(t){return '<button class="a-chip'+(ft===t[0]?' on':'')+'" role="tab" data-ft="'+t[0]+'">'+t[1]+'</button>'}).join('')+'</div>'+({db:fDb,el:fEl,le:fLe,te:fTe,re:fRe,ac:fAc}[ft])()+'</div>'}
 /* ---- rendu et événements ---- */
 var es=$('#es');
+
+/* ---- menu latéral : progression + raccourcis ---- */
+function esdPaint(){var d=document.getElementById('esd');if(!d)return;var tr=(typeof role!=='undefined'&&role==='tr');var n=0,t=0,nx=null;try{n=doneN();t=D.lessons.length;nx=nextLesson()}catch(e){}var pc=t?Math.round(n*100/t):0;
+ d.innerHTML=(tr?'':'<div class="esd-p"><span class="esd-k">Ta progression</span><div class="esd-bar"><i style="width:'+pc+'%"></i></div><p><b>'+n+'</b> leçon'+(n>1?'s':'')+' sur '+t+(nx?' · prochaine : '+esc(nx.titre):'')+'</p></div>')+
+ '<div class="esd-l"><button type="button" data-a="esdacc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Mon compte</button>'+
+ '<button type="button" data-a="contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v12H8l-4 4z"/></svg>Aide et contact</button>'+
+ '<a href="../conditions/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M9 11h6M9 15h6"/></svg>Conditions</a></div><p class="esd-s">Agora · by Stephen</p>'}
+/* ---- fiche contact ---- */
+var CONTACT_MAIL='';
+function openContact(sub){var o=document.getElementById('ctc');if(!o){o=document.createElement('div');o.id='ctc';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','Contact');document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o||e.target.closest('[data-cx]'))o.classList.remove('on')});o.addEventListener('submit',function(e){e.preventDefault();var f=e.target,v=function(k){return (f.elements[k]&&f.elements[k].value||'').trim()};if(v('m').length<5){toast('Écris ton message.');return}var body=v('m')+'\n\n— '+(v('n')||'Anonyme')+(v('e')?' ('+v('e')+')':'');if(CONTACT_MAIL){location.href='mailto:'+CONTACT_MAIL+'?subject='+encodeURIComponent('Agora · '+v('s'))+'&body='+encodeURIComponent(body)}else{try{navigator.clipboard.writeText(body)}catch(x){}toast('Message copié. Colle-le dans le groupe WhatsApp ou envoie-le à ton formateur.')}o.classList.remove('on')})}
+ var S={q:'Une question sur la formation',acces:'Un problème d’accès ou de compte',tech:'Un problème technique',avis:'Mon avis sur Agora',part:'Un partenariat ou une collaboration'};
+ var opt=Object.keys(S).map(function(k){return '<option value="'+esc(S[k])+'"'+(k===(sub||'q')?' selected':'')+'>'+esc(S[k])+'</option>'}).join('');
+ o.innerHTML='<div class="ctc-b"><button type="button" class="ctc-x" data-cx aria-label="Fermer">✕</button><span class="esd-k">Aide et contact</span><h2>Écris-nous</h2><p class="ctc-i">Une question, un souci, une idée ? Réponse en général sous quelques jours. Pour un échange plus rapide, passe par le groupe WhatsApp ou par ton formateur.</p><form><label>Ton nom<input name="n" autocomplete="name" maxlength="80"></label><label>Ton e-mail (pour te répondre)<input name="e" type="email" autocomplete="email" maxlength="120"></label><label>Sujet<select name="s">'+opt+'</select></label><label>Ton message<textarea name="m" rows="5" maxlength="1500" required></textarea></label><div class="ctc-a"><button class="btn" type="submit">'+(CONTACT_MAIL?'Envoyer par e-mail':'Copier mon message')+'</button><button class="btn ghost" type="button" data-cx>Annuler</button></div></form></div>';
+ o.classList.add('on');setTimeout(function(){var t=o.querySelector('textarea');t&&t.focus()},50)}
 function render(){
   var b=$('#esb'),ad=role==='fo',tr=role==='tr';b.className=ad?'tr':'';$('#es').setAttribute('data-view',P.tab||'home');$('#estab').classList.toggle('hide',ad);$('#es').classList.toggle('adm',ad);
   b.innerHTML=ad?vAdmin():(tr?vForm():vEl());
@@ -2781,7 +2876,7 @@ function render(){
   var hh=tr?['Espace formateur','Suivre les élèves, valider les niveaux, relire les leçons et les tests.']:(HE[P.tab]||HE.home);
   $('#ehero').innerHTML='<div class="eh-in"><span class="eh-k">'+(tr?'Formateur':'Agora · L’art oratoire')+'</span><h1>'+hh[0]+'</h1><p>'+hh[1]+'</p></div><div class="eh-il il" aria-hidden="true">'+((IHE[tr?'fo':P.tab]&&A.IL[IHE[tr?'fo':P.tab]])?A.IL[IHE[tr?'fo':P.tab]]():'')+'</div><svg class="eh-bg" viewBox="0 0 600 300" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="470" cy="150" r="40"/><circle cx="470" cy="150" r="80"/><circle cx="470" cy="150" r="120"/><circle cx="470" cy="150" r="160"/><circle cx="470" cy="150" r="200"/></g><g fill="currentColor"><circle cx="470" cy="118" r="17"/><path d="M440 190c0-24 14-38 30-38s30 14 30 38v30h-60z"/></g></svg>';
 
-  $('#estab').innerHTML=tr?FTABS():TABS.map(function(t){return '<button data-tab="'+t[0]+'" class="'+(P.tab===t[0]?'on':'')+'" aria-label="'+t[1]+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+t[2]+'</svg>'+t[1]+'</button>'}).join('');
+  try{esdPaint()}catch(e){}$('#estab').innerHTML=tr?FTABS():TABS.map(function(t){return '<button data-tab="'+t[0]+'" class="'+(P.tab===t[0]?'on':'')+'" aria-label="'+t[1]+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+t[2]+'</svg>'+t[1]+'</button>'}).join('');
   revealAll();fmFit();requestAnimationFrame(fmFit);$('#es').classList.toggle('examing',TS().st==='run'&&!tr);ensureTQ();
   [].forEach.call(document.querySelectorAll('.seg button'),function(x){x.classList.toggle('on',x.dataset.role===role)});
 }
@@ -2821,6 +2916,8 @@ es.addEventListener('click',function(e){
   case 'reco':var g=JSON.parse(b.dataset.v);if(g[0]==='les')openHub(g[1]);else if(g[0]==='test'){setTL(1);nav('course','test')}else nav(g[0]);return;
   case 'les':openHub(b.dataset.v);return;
   case 'lvopen':CL=+b.dataset.v;nav('course');return;
+  case 'contact':openContact(b.getAttribute('data-sub'));return;
+  case 'esdacc':{var g=document.getElementById('agear');g&&g.click();return}
   case 'fmmore':FM.all[CL]=!FM.all[CL];render();return;
   case 'test':setTL(1);nav('course','test');return;
   case 'appon':lkMake();return;
