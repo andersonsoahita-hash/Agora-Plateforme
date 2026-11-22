@@ -1,4 +1,4 @@
-window.AGORA_BUILD='4adfeb1323';
+window.AGORA_BUILD='bcbf6ca091';
 /* ============================================================
    Analyse de la voix (signal) et du texte (transcription)
    Tout se calcule dans la page. Aucun audio n'est envoyé nulle part.
@@ -1123,7 +1123,7 @@ window.AO_DATA.recordTips = {
   var NEW = [{"id": "pitchsoi", "nom": "Me présenter en 30 secondes", "modele": "Qui je suis → Ce que j’apporte → Pourquoi moi → Question", "aide": "1) Écris quatre phrases courtes, une par étape. 2) Dis-les en 30 secondes, debout, sans notes. 3) Enregistre et réécoute. Réussi = on comprend ce que tu fais en dix secondes, sans jargon, et tu finis par une question qui invite l’autre à répondre.", "sujets": ["Entretien pour une alternance", "Soirée de réseautage avec des inconnus", "Premier appel avec un client potentiel", "Présentation devant une nouvelle équipe"]}, {"id": "contenu", "nom": "Une idée de contenu avec intention", "modele": "Intention → Idée → Accroche de 10 mots → Appel", "aide": "1) Choisis une intention : attirer, rassurer, prouver ou convertir. 2) Écris l’idée en une phrase. 3) Écris l’accroche en dix mots maximum. 4) Dis le contenu en 45 secondes face caméra. Réussi = une personne qui ne te connaît pas devine l’intention, et tu peux dire si cette vidéo est faite pour un abonné ou pour un acheteur.", "sujets": ["Une vidéo pour attirer des étudiants", "Une vidéo pour rassurer un client hésitant", "Une vidéo pour prouver un résultat réel", "Une vidéo pour proposer un premier rendez-vous"]}];
   NEW.forEach(function (t) { if (!D.exerciseTypes.some(function (x) { return x.id === t.id; })) D.exerciseTypes.push(t); });
   D.exerciseTypes.forEach(function (t) { if (M[t.id]) t.exemple = M[t.id]; });
-  D.exerciseGroups = [{"id": "bases", "nom": "Les bases", "d": "Structurer une idée à l’oral.", "ids": ["mot", "qr", "argumenter", "connecteurs", "recit", "discours"]}, {"id": "debat", "nom": "Débat et objections", "d": "Répondre sans esquiver ni attaquer.", "ids": ["debat", "objection", "reprise", "interview", "aveu"]}, {"id": "style", "nom": "Style et diction", "d": "Jeux de mots, silences, textes à dire.", "ids": ["virelangue", "proverbe", "arrivee", "bascule", "simple"]}, {"id": "vente", "nom": "Vente", "d": "Ouvrir, écouter, annoncer un prix.", "ids": ["ouverture", "ratio", "prix", "analogie"]}, {"id": "marque", "nom": "Marque personnelle", "d": "Promesse, preuve, contenu avec intention.", "ids": ["positionnement", "story", "pitchsoi", "contenu"]}, {"id": "libre", "nom": "Entraînement libre", "d": "Discours à jouer, recherche express, histoire fétiche.", "ids": ["lecture", "express", "fetiche"]}];
+  D.exerciseGroups = [{"id": "bases", "nom": "Les bases", "d": "Structurer une idée à l’oral.", "ids": ["mot", "qr", "argumenter", "connecteurs", "recit", "discours"]}, {"id": "debat", "nom": "Débat et objections", "d": "Répondre sans esquiver ni attaquer.", "ids": ["debat", "objection", "reprise", "interview", "aveu"]}, {"id": "style", "nom": "Style et diction", "d": "Jeux de mots, silences, textes à dire.", "ids": ["virelangue", "proverbe", "arrivee", "bascule", "simple"]}, {"id": "vente", "nom": "Vente", "d": "Ouvrir, écouter, annoncer un prix.", "ids": ["ouverture", "ratio", "prix", "analogie"]}, {"id": "marque", "nom": "Personal branding", "d": "Promesse, preuve, contenu avec intention.", "ids": ["positionnement", "story", "pitchsoi", "contenu"]}, {"id": "libre", "nom": "Entraînement libre", "d": "Discours à jouer, recherche express, histoire fétiche.", "ids": ["lecture", "express", "fetiche"]}];
 })();
 
 ;
@@ -3752,6 +3752,16 @@ function exListHtml() {
   });
   return o + '</div>';
 }
+function exTexts() { return (D.exerciseTexts && D.exerciseTexts[st.type]) || null; }
+function exTextHtml() {
+  var L = exTexts(); if (!L) return '';
+  var mode = st.mode || 'read'; var ti = (st.ti || 0) % L.length; var tx = L[ti];
+  var h = '<div class="vsw"><button class="' + (mode === 'read' ? 'on' : '') + '" data-act="st-mode" data-v="read">Lire un texte écrit</button><button class="' + (mode === 'free' ? 'on' : '') + '" data-act="st-mode" data-v="free">Improviser</button></div>';
+  if (mode !== 'read') return h;
+  h += '<div class="extx"><div class="eyebrow">Texte ' + (ti + 1) + ' / ' + L.length + '</div><h2>' + esc(tx.t) + '</h2>' + tx.x.map(function (l, i) { return '<p><span class="extn">' + (i + 1) + '</span>' + esc(l) + '</p>'; }).join('') + '</div>';
+  h += '<div class="row"><button class="btn ghost small" data-act="st-text" data-v="-1">‹ Précédent</button><button class="btn ghost small" data-act="st-text" data-v="r">Au hasard</button><button class="btn ghost small" data-act="st-text" data-v="1">Suivant ›</button></div>';
+  return h;
+}
 function vStudio() {
   if (view.sub && view.sub.result) return vResult(view.sub.result);
   if (!st.screen) st.screen = 'ex';
@@ -3771,7 +3781,8 @@ function vStudio() {
   if (st.type === 'lecture') return h + '<div class="card stack"><div class="eyebrow">Avec la caméra</div><p class="muted small" style="margin:0">Lis un discours prêt à l’emploi au prompteur en te filmant : gestes, posture, regard et voix sont analysés.</p><button class="btn" data-act="gest-lec">🎥 Lire un discours avec la caméra</button></div>' + AGDISC.pickerHTML() + '</div>';
   h += '<div class="card stack"><div class="eyebrow">Prépare-toi</div>';
   if (st.type !== 'express') h += '<div class="row">' + D.durations.map(function (d) { return '<button class="chip' + (d === st.dur ? ' on' : '') + '" data-act="st-dur" data-v="' + d + '">' + durLabel(d) + '</button>'; }).join('') + '</div>';
-  if (st.type !== 'express') h += '<div><div class="eyebrow">' + (st.type === 'mot' ? 'Ton mot' : 'Sujet') + '</div><h2>' + esc(st.sujet) + '</h2>' + (st.type === 'debat' && st.stance ? '<p style="margin:6px 0 0">Tu défends : <span class="pill stance ' + (st.stance === 'POUR' ? 'pour' : 'contre') + '">' + st.stance + '</span></p>' : '') + '<div class="row" style="margin-top:6px"><button class="btn small ghost" data-act="st-new">' + (st.type === 'mot' ? 'Tirer au sort un autre mot' : st.type === 'debat' ? 'Autre sujet et autre camp' : 'Autre sujet') + '</button></div></div>';
+  if (st.type !== 'express' && exTexts()) h += exTextHtml();
+  if (st.type !== 'express' && !(exTexts() && (st.mode || 'read') === 'read')) h += '<div><div class="eyebrow">' + (st.type === 'mot' ? 'Ton mot' : 'Sujet') + '</div><h2>' + esc(st.sujet) + '</h2>' + (st.type === 'debat' && st.stance ? '<p style="margin:6px 0 0">Tu défends : <span class="pill stance ' + (st.stance === 'POUR' ? 'pour' : 'contre') + '">' + st.stance + '</span></p>' : '') + '<div class="row" style="margin-top:6px"><button class="btn small ghost" data-act="st-new">' + (st.type === 'mot' ? 'Tirer au sort un autre mot' : st.type === 'debat' ? 'Autre sujet et autre camp' : 'Autre sujet') + '</button></div></div>';
   h += '<div class="callout"><b>' + esc(t.modele) + '</b> — ' + esc(t.aide) + '</div>';
   if (t.exemple) h += '<details class="callout"><summary><b>Voir un modèle</b></summary><p style="margin:8px 0 0;white-space:pre-line">' + esc(t.exemple) + '</p></details>';
   h += '</div>';
@@ -4475,6 +4486,8 @@ document.addEventListener('click', function (ev) {
     case 'st-screen': if (st.rec || st.timerOn) break; st.screen = v; render(); window.scrollTo(0, 0); break;
     case 'st-type': setExType(v); render(); window.scrollTo(0, 0); break;
     case 'st-group': st.exGroup = v || null; render(); window.scrollTo(0, 0); break;
+    case 'st-mode': st.mode = v; render(); break;
+    case 'st-text': var _L = exTexts() || []; if (_L.length) { st.ti = v === 'r' ? Math.floor(Math.random() * _L.length) : ((st.ti || 0) + (+v) + _L.length) % _L.length; } render(); break;
     case 'st-dur': if (st.rec || st.timerOn) break; st.dur = +v; st.ended = false; st.recSec = 0; render(); break;
     case 'st-new': newSubject(); render(); break;
     case 'amb-toggle': if (AGAMB.on()) AGAMB.stop(); else AGAMB.start(st.type); render(); break;
