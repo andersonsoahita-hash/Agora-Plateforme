@@ -1594,6 +1594,11 @@ body{background:#E6E6E9}
 #es::before{inset:0!important;animation:none!important;background:radial-gradient(780px 560px at var(--mx) var(--my),color-mix(in srgb,var(--ga) 26%,transparent),transparent 62%),radial-gradient(720px 620px at 88% 6%,color-mix(in srgb,var(--gb) 24%,transparent),transparent 62%),linear-gradient(rgba(21,19,18,.05) 1px,transparent 1px) 0 0/56px 56px,linear-gradient(90deg,rgba(21,19,18,.05) 1px,transparent 1px) 0 0/56px 56px,#E6E6E9!important}
 .hero::before{content:"";position:absolute;z-index:0;right:-8%;top:50%;width:760px;height:760px;max-width:90vw;transform:translateY(-50%);background:radial-gradient(circle,color-mix(in srgb,var(--gb) 30%,transparent) 0%,color-mix(in srgb,var(--ga) 18%,transparent) 38%,transparent 68%);pointer-events:none}
 .hero>*{position:relative;z-index:1}
+
+/* ===== agv9 : menu à gauche (trois traits) ===== */
+#es #esk{order:-1!important;margin-right:2px}
+#esd{right:auto!important;left:0;transform:translateX(-105%)}
+#esd.on{box-shadow:24px 0 60px -30px rgba(0,0,0,.7)}
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=DM+Sans:wght@400;500;600;700&family=Dancing+Script:wght@600;700&display=swap">
 
@@ -1818,7 +1823,7 @@ body{background:#E6E6E9}
   <header class="a-hd"><div class="a-brand"><svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="22" r="11" fill="#C79746"/><circle cx="142.2" cy="34.4" r="11" fill="#fff"/><circle cx="171" cy="67.6" r="11" fill="#fff"/><circle cx="177.2" cy="111.1" r="11" fill="#fff"/><circle cx="158.9" cy="151.1" r="11" fill="#fff"/><circle cx="122" cy="174.8" r="11" fill="#fff"/><circle cx="78" cy="174.8" r="11" fill="#fff"/><circle cx="41.1" cy="151.1" r="11" fill="#fff"/><circle cx="22.8" cy="111.1" r="11" fill="#fff"/><circle cx="29" cy="67.6" r="11" fill="#fff"/><circle cx="57.8" cy="34.4" r="11" fill="#fff"/><circle cx="100" cy="100" r="22" fill="#C79746"/></svg><div><b>Agora</b><span><i>by Stephen</i></span></div></div>
     <div class="seg" role="tablist"><button type="button" role="tab" data-role="el" class="on">Élève</button><button type="button" role="tab" data-role="tr">Formateur</button></div>
     <button class="w-hl" id="agear" type="button">Mon compte</button>
-    <button class="w-hl w-quit" id="esx" type="button">Quitter l’espace</button><button id="esk" type="button" aria-label="Plus d’options" aria-expanded="false" aria-controls="esd"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg></button></header>
+    <button class="w-hl w-quit" id="esx" type="button">Quitter l’espace</button><button id="esk" type="button" aria-label="Menu" aria-expanded="false" aria-controls="esd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button></header>
   <section id="ehero"></section>
   <main id="esb"></main>
   <nav id="estab" aria-label="Navigation"></nav>
@@ -2926,9 +2931,9 @@ function esdPaint(){var d=document.getElementById('esd');if(!d)return;var tr=(ty
  var I=function(p){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>'};
  d.innerHTML='<div class="esd-h"><span class="esd-k">Raccourcis</span><button type="button" class="esd-x" data-dx aria-label="Fermer">✕</button></div><div class="esd-t" aria-hidden="true"><i></i></div>'+
  (tr?'':'<div class="esd-p"><span class="esd-k">Ta progression</span><div class="esd-bar"><i style="width:'+pc+'%"></i></div><p><b>'+n+'</b> leçon'+(n>1?'s':'')+' sur '+t+(nx?' · prochaine : '+esc(nx.titre):'')+'</p></div>')+
- '<div class="esd-l"><div class="esd-g">Mon espace</div><button type="button" data-a="esdacc">'+I('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>')+'Mon compte</button>'+
+ '<div class="esd-l">'+(tr?'':'<div class="esd-g">Aller à</div>'+TABS.map(function(x){return '<button type="button" data-tab="'+x[0]+'">'+I(x[2])+x[1]+'</button>'}).join(''))+'<div class="esd-g">Mon espace</div><button type="button" data-a="esdacc">'+I('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>')+'Mon compte</button>'+
  '<button type="button" data-a="comwa">'+I('<path d="M4 5h16v12H8l-4 4z"/>')+'Groupe WhatsApp</button>'+
- '<div class="esd-g">Aide</div><button type="button" data-a="contact">'+I('<path d="M3 6h18v12H3z"/><path d="M3 7l9 7 9-7"/>')+'Nous écrire</button>'+
+ '<div class="esd-g">Aide</div><button type="button" data-a="contact" data-sub="avis">'+I('<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>')+'Donner mon avis</button><button type="button" data-a="contact">'+I('<path d="M3 6h18v12H3z"/><path d="M3 7l9 7 9-7"/>')+'Nous écrire</button>'+
  '<a href="../conditions/" target="_blank" rel="noopener">'+I('<path d="M6 3h9l3 3v15H6z"/><path d="M9 11h6M9 15h6"/>')+'Conditions générales</a></div><p class="esd-s"><b>Agora</b> · by Stephen</p>'}
 /* ---- fiche contact ---- */
 var CONTACT_MAIL='';
