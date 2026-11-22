@@ -2091,7 +2091,7 @@ var A=window.AG||{S:{online:true,queue:0},toast:function(){},paintNet:function()
 var $=function(q,r){return (r||document).querySelector(q)};
 function esc(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function byId(a,id){for(var i=0;i<a.length;i++)if(a[i].id===id)return a[i]}
-var LV=[null,{n:'Fondements et structure',m:['p1','p2']},{n:'Langage et argumentation',m:['p3','pa','cx']},{n:'Voix et corps',m:['p4','p5','st']},{n:'Mémoire, public, confiance',m:['p6','p7','p8']},{n:'Entraînement et terrains',m:['p9','p10','p11','po','ve']}];
+var LV=[null,{n:'Fondements et structure',m:['p1','p2']},{n:'Langage et argumentation',m:['p3','pa','cx']},{n:'Voix et corps',m:['p4','p5','st']},{n:'Mémoire, public, confiance',m:['p6','p7','p8']},{n:'Entraînement et terrains',m:['p9','p10','p11','po','ve','ch','pb','ng']}];
 function lvOf(mid){for(var i=1;i<6;i++)if(LV[i].m.indexOf(mid)>-1)return i}
 function lessonsOf(lv){return D.lessons.filter(function(l){return lvOf(l.m)===lv})}
 function modTitle(id){return byId(D.modules,id).titre}
