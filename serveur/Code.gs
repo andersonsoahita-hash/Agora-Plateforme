@@ -76,6 +76,29 @@ function hash_(mdp, email) {
     .map(function (x) { return ('0' + (x & 255).toString(16)).slice(-2); }).join('');
 }
 
+/* ---------- sécurité : mots de passe renforcés, limites d'essais, saisies nettoyées ----------
+   Les comptes existants ne changent pas : l'ancien format reste accepté, puis est remplacé sans bruit à la prochaine connexion réussie. */
+function sha_(octets) { return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, octets); }
+function hex_(oct) { return oct.map(function (x) { return ('0' + (x & 255).toString(16)).slice(-2); }).join(''); }
+function hashV2_(mdp, email, sel) { // sel aléatoire propre à chaque compte + 300 tours : bien plus lent à deviner qu'un simple SHA-256
+  var h = sha_(sel + '|' + email + '|' + mdp);
+  for (var i = 0; i < 300; i++) h = sha_(h.concat(Utilities.newBlob(sel).getBytes()));
+  return 'v2:' + sel + ':' + hex_(h);
+}
+function nouveauHash_(mdp, email) { return hashV2_(mdp, email, alea_(16, 'abcdefghijklmnopqrstuvwxyz0123456789')); }
+function mdpOk_(stocke, mdp, email) { // vrai si le mot de passe correspond, ancien ou nouveau format
+  stocke = String(stocke || ''); if (!stocke) return false;
+  if (stocke.indexOf('v2:') === 0) { var p = stocke.split(':'); return p.length === 3 && hashV2_(mdp, email, p[1]) === stocke; }
+  return stocke === hash_(mdp, email);
+}
+function trop_(cle, max) { return Number(CacheService.getScriptCache().get(cle) || 0) >= max; } // limite atteinte ?
+function compte_(cle, sec) { var c = CacheService.getScriptCache(); c.put(cle, String(Number(c.get(cle) || 0) + 1), sec); }
+function oubli_(cle) { CacheService.getScriptCache().remove(cle); }
+function sur_(x, n) { // texte venu d'un visiteur : longueur limitée, et jamais interprété comme une formule par Google Sheets
+  var t = cut_(x, n).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '');
+  return /^[=+\-@]/.test(t) && !/^[+\-]?[\d\s().\-]+$/.test(t) ? "'" + t : t;
+}
+
 /* ---------- menu dans le Sheet ---------- */
 function onOpen() {
   SpreadsheetApp.getUi().createMenu('Agora')
@@ -397,12 +420,14 @@ function doPost(e) {
     var em = String(b.email || '').trim().toLowerCase();
 
     if (a === 'demande') {
-      if (!/^\S+@\S+\.\S+$/.test(em) || !b.nom || !b.prenoms) return rep_({ ok: false, erreur: 'Champs manquants' });
+      if (em.length > 120 || !/^[^\s<>"'`\\]+@[^\s<>"'`\\]+\.[^\s<>"'`\\]+$/.test(em) || !b.nom || !b.prenoms) return rep_({ ok: false, erreur: 'Champs manquants' });
+      if (trop_('dem_h', 60) || trop_('dem_' + em, 5)) return rep_({ ok: false, erreur: 'Trop de demandes. Réessaie dans un moment.' });
+      compte_('dem_h', 3600); compte_('dem_' + em, 3600);
       var ex = trouver_(C.mail, em);
       if (ex && etat_(ex.v) !== 'supprimé') return rep_({ ok: true, etat: etat_(ex.v) });
       if (ex) { effacerSeances_(em); effacerProgres_(em, ''); ex.sh.deleteRow(ex.r); }
       var role = String(b.role || '').toLowerCase().indexOf('form') === 0 ? 'formateur' : 'élève';
-      feuille_('Comptes').appendRow([new Date(), b.nom, b.prenoms, em, b.tel || '', b.age || '', role, lieu_(b), b.situation || '', String(b.projet || '').slice(0, 500), 'en attente', '', '', '', '', '', '', '', '']);
+      feuille_('Comptes').appendRow([new Date(), sur_(b.nom, 80), sur_(b.prenoms, 80), em, sur_(b.tel, 30), sur_(b.age, 4), role, sur_(lieu_(b), 200), sur_(b.situation, 120), sur_(b.projet, 500), 'en attente', '', '', '', '', '', '', '', '']);
       journal_('Nouvelle demande (' + role + ')' + (/D[ée]veloppeur Anderson/i.test(String(b.projet || '')) ? ' [compte test]' : '') + ' : ' + em + (b.cgu ? ' · conditions acceptées (version ' + cut_(b.cgu, 10) + ')' : ''));
       return rep_({ ok: true, etat: 'en attente' });
     }
@@ -410,17 +435,22 @@ function doPost(e) {
     if (a === 'activer') { // code à usage unique + création du mot de passe (ordinateur)
       var t = trouver_(C.mail, em);
       if (!t || etat_(t.v) !== 'validé') return rep_({ ok: false, erreur: 'Compte non validé.' });
-      if (!t.v[C.code] || String(t.v[C.code]).toUpperCase() !== String(b.code || '').trim().toUpperCase()) return rep_({ ok: false, erreur: 'Code invalide ou déjà utilisé.' });
+      if (trop_('act_' + em, 8)) return rep_({ ok: false, erreur: 'Trop d’essais. Réessaie dans 15 minutes.' });
+      if (!t.v[C.code] || String(t.v[C.code]).toUpperCase() !== String(b.code || '').trim().toUpperCase()) { compte_('act_' + em, 900); return rep_({ ok: false, erreur: 'Code invalide ou déjà utilisé.' }); }
+      oubli_('act_' + em);
       if (String(b.mdp || '').length < 6) return rep_({ ok: false, erreur: 'Mot de passe : 6 caractères minimum.' });
       var jt = jeton_();
-      set_(t, C.code, ''); set_(t, C.pc, b.appareil || ''); set_(t, C.pw, hash_(b.mdp, em)); set_(t, C.tok, jt); set_(t, C.last, new Date());
+      set_(t, C.code, ''); set_(t, C.pc, b.appareil || ''); set_(t, C.pw, nouveauHash_(String(b.mdp), em)); set_(t, C.tok, jt); set_(t, C.last, new Date());
       journal_('Compte activé : ' + em);
       var r1 = profil_(t.v); r1.ok = true; r1.etat = 'validé'; r1.jeton = jt; return rep_(r1);
     }
 
     if (a === 'connexion') {
       var c = trouver_(C.mail, em);
-      if (!c || !c.v[C.pw] || c.v[C.pw] !== hash_(String(b.mdp || ''), em)) return rep_({ ok: false, erreur: 'E-mail ou mot de passe incorrect.' });
+      if (trop_('cx_' + em, 10)) return rep_({ ok: false, erreur: 'Trop d’essais. Réessaie dans 15 minutes.' });
+      if (!c || !mdpOk_(c.v[C.pw], String(b.mdp || ''), em)) { compte_('cx_' + em, 900); return rep_({ ok: false, erreur: 'E-mail ou mot de passe incorrect.' }); }
+      oubli_('cx_' + em);
+      if (String(c.v[C.pw]).indexOf('v2:') !== 0) { try { var nh = nouveauHash_(String(b.mdp || ''), em); if (mdpOk_(nh, String(b.mdp || ''), em)) set_(c, C.pw, nh); } catch (e2) {} } // mise à niveau silencieuse
       var s = etat_(c.v); if (s !== 'validé') return rep_({ ok: true, etat: s });
       if (c.v[C.pc] && c.v[C.pc] !== b.appareil) return rep_({ ok: true, etat: 'autre appareil' });
       var j2 = jeton_();
