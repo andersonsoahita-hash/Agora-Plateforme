@@ -1,5 +1,5 @@
 /* Agora — fonctionne sans réseau : réseau d'abord (toujours la dernière version), cache en secours. Le serveur (script.google.com) n'est jamais mis en cache. */
-const CACHE = 'agora-pl-1';
+const CACHE = 'agora-pl-2';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'gest-engine.js', 'gest-voice.js', 'gest-ui.js'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => Promise.all(SHELL.map(f => c.add(new Request(f, { cache: 'reload' })).catch(() => {})))).then(() => self.skipWaiting()));
@@ -27,8 +27,8 @@ self.addEventListener('fetch', e => {
     return;
   }
   if (req.mode === 'navigate') {
-    e.respondWith(avecDelai(req, 4000).then(r => enCache('index.html', r)).catch(() => caches.match('index.html', { ignoreSearch: true }).then(r => r || caches.match('./', { ignoreSearch: true })).then(r => r || new Response('Hors ligne — ouvre Agora une première fois avec du réseau.', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } }))));
+    e.respondWith(avecDelai(new Request(req, { cache: 'no-cache' }), 4000).then(r => enCache('index.html', r)).catch(() => caches.match('index.html', { ignoreSearch: true }).then(r => r || caches.match('./', { ignoreSearch: true })).then(r => r || new Response('Hors ligne — ouvre Agora une première fois avec du réseau.', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } }))));
     return;
   }
-  e.respondWith(avecDelai(req, 4000).then(r => enCache(req, r)).catch(() => caches.match(req, { ignoreSearch: true }).then(r => r || Response.error())));
+  e.respondWith(avecDelai(new Request(req, { cache: 'no-cache' }), 4000).then(r => enCache(req, r)).catch(() => caches.match(req, { ignoreSearch: true }).then(r => r || Response.error())));
 });
