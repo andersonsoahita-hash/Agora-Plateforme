@@ -362,7 +362,7 @@ function lieuLire_(v) { // « Madagascar — Ariary (Ar) · Antananarivo · Anal
 }
 function carte_(moi, complet) {
   var sh = feuille_('Comptes'), n = sh.getLastRow(), d = n > 1 ? sh.getRange(2, 1, n - 1, NCOL).getValues() : [];
-  var P = {}, V = {}, Qm = {}, total = 0, K = 3;
+  var P = {}, V = {}, Qm = {}, total = 0, K = 2, KV = 1; // quartier : 2 membres minimum ; ville : dès 1 (chiffres seuls, jamais de nom)
   var mv = moi ? sansAccent_(moi.ville) : '', mp = moi ? moi.pays : '';
   d.forEach(function (v) {
     if (etat_(v) !== 'validé' || estTest_(v)) return;
@@ -372,7 +372,7 @@ function carte_(moi, complet) {
     var kv = pays + '|' + sansAccent_(l.ville); V[kv] = V[kv] || { pays: pays, ville: l.ville, n: 0 }; V[kv].n++;
     if (moi && pays === mp && sansAccent_(l.ville) === mv && l.quartier) { var kq = sansAccent_(l.quartier); Qm[kq] = Qm[kq] || { quartier: l.quartier, n: 0 }; Qm[kq].n++; }
   });
-  var villes = Object.keys(V).map(function (k) { return V[k]; }).filter(function (x) { return complet || x.n >= K; }).sort(function (a, b) { return b.n - a.n; });
+  var villes = Object.keys(V).map(function (k) { return V[k]; }).filter(function (x) { return complet || x.n >= KV; }).sort(function (a, b) { return b.n - a.n; });
   var r = { total: total, pays: Object.keys(P).map(function (k) { return { pays: k, n: P[k] }; }).sort(function (a, b) { return b.n - a.n; }), villes: villes, seuil: K };
   if (moi) {
     var nv = V[mp + '|' + mv] ? V[mp + '|' + mv].n : 0;
