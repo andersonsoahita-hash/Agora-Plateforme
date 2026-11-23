@@ -1,4 +1,4 @@
-window.AGORA_BUILD='57216529b8';
+window.AGORA_BUILD='264ca6bddb';
 /* ============================================================
    Analyse de la voix (signal) et du texte (transcription)
    Tout se calcule dans la page. Aucun audio n'est envoyé nulle part.
@@ -1439,17 +1439,17 @@ var AGAMB = (function () {
    cachees (mains cachées) · basses (bras ballants) · croises (bras croisés) · regard-bas (tête baissée)
    regard-cote (tête de côté) · balancement · deplacement · contact (main sur le visage/corps) · contradiction
    Exemple : cachees:[{u:'https://youtu.be/XXXXXXXXXXX?t=95',t:'Des mains qui accompagnent le propos',d:30}] */
-/* Liens ajoutés sans avoir été regardés : ils démarrent au début de la vidéo. Pour viser le bon geste, ajoute ?t=SECONDES au lien. */
+/* Vidéos en français (TEDx, lecteur officiel TED), choisies d'après leur titre : à vérifier en les regardant. */
 window.AGREF={
-  'cachees':[{u:'https://youtu.be/4cXEZq9PbMs',t:'Allan Pease · Montrer ses mains (TEDx)',d:45},{u:'https://youtu.be/mYD7Y9CXeUw',t:'Jill Bolte Taylor · des mains qui accompagnent le récit',d:45}],
-  'basses':[{u:'https://youtu.be/4cXEZq9PbMs',t:'Allan Pease · gestes à hauteur de poitrine (TEDx)',d:45}],
-  'croises':[{u:'https://youtu.be/e_R60Z7t2ps',t:'Allan Pease · Closed body language',d:45}],
-  'regard-bas':[{u:'https://youtu.be/eWynt87PaJ0',t:'Barack Obama · la tête haute (convention 2004)',d:45}],
-  'regard-cote':[{u:'https://youtu.be/f6YgiwMr0JU',t:'Ken Robinson · il regarde la salle',d:45}],
+  'cachees':[{u:'https://embed.ted.com/talks/samuel_savarel_reveillez_l_orateur_qui_sommeille_en_vous',t:'Samuel Savarel · Réveillez l’orateur qui sommeille en vous (TEDx)',d:45},{u:'https://embed.ted.com/talks/pascal_haumont_devenez_un_meilleur_orateur_imitez_les_autres',t:'Pascal Haumont · Devenez un meilleur orateur : imitez les autres (TEDx)',d:45}],
+  'basses':[{u:'https://embed.ted.com/talks/samuel_savarel_reveillez_l_orateur_qui_sommeille_en_vous',t:'Samuel Savarel · Réveillez l’orateur qui sommeille en vous (TEDx)',d:45},{u:'https://embed.ted.com/talks/pascal_haumont_devenez_un_meilleur_orateur_imitez_les_autres',t:'Pascal Haumont · Devenez un meilleur orateur : imitez les autres (TEDx)',d:45}],
+  'croises':[{u:'https://embed.ted.com/talks/samuel_savarel_reveillez_l_orateur_qui_sommeille_en_vous',t:'Samuel Savarel · Réveillez l’orateur qui sommeille en vous (TEDx)',d:45},{u:'https://embed.ted.com/talks/pascal_haumont_devenez_un_meilleur_orateur_imitez_les_autres',t:'Pascal Haumont · Devenez un meilleur orateur : imitez les autres (TEDx)',d:45}],
+  'regard-bas':[{u:'https://embed.ted.com/talks/samuel_savarel_reveillez_l_orateur_qui_sommeille_en_vous',t:'Samuel Savarel · Réveillez l’orateur qui sommeille en vous (TEDx)',d:45}],
+  'regard-cote':[{u:'https://embed.ted.com/talks/samuel_savarel_reveillez_l_orateur_qui_sommeille_en_vous',t:'Samuel Savarel · Réveillez l’orateur qui sommeille en vous (TEDx)',d:45}],
   'balancement':[],
   'deplacement':[],
-  'contact':[{u:'https://youtu.be/f6YgiwMr0JU',t:'Ken Robinson · posture calme, gestes naturels',d:45}],
-  'contradiction':[{u:'https://youtu.be/eIho2S0ZahI',t:'Julian Treasure · voix, rythme et silences',d:45}]
+  'contact':[{u:'https://embed.ted.com/talks/samuel_savarel_reveillez_l_orateur_qui_sommeille_en_vous',t:'Samuel Savarel · Réveillez l’orateur qui sommeille en vous (TEDx)',d:45},{u:'https://embed.ted.com/talks/pascal_haumont_devenez_un_meilleur_orateur_imitez_les_autres',t:'Pascal Haumont · Devenez un meilleur orateur : imitez les autres (TEDx)',d:45}],
+  'contradiction':[{u:'https://embed.ted.com/talks/olivier_courbier_donnez_de_l_impact_a_vos_discours',t:'Olivier Courbier · Donnez de l’impact à vos discours (TEDx)',d:45}]
 };
 window.AGREF_play=function(x){if(x&&/^https:\/\/embed\.ted\.com\//.test(x.u||''))return x.u;
   var m=String(x.u||'').match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);if(!m)return '';
@@ -1458,13 +1458,14 @@ window.AGREF_play=function(x){if(x&&/^https:\/\/embed\.ted\.com\//.test(x.u||'')
   return 'https://www.youtube-nocookie.com/embed/'+m[1]+'?rel=0&modestbranding=1&playsinline=1&autoplay=1&start='+s+(x.d?'&end='+(s+(+x.d)):'');
 };
 
-/* Vidéos « comment faire » : une par type d'exercice, lues dans l'appli (en ligne). TED : lecteur officiel, sous-titres français. */
+/* Vidéos « comment faire » : par type d'exercice, en français, lues dans l'appli (en ligne). */
 window.AGREF_EX={
-  argumenter:[{u:'https://embed.ted.com/talks/lang/fr/simon_sinek_how_great_leaders_inspire_action',t:'Simon Sinek · Convaincre en partant du pourquoi (TED)'}],
-  recit:[{u:'https://embed.ted.com/talks/lang/fr/andrew_stanton_the_clues_to_a_great_story',t:'Andrew Stanton · Les indices d’une grande histoire (TED)'}],
-  fetiche:[{u:'https://embed.ted.com/talks/lang/fr/andrew_stanton_the_clues_to_a_great_story',t:'Andrew Stanton · Les indices d’une grande histoire (TED)'}],
-  discours:[{u:'https://embed.ted.com/talks/lang/fr/chris_anderson_teds_secret_to_great_public_speaking',t:'Chris Anderson · Le secret d’une grande prise de parole (TED)'}],
-  aveu:[{u:'https://embed.ted.com/talks/lang/fr/brene_brown_the_power_of_vulnerability',t:'Brené Brown · Le pouvoir de la vulnérabilité (TED)'}]
+  argumenter:[{u:'https://embed.ted.com/talks/jerome_lavillat_peut_on_convaincre_les_autres',t:'Jérôme Lavillat · Peut-on convaincre les autres ? (TEDx)',d:45},{u:'https://embed.ted.com/talks/elina_creveau_la_rhetorique_une_arme_dangereuse_mais_persuasive',t:'Elina Creveau · La rhétorique, une arme dangereuse mais persuasive (TEDx)',d:45}],
+  debat:[{u:'https://embed.ted.com/talks/elina_creveau_la_rhetorique_une_arme_dangereuse_mais_persuasive',t:'Elina Creveau · La rhétorique, une arme dangereuse mais persuasive (TEDx)',d:45}],
+  recit:[{u:'https://embed.ted.com/talks/sylvie_mombo_le_conte_les_mots_pour_guerir_nos_maux',t:'Sylvie Mombo · Le conte, les mots pour guérir nos maux (TEDx)',d:45},{u:'https://embed.ted.com/talks/joane_ukeiwe_la_force_du_conte_kanak',t:'Joane Ukeiwe · La force du conte kanak (TEDx)',d:45}],
+  fetiche:[{u:'https://embed.ted.com/talks/joane_ukeiwe_la_force_du_conte_kanak',t:'Joane Ukeiwe · La force du conte kanak (TEDx)',d:45}],
+  discours:[{u:'https://embed.ted.com/talks/olivier_courbier_donnez_de_l_impact_a_vos_discours',t:'Olivier Courbier · Donnez de l’impact à vos discours (TEDx)',d:45}],
+  aveu:[{u:'https://embed.ted.com/talks/vanessa_millet_la_vulnerabilite_mon_heroine',t:'Vanessa Millet · La vulnérabilité, mon héroïne (TEDx)',d:45}]
 };
 window.AGREF_howBtn=function(type){return (window.AGREF_EX&&(AGREF_EX[type]||[]).length)?'<button type="button" class="btn ghost" data-howto="'+type+'" style="margin:8px 0">▶ Voir comment faire cet exercice</button>':''};
 (function(){
