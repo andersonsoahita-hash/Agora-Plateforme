@@ -15,9 +15,10 @@ var FEUILLES = {
   formateurs: ['Mis à jour', 'Email', 'Niveau', 'Statut', 'Demandé le', 'Décidé par'],
   activites: ['Id', 'Créé le', 'Type', 'Auteur', 'Nom', 'Titre ou sujet', 'Mode', 'Format', 'Camp A', 'Camp B', 'Date', 'Heure', 'Lieu ou lien', 'Places', 'Statut'],
   inscrits: ['Id activité', 'Email', 'Nom', 'Date'],
+  avis: ['Id', 'Date', 'Sujet', 'Nom', 'Email', 'Message', 'Statut'],
   seances: ['Reçu le', 'Email', 'Id', 'Date', 'Sujet', 'Type', 'Durée (s)', 'Mots', 'Mots/min', 'Tics', 'Logos', 'Ethos', 'Pathos', 'Source', 'Transcription', 'Détail (JSON)']
 };
-var CLEF = { 'Comptes': 'comptes', 'Journal': 'journal', 'Séances': 'seances', 'Admins': 'admins', 'Progrès': 'progres', 'Compta': 'compta', 'Tests': 'tests', 'Certificats': 'certificats', 'Formateurs': 'formateurs', 'Activités': 'activites', 'Inscrits': 'inscrits' };
+var CLEF = { 'Comptes': 'comptes', 'Journal': 'journal', 'Séances': 'seances', 'Admins': 'admins', 'Progrès': 'progres', 'Compta': 'compta', 'Tests': 'tests', 'Certificats': 'certificats', 'Formateurs': 'formateurs', 'Activités': 'activites', 'Inscrits': 'inscrits', 'Avis': 'avis' };
 var NPRO = 8, MAXPRO = 60, NCPT = 13;
 var C = { date: 0, nom: 1, pre: 2, mail: 3, tel: 4, age: 5, role: 6, pays: 7, sit: 8, proj: 9, st: 10, code: 11, exp: 12, last: 13, pc: 14, mob: 15, pw: 16, tok: 17, mtok: 18 };
 var NCOL = 19;
@@ -34,7 +35,7 @@ var DUREE_CODE = 600; // le code de liaison du téléphone vaut 10 minutes
 function feuille_(nom) {
   var ss = SpreadsheetApp.getActiveSpreadsheet(), sh = ss.getSheetByName(nom), cle = CLEF[nom];
   if (!sh) { sh = ss.insertSheet(nom); sh.appendRow(FEUILLES[cle]); sh.setFrozenRows(1); if (nom === 'Séances') sh.getRange(1, 4, sh.getMaxRows(), 1).setNumberFormat('@'); }
-  var nc = nom === 'Comptes' ? NCOL : (nom === 'Séances' ? NSEA : (nom === 'Admins' ? NADM : (nom === 'Progrès' ? NPRO : (nom === 'Compta' ? NCPT : (FEUILLES[cle] && /^(Tests|Certificats|Formateurs|Activités|Inscrits)$/.test(nom) ? FEUILLES[cle].length : 0)))));
+  var nc = nom === 'Comptes' ? NCOL : (nom === 'Séances' ? NSEA : (nom === 'Admins' ? NADM : (nom === 'Progrès' ? NPRO : (nom === 'Compta' ? NCPT : (FEUILLES[cle] && /^(Tests|Certificats|Formateurs|Activités|Inscrits|Avis)$/.test(nom) ? FEUILLES[cle].length : 0)))));
   if (nc) {
     if (sh.getMaxColumns() < nc) sh.insertColumnsAfter(sh.getMaxColumns(), nc - sh.getMaxColumns());
     sh.getRange(1, 1, 1, nc).setValues([FEUILLES[cle]]);
@@ -621,6 +622,22 @@ function doPost(e) {
       }
       var tIns = aIns(), cpt = {}, mien = {}, noms = {}; tIns.forEach(function (x) { cpt[x.id] = (cpt[x.id] || 0) + 1; if (x.em === ac.em) mien[x.id] = 1; (noms[x.id] = noms[x.id] || []).push(aNom(x.nom)); });
       return rep_({ ok: true, moi: ac.em, activites: aTout().reverse().slice(0, 100).map(function (x) { return { id: x.id, type: x.type, titre: x.titre, mode: x.mode, fmt: x.fmt, a: x.a, b: x.b, date: x.date, heure: x.heure, lieu: x.lieu, max: x.max, par: aNom(x.nom), mien: x.auteur === ac.em, n: cpt[x.id] || 0, inscrit: !!mien[x.id], noms: (noms[x.id] || []).slice(0, 12) }; }) });
+    }
+    if (a === 'avisEnvoi') { // public : un visiteur ou un élève donne son avis ou écrit à l'équipe (limité, jamais interprété)
+      var mA = sur_(b.msg, 1500).trim(); if (mA.length < 5) return rep_({ ok: false, erreur: 'Écris ton message.' });
+      if (trop_('avi_h', 60) || trop_('avi_' + (em || 'x'), 5)) return rep_({ ok: false, erreur: 'Trop de messages. Réessaie dans un moment.' });
+      compte_('avi_h', 3600); compte_('avi_' + (em || 'x'), 3600);
+      var idA = 'M' + alea_(6, 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789');
+      feuille_('Avis').appendRow([idA, iso_(''), sur_(b.sujet, 80), sur_(b.nom, 80), sur_(em, 120), mA, 'nouveau']);
+      journal_('Message reçu ' + idA + ' (' + sur_(b.sujet, 40) + ')');
+      return rep_({ ok: true, id: idA });
+    }
+    if (a === 'avisListe' || a === 'avisStatut') { // console : lecture et classement des messages
+      var qv = qui_(b); if (!qv) return rep_({ ok: false, erreur: 'Clé invalide' });
+      if (!peut_(qv, 'voir')) return rep_({ ok: false, erreur: 'Droit insuffisant.' });
+      var shV = feuille_('Avis'), dV = lignes_('Avis', 7);
+      if (a === 'avisStatut') { var stN = /^(nouveau|lu|archivé)$/.test(b.statut) ? b.statut : 'lu'; for (var iv = 0; iv < dV.length; iv++) if (String(dV[iv][0]) === String(b.id)) { shV.getRange(iv + 2, 7).setValue(stN); return rep_({ ok: true }); } return rep_({ ok: false, erreur: 'Introuvable.' }); }
+      return rep_({ ok: true, avis: dV.map(function (r) { return { id: String(r[0]), date: String(r[1]), sujet: String(r[2]), nom: String(r[3]), email: String(r[4]), msg: String(r[5]), st: String(r[6]) || 'nouveau' }; }).reverse().slice(0, 300) });
     }
     if (a === 'actTout' || a === 'actSupprimer') { // console
       var qa = qui_(b); if (!qa) return rep_({ ok: false, erreur: 'Clé invalide' });
