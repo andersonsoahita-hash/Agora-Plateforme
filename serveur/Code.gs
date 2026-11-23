@@ -509,8 +509,8 @@ function doPost(e) {
 
     /* --- séances et avancement --- */
     if (a === 'seance') { // le téléphone envoie ses séances (transcription comprise)
-      var am = auth_(b, 'm'); if (!am.u) return rep_({ ok: true, etat: am.etat });
-      var nb = ecrireSeances_(am.em, b.seances, 'téléphone');
+      var cs = b.canal === 'p' ? 'p' : 'm', am = auth_(b, cs); if (!am.u) return rep_({ ok: true, etat: am.etat });
+      var nb = ecrireSeances_(am.em, b.seances, cs === 'p' ? 'plateforme' : 'téléphone');
       return rep_({ ok: true, etat: 'validé', recu: nb });
     }
     if (a === 'lecons') { // léger : les leçons terminées sur la plateforme (le téléphone l'interroge toutes les 15 s)
@@ -519,7 +519,7 @@ function doPost(e) {
     }
     if (a === 'avancement') { // lu par la plateforme (canal p) et par le téléphone (canal m)
       var cn = b.canal === 'm' ? 'm' : 'p', av = auth_(b, cn); if (!av.u) return rep_({ ok: true, etat: av.etat });
-      var ls = lireSeances_(av.em, 40, 8000), r5 = profil_(av.u.v);
+      var ls = lireSeances_(av.em, 150, 4000), r5 = profil_(av.u.v);
       r5.ok = true; r5.etat = 'validé'; r5.seances = ls; r5.bilan = bilan_(ls); r5.mobile = !!av.u.v[C.mob] && !!av.u.v[C.mtok];
       return rep_(r5);
     }

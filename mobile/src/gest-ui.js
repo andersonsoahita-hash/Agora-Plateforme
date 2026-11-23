@@ -293,6 +293,7 @@ async function fixMp4(blob,sec){
   const e=find('mehd');if(e>0){const ev=head[e+4];if(ev===0&&dv.getUint32(e+8)===0)dv.setUint32(e+8,Math.round(sec*ts));else if(ev===1&&dv.getUint32(e+8)===0&&dv.getUint32(e+12)===0)dv.setUint32(e+12,Math.round(sec*ts));}
   return new Blob([head,blob.slice(N)],{type:blob.type});
 }
+const tmo=(p,ms)=>Promise.race([p,new Promise(r=>setTimeout(()=>r(undefined),ms))]);
 async function finish(){
   if(!running||!an)return;running=false;const words=transcript.map(o=>({w:o.w,t:o.t})).sort((x,y)=>x.t-y.t);if(!DEMO)words.forEach(o=>an.addWord(o.w,o.t));const r=an.finish(),fr=frames,asp=proc.width/proc.height,fcp=FCP.slice();
   const pcmC=pcmChunks.slice(),sr=aSR;stopPCM();
@@ -305,13 +306,13 @@ async function finish(){
   const rmsOf=a=>{let q=0;for(let i=0;i<a.length;i+=7)q+=a[i]*a[i];return Math.sqrt(q/Math.max(1,a.length/7));};
   let pcm=null,src='micro';
   try{pcm=AgoraVoice.resample16(pcmC,sr);}catch(e){console.error(e);}
-  if((!pcm||pcm.length<32000||rmsOf(pcm)<0.002)&&blob){try{const AC=window.AudioContext||window.webkitAudioContext,ac=new AC(),buf=await ac.decodeAudioData(await blob.arrayBuffer());const p2=AgoraVoice.resample16([buf.getChannelData(0)],buf.sampleRate);try{ac.close()}catch(e){}if(p2&&p2.length>=32000&&rmsOf(p2)>(pcm?rmsOf(pcm):0)){pcm=p2;src='vidéo';}}catch(e){console.error(e);}}
+  if((!pcm||pcm.length<32000||rmsOf(pcm)<0.002)&&blob){try{const AC=window.AudioContext||window.webkitAudioContext,ac=new AC(),buf=await tmo(ac.decodeAudioData(await blob.arrayBuffer()),10000);const p2=AgoraVoice.resample16([buf.getChannelData(0)],buf.sampleRate);try{ac.close()}catch(e){}if(p2&&p2.length>=32000&&rmsOf(p2)>(pcm?rmsOf(pcm):0)){pcm=p2;src='vidéo';}}catch(e){console.error(e);}}
   item.audioInfo={sec:pcm?Math.round(pcm.length/160)/100:0,rms:pcm?Math.round(rmsOf(pcm)*10000)/10000:0,src,micro:pcmC.length};
-  try{item.sig=pcm&&pcm.length>=32000?await AO_ANALYSIS.analyzeSignal(pcm):null;}catch(e){console.error(e);item.sig=null;}
+  try{item.sig=pcm&&pcm.length>=32000?(await tmo(AO_ANALYSIS.analyzeSignal(pcm),40000))||null:null;}catch(e){console.error(e);item.sig=null;}
   analyseText(item,words.map(w=>w.w).join(' '));
   c.classList.remove('on');c.style.fontSize='';
   const meta=ls.get('agt_hist',[]);meta.unshift({id:item.id,date:item.date,score:r.score.total,duree:r.duree,video:!!blob,prio:(r.priorites||[]).map(id=>(r.issues.find(i=>i.id===id)||{}).title).filter(Boolean),exo:EXO||undefined,an:EXO?{sig:item.sig&&item.sig.ok?item.sig:null,txt:item.txt,pil:item.pil,text:item.text}:undefined});
-  try{await idb.put(item);}catch(e){console.error(e);}
+  try{await tmo(idb.put(item),10000);}catch(e){console.error(e);}
   meta.slice(6).forEach(m=>idb.del(m.id));ls.set('agt_hist',meta.slice(0,6));
   openReport(item);
 }
@@ -345,7 +346,7 @@ function openReport(it){
     <div><h3 style="margin:0 0 4px">${r.issues.length?r.issues.length+' moment'+(r.issues.length>1?'s':'')+' à revoir':'Rien de grave détecté'}</h3><div class="note">${fmt(r.duree)} · corps visible ${r.corpsVisiblePct} % du temps</div><div class="note">Note indicative sur 100.</div></div></div></div>
   <div class="tabs" id="tabs"><button data-tab="g" class="on">Gestes</button><button data-tab="v">Voix</button><button data-tab="s">Discours</button></div>
   <div id="tab-g"><div class="card"><h3>Ta vidéo</h3>
-   ${it.blob?`<div class="vwrap" style="aspect-ratio:${it.asp||9/16}"><video id="rv" playsinline controls></video><canvas id="rc"></canvas></div><div class="ctl" style="margin-top:10px"><button class="btn sec" id="saveVid">Enregistrer la vidéo</button><button class="btn sec" id="delRep">Supprimer cet essai</button></div><p class="note">La vidéo est gardée uniquement dans ce navigateur (les 6 derniers essais), jamais envoyée. Enregistre-la dans tes Photos pour la garder.</p>`:'<p class="note">Vidéo non disponible pour cet essai (enregistrement non pris en charge ou supprimé).</p>'}
+   ${it.blob?`<div class="vwrap" style="aspect-ratio:${it.asp||9/16}"><video id="rv" playsinline controls></video><canvas id="rc"></canvas></div><div class="ctl" style="margin-top:10px"><button class="btn sec" id="saveVid">Enregistrer la vidéo</button><button class="btn sec" id="delVid">Supprimer la vidéo (garder l’analyse)</button><button class="btn sec" id="delRep">Supprimer cet essai</button></div><p class="note">La vidéo est gardée uniquement dans ce navigateur (les 6 derniers essais), jamais envoyée. Enregistre-la dans tes Photos pour la garder.</p>`:'<p class="note">Vidéo non disponible pour cet essai (enregistrement non pris en charge ou supprimé).</p>'}
    <div class="mk" id="mk">${mk}<div class="cur" id="cur"></div></div>
    <div class="leg"><span><i class="i-bad" style="display:inline-block;width:10px;height:10px;border-radius:3px"></i> à corriger</span><span><i class="i-mid" style="display:inline-block;width:10px;height:10px;border-radius:3px"></i> mineur</span><span><i class="i-good" style="display:inline-block;width:10px;height:10px;border-radius:3px"></i> bien</span><span><i class="i-neu" style="display:inline-block;width:10px;height:10px;border-radius:3px"></i> compris par le contexte</span></div>
    <p class="note">Touche une barre pour aller au moment. Sur la vidéo, ton squelette et le geste concerné s’affichent.</p></div>
@@ -374,6 +375,7 @@ function openReport(it){
   if(!it.blob){root.querySelectorAll('.play').forEach(b=>b.disabled=true);return;}
   const v=$('#rv'),c=$('#rc'),cx=c.getContext('2d'),url=URL.createObjectURL(it.blob);pb={v,url,raf:0,stopAt:null};v.src=url;
   twoTap($('#delRep'),async()=>{await delItem(it.id);histRender();show('s-hist');});
+  const dv=$('#delVid');if(dv)twoTap(dv,async()=>{it.blob=null;try{await idb.put(it)}catch(e){console.error(e)}const mh=ls.get('agt_hist',[]);mh.forEach(x=>{if(x.id===it.id)x.video=false});ls.set('agt_hist',mh);openReport(it);});
   $('#saveVid').onclick=async()=>{const ext=/mp4/.test(it.blob.type)?'mp4':'webm',f=new File([it.blob],'agora-gestuelle-'+new Date(it.date).toISOString().slice(0,16).replace(/[:T]/g,'-')+'.'+ext,{type:it.blob.type});try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return;}}catch(e){if(e&&e.name==='AbortError')return;}const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},3000);};
   const fixDur=()=>{if(v.duration===Infinity&&!/mp4/.test(it.blob.type)){v.currentTime=1e7;v.ontimeupdate=()=>{v.ontimeupdate=null;v.currentTime=0;};}};v.onloadedmetadata=fixDur;
   const act=t=>[...r.issues,...r.neutral].find(i=>t>=i.t0-0.2&&t<=i.t1+0.2);

@@ -177,7 +177,10 @@ function vSync() {
   if (!d) h += '<p class="muted small" style="margin:0">' + (sy.loading ? 'Chargement…' : 'Pas encore chargé. Appuie sur Actualiser.') + '</p>';
   else {
     h += '<div class="row" style="justify-content:space-around"><div class="pil"><b>' + bi.total + '</b><span class="small muted">séance' + (bi.total > 1 ? 's' : '') + '</span></div><div class="pil"><b>' + bi.jours + '</b><span class="small muted">jour' + (bi.jours > 1 ? 's' : '') + ' actif' + (bi.jours > 1 ? 's' : '') + '</span></div><div class="pil"><b>' + bi.mots + '</b><span class="small muted">mots dits</span></div></div>';
-    h += d.seances.length ? d.seances.map(function (s) {
+    var tc = {}; d.seances.forEach(function (s) { var k = s.type || 'Séance'; tc[k] = (tc[k] || 0) + 1; });
+    var fk = sy.f && tc[sy.f] ? sy.f : '';
+    if (d.seances.length) h += '<div class="row" style="flex-wrap:wrap;gap:6px"><button class="btn small' + (fk ? ' ghost' : '') + '" data-act="sync-fil" data-v="">Tout · ' + d.seances.length + '</button>' + Object.keys(tc).map(function (k) { return '<button class="btn small' + (fk === k ? '' : ' ghost') + '" data-act="sync-fil" data-v="' + esc(k) + '">' + esc(k) + ' · ' + tc[k] + '</button>'; }).join('') + '</div>';
+    h += d.seances.length ? d.seances.filter(function (s) { return !fk || (s.type || 'Séance') === fk; }).map(function (s) {
       return '<details class="sy-s"><summary><b>' + esc(s.sujet || 'Séance') + '</b><span class="small muted">' + esc(s.date) + ' · ' + esc(s.type || '') + (s.dur ? ' · ' + esc(durLabel(+s.dur)) : '') + (s.mots ? ' · ' + s.mots + ' mots' : '') + ' · Logos/Ethos/Pathos ' + ssc(s.logos) + '/' + ssc(s.ethos) + '/' + ssc(s.pathos) + '</span></summary>' + (s.transcript ? '<p class="sy-tx">' + esc(s.transcript) + '</p>' : '<p class="muted small" style="margin:8px 0 0">Pas de transcription pour cette séance.</p>') + '</details>';
     }).join('') : '<p class="muted small" style="margin:0">Aucune séance pour l’instant. Fais un exercice dans le Studio : il apparaîtra ici.</p>';
   }
@@ -193,6 +196,7 @@ function syAct(act, v, el) {
     case 'sync-back': view = { tab: 'home', sub: null }; render(); window.scrollTo(0, 0); return true;
     case 'sync-hide': lsSet('ao_sy_hide', '1'); render(); return true;
     case 'sync-link': var c = byIdEl('syCode'), bk = byIdEl('syBack'); syLink(c ? c.value : '', !!(bk && bk.checked), el, byIdEl('syErr')); return true;
+    case 'sync-fil': sy.f = v || ''; render(); return true;
     case 'sync-flush': syFlush().then(function () { syAvanc(false); }); toast('Envoi en cours…'); return true;
     case 'sync-refresh': sy.err = ''; syCheck(); syFlush(); syAvanc(false); return true;
     case 'sync-unlink':
