@@ -1,5 +1,5 @@
 /* Agora Studio — service worker (généré par build.js, ne pas éditer à la main) */
-const CACHE = 'amob-248ba97e25';
+const CACHE = 'amob-484c40596f';
 const FILES = [
  "./",
  "index.html",
