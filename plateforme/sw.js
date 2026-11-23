@@ -1,6 +1,6 @@
 /* Agora — fonctionne sans réseau : réseau d'abord (toujours la dernière version), cache en secours. Le serveur (script.google.com) n'est jamais mis en cache. */
-const CACHE = 'agora-pl-2';
-const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'gest-engine.js', 'gest-voice.js', 'gest-ui.js'];
+const CACHE = 'agora-pl-3';
+const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'gest-engine.js', 'refvideos.js', 'gest-voice.js', 'gest-ui.js'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => Promise.all(SHELL.map(f => c.add(new Request(f, { cache: 'reload' })).catch(() => {})))).then(() => self.skipWaiting()));
 });

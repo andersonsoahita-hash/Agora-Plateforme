@@ -318,7 +318,7 @@ function openReport(it){
   const sevCls=s=>s>=3?'':(s===2?'':'s1');
   const card=(i,kind)=>{const cls=kind==='n'?'n':kind==='g'?'s0':(i.sev>=2?'':'s1');
     return `<div class="iss ${cls}" data-id="${i.id}"><button class="play" data-t0="${i.t0}" data-t1="${i.t1}">▶ ${fmt(i.t0)}${i.t1-i.t0>1?'–'+fmt(i.t1):''}</button><h4>${esc(i.title)}</h4>
-      <p>${esc(i.what)}</p>${i.ctx?`<p class="w">${esc(i.ctx)}</p>`:''}${i.why?`<p class="w">${esc(i.why)}</p>`:''}${i.fix?`<p class="f">→ ${esc(i.fix)}</p>`:''}</div>`;};
+      <p>${esc(i.what)}</p>${i.ctx?`<p class="w">${esc(i.ctx)}</p>`:''}${i.why?`<p class="w">${esc(i.why)}</p>`:''}${i.fix?`<p class="f">→ ${esc(i.fix)}</p>`:''}${kind||!(window.AGREF&&(AGREF[i.kind]||[]).length)?'':`<button class="btn sec refb" data-k="${i.kind}" style="margin-top:8px">▶ Voir un exemple</button>`}</div>`;};
   const pri=r.issues.filter(i=>r.priorites.includes(i.id));
   const marks=[...r.issues.map(i=>[i,i.sev>=2?'i-bad':'i-mid']),...r.good.map(i=>[i,'i-good']),...r.neutral.map(i=>[i,'i-neu'])];
   const mk=marks.map(([i,c])=>`<i class="${c}" data-t0="${i.t0}" style="left:${100*i.t0/dur}%;width:${Math.max(0.8,100*(i.t1-i.t0)/dur)}%"></i>`).join('');
@@ -381,6 +381,11 @@ function openReport(it){
 function audioDiag(it){const a=it.audioInfo;if(!a)return '';return `<p class="note small">Son capté : ${a.sec} s, niveau ${a.rms} (source : ${a.src}). ${a.rms<0.002?'Le niveau est quasi nul : le micro a été coupé pendant la transcription vocale du téléphone.':''}</p>`;}
 function bindTabs(it){
   if(it.exo){$('#rep').insertAdjacentHTML('afterbegin','<div class="ctl" style="margin-bottom:10px"><button class="btn" id="toExo" style="width:100%">Retour à l’exercice →</button></div>');$('#toExo').onclick=()=>{opts.done(it);};}
+  root.querySelectorAll('.refb').forEach(b=>b.onclick=()=>{const L=(window.AGREF&&AGREF[b.dataset.k])||[];if(!L.length)return;let n=0;
+    let m=root.querySelector('#refm');if(!m){m=document.createElement('div');m.id='refm';m.style.cssText='position:fixed;inset:0;z-index:50;background:rgba(10,6,5,.86);display:flex;align-items:center;justify-content:center;padding:16px';root.appendChild(m);}
+    const draw=()=>{const x=L[n];m.innerHTML='<div style="width:min(720px,100%);background:#1b1210;border:1px solid rgba(199,151,70,.35);border-radius:16px;padding:14px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px"><b style="color:#fff">'+esc(x.t||'Exemple')+'</b><button class="btn sec" id="refx">✕</button></div>'+(navigator.onLine?'<div style="position:relative;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#000"><iframe src="'+AGREF_play(x)+'" style="position:absolute;inset:0;width:100%;height:100%;border:0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>':'<p class="note">Connecte-toi à internet pour voir cet exemple.</p>')+(L.length>1?'<div class="ctl" style="margin-top:10px"><button class="btn sec" id="refn">Autre exemple ('+(n+1)+'/'+L.length+')</button></div>':'')+'</div>';
+      m.querySelector('#refx').onclick=()=>{m.remove()};const nb=m.querySelector('#refn');if(nb)nb.onclick=()=>{n=(n+1)%L.length;draw()};};
+    draw();m.onclick=e=>{if(e.target===m)m.remove()};});
   const sw=t=>{root.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));['g','v','s'].forEach(k=>{const e=$('#tab-'+k);if(e)e.hidden=k!==t;});};
   root.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>sw(b.dataset.tab));
   window.__goSeek=t=>{sw('g');const v=$('#rv');if(v){v.currentTime=Math.max(0,t-0.5);v.play().catch(()=>{});v.scrollIntoView({behavior:'smooth',block:'center'});}};
