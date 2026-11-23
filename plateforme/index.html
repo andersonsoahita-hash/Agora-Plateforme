@@ -1920,7 +1920,7 @@ body{background:#E6E6E9}
     h+=sh(ok?'done':'',3,'Code d’activation',ok?'Utilisé : ton mot de passe est créé.':'Envoyé par e-mail après validation, valable une seule fois.');
     h+=sh(ok?'on':'',4,'Appareils',ok?'1 ordinateur (la plateforme) et 1 téléphone (l’application).':'Un seul ordinateur et un seul téléphone par compte.');
     h+='</div><p class="note"><b>'+r.p+' '+r.n+'</b> · '+(r.d||'')+(s==='syncing'?' <span class="pill">Envoi</span>':s==='pending'?' <span class="pill">En attente</span>':' <span class="pill ok">Validé</span>')+'</p>';
-    if(s==='pending'||s==='syncing')h+='<p class="note"><b>Pendant que tu attends :</b> prépare ton installation, c’est le bon moment.</p>'+(window.AGINST?AGINST.html(true):'');
+    if(s==='pending'||s==='syncing')h+='<p class="note"><b>Ta demande est en cours de vérification.</b> Une fois ton accès validé, tu recevras un e-mail avec ton code d’activation. L’application Agora Studio ne s’installe et ne s’active qu’à ce moment-là : avant, rien n’y est disponible.</p>';
     if(s==='pending')h+='<button class="btn sm" id="haveCode">J’ai reçu mon code</button> ';
     if(s==='out')h+='<button class="btn sm" id="haveCode">Me reconnecter</button> ';
     if(s==='approved')h+='<p class="note"><b>Connecté.</b> Ouvre « Mon espace » en haut de la page. Autorisation hors ligne : 14 jours, tant que tu te reconnectes avant la fin.</p>';
