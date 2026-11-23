@@ -80,6 +80,7 @@ function paintPerm(msgs={}){$('#permList').innerHTML=permRows().map(([k,t,d])=>{
   return `<div class="perm"><div class="dot ${c}">${ic}</div><div><b>${t}</b><small>${esc(msgs[k]||d)}</small></div></div>`}).join('');}
 $('#start').onclick=()=>{P={cam:'',mic:'',stt:S.stt?'':'ok',mod:''};paintPerm();$('#grant').textContent='Tout autoriser';show('s-perm');listLenses();};
 const portraitScreen=()=>matchMedia('(pointer:coarse)').matches;
+let gW=null;
 async function getStream(audio){
   const a=audio?{echoCancellation:true,noiseSuppression:true}:false;
   const sz=S.fit==='fill'?{width:{ideal:1080},height:{ideal:1920},aspectRatio:{ideal:9/16},frameRate:{ideal:30}}:{width:{ideal:1920},height:{ideal:1440},aspectRatio:{ideal:4/3},frameRate:{ideal:30}};
@@ -209,13 +210,13 @@ function loop(){
   else{let pr=null;try{pr=pose.detectForVideo(proc,now);
       if(frameN%2===0){const hr=hand.detectForVideo(proc,now);lastHands=hr.landmarks&&hr.landmarks.length?hr.landmarks:null;lastHandsT=now;}
       else{const fr=face.detectForVideo(proc,now);lastFace=fr.faceLandmarks&&fr.faceLandmarks[0]?fr.faceLandmarks[0]:null;lastFaceT=now;}}catch(e){return;}
-    L=pr&&pr.landmarks&&pr.landmarks[0];hl=(now-lastHandsT<350)?lastHands:null;fl=(now-lastFaceT<350)?lastFace:null;}
+    L=pr&&pr.landmarks&&pr.landmarks[0];gW=pr&&pr.worldLandmarks&&pr.worldLandmarks[0]||null;hl=(now-lastHandsT<350)?lastHands:null;fl=(now-lastFaceT<350)?lastFace:null;}
   if(!DEMO&&!running&&!calib&&now-calibT>700){calibT=now;const k=headTurns(fl,L);if(k===null){if(++calibMiss>=3){calibMiss=0;if(++calibTries<=6)rotUser=(rotUser+1)%4;else calib=true;}}else{calibMiss=0;if(k===0){if(++calibOk>=2){calib=true;saveRot();}}else{calibOk=0;if(++calibTries<=6)rotUser=(rotUser+k)%4;else calib=true;}}}
   const t=(now-t0perf)/1000;
   if(running&&an&&tStart){
     an.setOpts({aspect:proc.width/proc.height});
     if(DEMO){while(demoI<DEMO_WORDS.length&&DEMO_WORDS[demoI][0]<=t){an.addWord(DEMO_WORDS[demoI][1],DEMO_WORDS[demoI][0]);transcript.push({w:DEMO_WORDS[demoI][1],t:DEMO_WORDS[demoI][0]});an.markSpeech(t);demoI++;}if(t<30&&t>3)an.markSpeech(t);}
-    const out=an.push({t,pose:L,hands:hl,face:fl});
+    const out=an.push({t,pose:L,world:gW,hands:hl,face:fl});
     if(frameN%2===0&&L)frames.push([Math.round(t*100)/100,L.map(p=>[Math.round(p.x*1000),Math.round(p.y*1000),Math.round((p.visibility||0)*100)]),hl?hl.map(h=>h.map(p=>[Math.round(p.x*1000),Math.round(p.y*1000)])):null,(fl&&FCI.length)?FCI.map(i=>[Math.round(fl[i].x*1000),Math.round(fl[i].y*1000)]):null]);
     if(out&&out.state){lastState=out.state;$('#pst').textContent=LAB[out.state];$('#pst').style.borderColor=COL[out.state];}
     if(S.liveFb&&out&&out.alerts.length&&now-lastAlert>6000){lastAlert=now;flash(out.alerts[0]);}

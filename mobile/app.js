@@ -1,4 +1,4 @@
-window.AGORA_BUILD='4b0a94faa6';
+window.AGORA_BUILD='57216529b8';
 /* ============================================================
    Analyse de la voix (signal) et du texte (transcription)
    Tout se calcule dans la page. Aucun audio n'est envoyé nulle part.
@@ -1663,16 +1663,21 @@ E.createAnalyzer=function(opts){
       /* profondeur : un poignet nettement plus près de la caméra que le visage = main devant le corps, pas un contact */
       const SWn=SW/opts.aspect,zs=[L[0],L[11],L[12]].filter(q=>q&&typeof q.z==='number'),zRef=zs.length?zs.reduce((a,q)=>a+q.z,0)/zs.length:null;
       const wrs=[15,16].map(i=>({i,p:P(L,i),z:L[i].z}));
+      /* 3D métrique (mètres) : les doigts doivent être réellement près de la tête ou du cou, pas seulement devant */
+      const Wd=f.world,near3D=wi=>{if(!Wd)return true;const g=i=>Wd[i]&&(Wd[i].visibility==null||Wd[i].visibility>0.4)?Wd[i]:null,fi=wi===15?[15,17,19,21]:[16,18,20,22],fp=fi.map(g).filter(Boolean),ls=g(11),rs=g(12),no=g(0);
+        if(!fp.length||!ls||!rs||!no)return true;
+        const m={x:(ls.x+rs.x)/2,y:(ls.y+rs.y)/2,z:(ls.z+rs.z)/2},ne={x:m.x+0.4*(no.x-m.x),y:m.y+0.4*(no.y-m.y),z:m.z+0.4*(no.z-m.z)},refs=[no,ne,g(7),g(8),g(9),g(10)].filter(Boolean),d=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y,a.z-b.z);
+        let mn=9;fp.forEach(a=>refs.forEach(b=>{mn=Math.min(mn,d(a,b))}));return mn<0.17};
       const front=w=>!!w&&zRef!=null&&w.p.v>0.4&&typeof w.z==='number'&&(w.z-zRef)/SWn<-0.45;
       if(f.hands&&f.hands.length){
         f.hands.forEach(lm=>{
           /* la main détectée doit coller au poignet de la pose (sinon : résultat périmé ou autre main) */
           const nw=wrs.filter(w=>w.p.v>0.3).map(w=>({w,d:Math.hypot(lm[0].x*opts.aspect-w.p.x,lm[0].y-w.p.y)})).sort((a,b)=>a.d-b.d)[0];
-          if(!nw||nw.d>0.9*H.ed||front(nw.w))return;
+          if(!nw||nw.d>0.9*H.ed||front(nw.w)||!near3D(nw.w.i))return;
           const pts=[4,8,12,16,20,9].map(i=>({x:lm[i].x*opts.aspect,y:lm[i].y}));
           const palmW=Math.hypot((lm[5].x-lm[17].x)*opts.aspect,lm[5].y-lm[17].y);sources.push({pts,ratio:palmW/H.ed,known:true});});
       }else{
-        [[15,17,19,21],[16,18,20,22]].forEach(ids=>{if(front(wrs.filter(w=>w.i===ids[0])[0]))return;const pts=ids.map(i=>P(L,i)).filter(p=>p.v>0.45&&p.rx>=0&&p.rx<=1&&p.ry>=0&&p.ry<=1);if(pts.length>=3)sources.push({pts,ratio:null,known:false});});
+        [[15,17,19,21],[16,18,20,22]].forEach(ids=>{if(front(wrs.filter(w=>w.i===ids[0])[0])||!near3D(ids[0]))return;const pts=ids.map(i=>P(L,i)).filter(p=>p.v>0.45&&p.rx>=0&&p.rx<=1&&p.ry>=0&&p.ry<=1);if(pts.length>=3)sources.push({pts,ratio:null,known:false});});
       }
       let best=null;
       sources.forEach(s=>{
@@ -2015,6 +2020,7 @@ function paintPerm(msgs={}){$('#permList').innerHTML=permRows().map(([k,t,d])=>{
   return `<div class="perm"><div class="dot ${c}">${ic}</div><div><b>${t}</b><small>${esc(msgs[k]||d)}</small></div></div>`}).join('');}
 $('#start').onclick=()=>{P={cam:'',mic:'',stt:S.stt?'':'ok',mod:''};paintPerm();$('#grant').textContent='Tout autoriser';show('s-perm');listLenses();};
 const portraitScreen=()=>matchMedia('(pointer:coarse)').matches;
+let gW=null;
 async function getStream(audio){
   const a=audio?{echoCancellation:true,noiseSuppression:true}:false;
   const sz=S.fit==='fill'?{width:{ideal:1080},height:{ideal:1920},aspectRatio:{ideal:9/16},frameRate:{ideal:30}}:{width:{ideal:1920},height:{ideal:1440},aspectRatio:{ideal:4/3},frameRate:{ideal:30}};
@@ -2144,13 +2150,13 @@ function loop(){
   else{let pr=null;try{pr=pose.detectForVideo(proc,now);
       if(frameN%2===0){const hr=hand.detectForVideo(proc,now);lastHands=hr.landmarks&&hr.landmarks.length?hr.landmarks:null;lastHandsT=now;}
       else{const fr=face.detectForVideo(proc,now);lastFace=fr.faceLandmarks&&fr.faceLandmarks[0]?fr.faceLandmarks[0]:null;lastFaceT=now;}}catch(e){return;}
-    L=pr&&pr.landmarks&&pr.landmarks[0];hl=(now-lastHandsT<350)?lastHands:null;fl=(now-lastFaceT<350)?lastFace:null;}
+    L=pr&&pr.landmarks&&pr.landmarks[0];gW=pr&&pr.worldLandmarks&&pr.worldLandmarks[0]||null;hl=(now-lastHandsT<350)?lastHands:null;fl=(now-lastFaceT<350)?lastFace:null;}
   if(!DEMO&&!running&&!calib&&now-calibT>700){calibT=now;const k=headTurns(fl,L);if(k===null){if(++calibMiss>=3){calibMiss=0;if(++calibTries<=6)rotUser=(rotUser+1)%4;else calib=true;}}else{calibMiss=0;if(k===0){if(++calibOk>=2){calib=true;saveRot();}}else{calibOk=0;if(++calibTries<=6)rotUser=(rotUser+k)%4;else calib=true;}}}
   const t=(now-t0perf)/1000;
   if(running&&an&&tStart){
     an.setOpts({aspect:proc.width/proc.height});
     if(DEMO){while(demoI<DEMO_WORDS.length&&DEMO_WORDS[demoI][0]<=t){an.addWord(DEMO_WORDS[demoI][1],DEMO_WORDS[demoI][0]);transcript.push({w:DEMO_WORDS[demoI][1],t:DEMO_WORDS[demoI][0]});an.markSpeech(t);demoI++;}if(t<30&&t>3)an.markSpeech(t);}
-    const out=an.push({t,pose:L,hands:hl,face:fl});
+    const out=an.push({t,pose:L,world:gW,hands:hl,face:fl});
     if(frameN%2===0&&L)frames.push([Math.round(t*100)/100,L.map(p=>[Math.round(p.x*1000),Math.round(p.y*1000),Math.round((p.visibility||0)*100)]),hl?hl.map(h=>h.map(p=>[Math.round(p.x*1000),Math.round(p.y*1000)])):null,(fl&&FCI.length)?FCI.map(i=>[Math.round(fl[i].x*1000),Math.round(fl[i].y*1000)]):null]);
     if(out&&out.state){lastState=out.state;$('#pst').textContent=LAB[out.state];$('#pst').style.borderColor=COL[out.state];}
     if(S.liveFb&&out&&out.alerts.length&&now-lastAlert>6000){lastAlert=now;flash(out.alerts[0]);}
