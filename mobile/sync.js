@@ -94,9 +94,9 @@ function syGateDraw() {
   if (!sy.gate) { if (d && d.parentNode) d.parentNode.removeChild(d); return; }
   if (!d) { d = document.createElement('div'); d.id = 'syGate'; d.className = 'lock'; d.setAttribute('role', 'alertdialog'); document.body.appendChild(d); }
   var key = sy.gate; if (d.getAttribute('data-g') === key) return; d.setAttribute('data-g', key);
-  var h = '<div class="lockbox"><h2>Une erreur est survenue</h2><p>Veuillez vous reconnecter. Si le problème persiste, prévenez votre administrateur.</p>';
-  if (key === 'relink') {
-    h += '<p class="small muted">Sur la plateforme : Mon compte, puis « Activer mon application ». Un code s’affiche : saisis-le ici.</p><div class="stack" style="text-align:left"><input type="text" id="syGateCode" class="sy-code" maxlength="9" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX" aria-label="Code de liaison"><button class="btn" id="syGateGo" type="button">Me reconnecter</button><p class="callout" id="syGateErr" hidden></p></div>';
+  var h = key === 'first' ? '<div class="lockbox"><h2>Active Agora Studio</h2><p>Cette application s’ouvre avec ton compte. Tant que ton accès n’est pas validé et activé, rien n’est disponible.</p>' : '<div class="lockbox"><h2>Une erreur est survenue</h2><p>Veuillez vous reconnecter. Si le problème persiste, prévenez votre administrateur.</p>';
+  if (key === 'relink' || key === 'first') {
+    h += '<p class="small muted">' + (key === 'first' ? 'Une fois ton accès validé : sur la plateforme, ouvre Mon compte, puis « Activer mon application ». Un code s’affiche : saisis-le ici.' : 'Sur la plateforme : Mon compte, puis « Activer mon application ». Un code s’affiche : saisis-le ici.') + '</p><div class="stack" style="text-align:left"><input type="text" id="syGateCode" class="sy-code" maxlength="9" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX" aria-label="Code de liaison"><button class="btn" id="syGateGo" type="button">' + (key === 'first' ? 'Activer l’application' : 'Me reconnecter') + '</button><p class="callout" id="syGateErr" hidden></p></div>';
   } else h += '<p class="small muted">Nouvelle tentative automatique, tu n’as rien à faire.</p>';
   h += '<p class="small muted">Tes données restent sur ton téléphone.</p></div>';
   d.innerHTML = h;
@@ -211,4 +211,5 @@ function syBoot() {
   window.addEventListener('offline', function () { sy.offline = true; syPaint(); });
   setInterval(syPaint, 30000);
   if (syLinked()) { syFlush(); syAvanc(true); setTimeout(syLecons, 800); }
+  else { var go1 = function () { sy.gate = 'first'; syGateDraw(); }; if (document.body) go1(); else document.addEventListener('DOMContentLoaded', go1); }
 }
